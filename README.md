@@ -1,98 +1,47 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Sistema de Gestão para Escola de Música
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> **Projeto Web desenvolvido para a disciplina de Programação Web 2**  
+> **Curso:** Tecnologia em Análise e Desenvolvimento de Sistemas (ADS)  
+> **Instituição:** Instituto Federal de Rondônia (IFRO) - Campus Ji-Paraná  
+> **Data:** 03 de Junho de 2026
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Descrição do Projeto
+O **Sistema de Gestão Escolar** é uma aplicação web monolítica desenvolvida especificamente para centralizar, integrar e otimizar os processos administrativos e pedagógicos de uma escola de música. A plataforma reúne em um único ambiente estruturado o controle completo de alunos, responsáveis, professores, turmas, cursos, salas e contratos, garantindo que as informações circulem de forma consistente entre os módulos e permaneçam acessíveis apenas a usuários autorizados.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A aplicação organiza e rastreia com precisão todo o ciclo do aluno dentro da instituição: desde o cadastro inicial (vinculado ao seu respectivo responsável), passando pela matrícula ativa em turmas, até a formalização do contrato pedagógico/financeiro e o acompanhamento de suas respectivas parcelas. Todas as informações são interligadas e centralizadas, reduzindo drasticamente a dependência de controles manuais ou planilhas isoladas e eliminando a necessidade de comunicação física/intersetorial para a localização de dados básicos.
 
-## Project setup
+## Objetivos da Aplicação
+* **Centralização e Acessibilidade:** Substituir processos manuais e controles isolados por uma solução digital única, estruturada, segura e confiável.
+* **Integração Total de Módulos:** Gerenciar de forma coerente os vínculos entre alunos, turmas, professores, salas e contratos, refletindo as atualizações automaticamente em todo o sistema.
+* **Validação Automatizada de Regras de Negócio:** Automatizar rotinas institucionais críticas, tais como:
+  * Verificação em tempo real de vagas disponíveis em turmas.
+  * Controle e prevenção estrita de conflitos de horários de professores.
+  * Validação da disponibilidade física de salas de aula.
+  * Prevenção de matrículas duplicadas para o mesmo aluno.
+  * Manutenção da integridade referencial antes da exclusão de qualquer registro do sistema.
+* **Integridade dos Dados:** Garantir a consistência das informações ao longo de toda a operação, mitigando falhas que possam comprometer a grade horária de aulas, o histórico acadêmico dos estudantes ou os contratos vigentes.
+* **Apoio ao Controle Financeiro:** Oferecer um controle financeiro básico por meio do módulo de contratos, permitindo registrar o vínculo financeiro entre o aluno e o curso, contendo valores mensais, períodos de vigência e o status das parcelas.
 
-```bash
-$ npm install
-```
+## Perfis de Usuário
+O sistema é de uso interno e foi modelado para atender a dois níveis distintos de permissões de acesso:
+1. **Administrador:** Possui acesso irrestrito a todas as funcionalidades, configurações do sistema, cadastros, relatórios e módulos operacionais da aplicação.
+2. **Secretária Escolar:** Perfil focado nas atividades operacionais diárias da instituição, operando rotinas de cadastros, consultas rápidas e a efetivação de matrículas.
 
-## Compile and run the project
+## Módulos da Aplicação
+O escopo do projeto contempla o desenvolvimento e a integração dos seguintes módulos:
+- [x] **Módulo de Alunos e Responsáveis:** Cadastro completo e vínculo familiar.
+- [x] **Módulo de Professores:** Gestão do corpo docente e controle de cargas horárias.
+- [x] **Módulo de Cursos e Turmas:** Organização da grade curricular e distribuição de alunos por turmas.
+- [x] **Módulo de Salas:** Alocação de espaços físicos para aulas, prevenindo choques de horários.
+- [x] **Módulo de Contratos:** Vínculo financeiro, controle de mensalidades, vigências e parcelas.
 
-```bash
-# development
-$ npm run start
+## Equipe de Desenvolvimento
+* **Alencar Ferreira Morete da Cruz**
+* **Emily Pereira Chagas**
 
-# watch mode
-$ npm run start:dev
+## Links do Projeto
+* **Documento do Projeto:** [Projeto-de-Software-web](https://docs.google.com/document/d/1QKbgZV6JTAKhE9u6zjgqta_oqEvf0jFNc43CkXxWuVA/edit?usp=sharing)
 
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
