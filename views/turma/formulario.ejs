@@ -1,0 +1,109 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item"><a href="/turmas">Turmas</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)"><%= titulo %></a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="/turmas/<%= turma && turma.id ? turma.id + '/editar' : 'criar' %>" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Nome</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="nome" value="<%= turma ? turma.nome : '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Curso</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="cursoId" required>
+                                <option value="">Selecione...</option>
+                                <% cursos.forEach(c => { %>
+                                    <option value="<%= c.id %>" <%= turma && turma.curso && turma.curso.id === c.id ? 'selected' : '' %>><%= c.nome %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Sala</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="salaId" required>
+                                <option value="">Selecione...</option>
+                                <% salas.forEach(s => { %>
+                                    <option value="<%= s.id %>" <%= turma && turma.sala && turma.sala.id === s.id ? 'selected' : '' %>><%= s.nome %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Dia da Semana</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="diaSemana" required>
+                                <% ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].forEach(d => { %>
+                                    <option value="<%= d %>" <%= turma && turma.diaSemana === d ? 'selected' : '' %>><%= d %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Horário Início</label>
+                        <div class="col-sm-9">
+                            <input type="time" class="form-control" name="horarioInicio" value="<%= turma ? turma.horarioInicio : '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Horário Fim</label>
+                        <div class="col-sm-9">
+                            <input type="time" class="form-control" name="horarioFim" value="<%= turma ? turma.horarioFim : '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Capacidade</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" name="capacidade" value="<%= turma ? turma.capacidade : 0 %>" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Data Início</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" name="dataInicio" value="<%= turma ? turma.dataInicio : '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Data Fim</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" name="dataFim" value="<%= turma ? (turma.dataFim || '') : '' %>">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Status</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="statusTurma">
+                                <% ['Planejamento','Em Andamento','Concluída','Cancelada','Suspensa'].forEach(s => { %>
+                                    <option value="<%= s %>" <%= turma && turma.statusTurma === s ? 'selected' : '' %>><%= s %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                            <a href="/turmas" class="btn btn-light ml-2">Cancelar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0">&raquo; Consulte todos os contratos cadastrados no sistema</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Contratos</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="basic-form">
+                    <form>
+                        <div class="form-row">
+                            <div class="col-auto">
+                                <input type="text" class="form-control" placeholder="Digite para pesquisar...">
+                            </div>
+                            <div class="col-auto mt-2 mt-lg-0">
+                                <button type="submit" class="btn btn-primary mb-2">Pesquisar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <a href="/contratos/criar" class="btn btn-success">Novo</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Aluno</th>
+                                <th>Curso</th>
+                                <th>Valor Mensal</th>
+                                <th>Início</th>
+                                <th>Venc. Parcela</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (let i = 0; i < contratos.length; i++) { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td><%= contratos[i].aluno.nome %></td>
+                                    <td><%= contratos[i].curso.nome %></td>
+                                    <td><%= moneyFormat(contratos[i].valorMensal) %></td>
+                                    <td><%= dateFormat(contratos[i].dataInicio) %></td>
+                                    <td><%= contratos[i].dataVencimentoParcela ? dateFormat(contratos[i].dataVencimentoParcela) : '-' %></td>
+                                    <td>
+                                        <% if (contratos[i].statusContrato === 'Ativo') { %>
+                                            <span class="badge badge-primary"><%= contratos[i].statusContrato %></span>
+                                        <% } else if (contratos[i].statusContrato === 'Encerrado') { %>
+                                            <span class="badge badge-success"><%= contratos[i].statusContrato %></span>
+                                        <% } else { %>
+                                            <span class="badge badge-danger"><%= contratos[i].statusContrato %></span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <a href="/contratos/<%= contratos[i].id %>/editar" class="text-warning mr-2">
+                                            <i class="fa fa-pencil fa-lg"></i>
+                                        </a>
+                                        <a href="/contratos/<%= contratos[i].id %>/excluir" class="text-danger">
+                                            <i class="fa fa-trash fa-lg"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

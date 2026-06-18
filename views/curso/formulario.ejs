@@ -1,0 +1,71 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item"><a href="/cursos">Cursos</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)"><%= titulo %></a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="/cursos/<%= curso && curso.id ? curso.id + '/editar' : 'criar' %>" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Nome</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="nome" value="<%= curso ? curso.nome : '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Descrição</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" name="descricao" rows="3"><%= curso ? (curso.descricao || '') : '' %></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Instrumento</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="instrumento" value="<%= curso ? curso.instrumento : '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Nível</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="nivel" required>
+                                <% ['Iniciante','Intermediário','Avançado'].forEach(n => { %>
+                                    <option value="<%= n %>" <%= curso && curso.nivel === n ? 'selected' : '' %>><%= n %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Carga Horária (h)</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" name="cargaHoraria" value="<%= curso ? curso.cargaHoraria : 0 %>" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Duração (meses)</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" name="duracaoMeses" value="<%= curso ? curso.duracaoMeses : 0 %>" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                            <a href="/cursos" class="btn btn-light ml-2">Cancelar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

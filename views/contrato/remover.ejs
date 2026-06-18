@@ -1,0 +1,67 @@
+<% contrato = locals.contrato || {}; %>
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= locals.titulo %></h4>
+            <p class="mb-0">&raquo; <%= locals.subtitulo %></p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item active"><a href="/contratos">Consultar Contratos</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Remover Contrato</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card border-danger">
+            <div class="card-header bg-danger">
+                <h4 class="card-title text-white mb-0">Remoção de Contrato</h4>
+            </div>
+            <div class="card-body">
+                <% if (locals.erro) { %>
+                    <div class="alert alert-danger">
+                        <strong>Não foi possível remover:</strong> <%= locals.erro %>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-warning">
+                        Esta ação é irreversível. Tem certeza que deseja remover o contrato de <strong><%= contrato.aluno ? contrato.aluno.nome : '' %></strong>?
+                    </div>
+                <% } %>
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th>Aluno</th>
+                                <td><%= contrato.aluno ? contrato.aluno.nome : '-' %></td>
+                            </tr>
+                            <tr>
+                                <th>Curso</th>
+                                <td><%= contrato.curso ? contrato.curso.nome : '-' %></td>
+                            </tr>
+                            <tr>
+                                <th>Valor Mensal</th>
+                                <td><%= moneyFormat(contrato.valorMensal) %></td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td><%= contrato.statusContrato %></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <% if (!locals.erro) { %>
+                    <form action="/contratos/<%= contrato.id %>/excluir" method="POST">
+                        <button type="submit" class="btn btn-danger mr-2">Remover Contrato</button>
+                        <a href="/contratos" class="btn btn-warning">Cancelar</a>
+                    </form>
+                <% } else { %>
+                    <a href="/contratos" class="btn btn-warning">Voltar</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

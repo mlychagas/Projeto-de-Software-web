@@ -1,0 +1,66 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0">&raquo; Consulte os vínculos entre professores e turmas</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Prof. por Turma</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="basic-form">
+                    <form>
+                        <div class="form-row">
+                            <div class="col-auto">
+                                <input type="text" class="form-control" placeholder="Digite para pesquisar...">
+                            </div>
+                            <div class="col-auto mt-2 mt-lg-0">
+                                <button type="submit" class="btn btn-primary mb-2">Pesquisar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <a href="/ministra/vincular" class="btn btn-success">Novo</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Turma</th>
+                                <th>Professor</th>
+                                <th>Data de Atribuição</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (let i = 0; i < vinculos.length; i++) { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td><%= vinculos[i].turma.nome %></td>
+                                    <td><%= vinculos[i].professor.nome %></td>
+                                    <td><%= dateFormat(vinculos[i].dataAtribuicao) %></td>
+                                    <td>
+                                        <a href="/ministra/<%= vinculos[i].turma.id %>/<%= vinculos[i].professor.id %>/excluir" class="text-danger">
+                                            <i class="fa fa-trash fa-lg"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

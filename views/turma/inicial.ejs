@@ -1,0 +1,87 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0">&raquo; Consulte todas as turmas cadastradas no sistema</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Turmas</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="basic-form">
+                    <form>
+                        <div class="form-row">
+                            <div class="col-auto">
+                                <input type="text" class="form-control" placeholder="Digite para pesquisar...">
+                            </div>
+                            <div class="col-auto mt-2 mt-lg-0">
+                                <button type="submit" class="btn btn-primary mb-2">Pesquisar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <a href="/turmas/criar" class="btn btn-success">Novo</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nome</th>
+                                <th>Curso</th>
+                                <th>Sala</th>
+                                <th>Dia</th>
+                                <th>Horário</th>
+                                <th>Capacidade</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (let i = 0; i < turmas.length; i++) { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td><%= turmas[i].nome %></td>
+                                    <td><%= turmas[i].curso.nome %></td>
+                                    <td><%= turmas[i].sala.nome %></td>
+                                    <td><%= turmas[i].diaSemana %></td>
+                                    <td><%= turmas[i].horarioInicio %> - <%= turmas[i].horarioFim %></td>
+                                    <td><%= turmas[i].capacidade %></td>
+                                    <td>
+                                        <% if (turmas[i].statusTurma === 'Em Andamento') { %>
+                                            <span class="badge badge-primary"><%= turmas[i].statusTurma %></span>
+                                        <% } else if (turmas[i].statusTurma === 'Concluída') { %>
+                                            <span class="badge badge-success"><%= turmas[i].statusTurma %></span>
+                                        <% } else if (turmas[i].statusTurma === 'Cancelada') { %>
+                                            <span class="badge badge-danger"><%= turmas[i].statusTurma %></span>
+                                        <% } else { %>
+                                            <span class="badge badge-warning"><%= turmas[i].statusTurma %></span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <a href="/turmas/<%= turmas[i].id %>/editar" class="text-warning mr-2">
+                                            <i class="fa fa-pencil fa-lg"></i>
+                                        </a>
+                                        <a href="/turmas/<%= turmas[i].id %>/excluir" class="text-danger">
+                                            <i class="fa fa-trash fa-lg"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

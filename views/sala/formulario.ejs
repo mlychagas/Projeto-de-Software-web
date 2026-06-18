@@ -1,0 +1,55 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item"><a href="/salas">Salas</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)"><%= titulo %></a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="/salas/<%= sala && sala.id ? sala.id + '/editar' : 'criar' %>" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Nome</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="nome" value="<%= sala ? sala.nome : '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Localização</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="localizacao" value="<%= sala ? sala.localizacao : '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Capacidade</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" name="capacidade" value="<%= sala ? sala.capacidade : 0 %>" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Equipamentos</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" name="equipamentos" rows="3"><%= sala ? (sala.equipamentos || '') : '' %></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                            <a href="/salas" class="btn btn-light ml-2">Cancelar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

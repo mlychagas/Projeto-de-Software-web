@@ -1,0 +1,67 @@
+<% sala = locals.sala || {}; %>
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= locals.titulo %></h4>
+            <p class="mb-0">&raquo; <%= locals.subtitulo %></p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item active"><a href="/salas">Consultar Salas</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Remover Sala</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card border-danger">
+            <div class="card-header bg-danger">
+                <h4 class="card-title text-white mb-0">Remoção de Sala</h4>
+            </div>
+            <div class="card-body">
+                <% if (locals.erro) { %>
+                    <div class="alert alert-danger">
+                        <strong>Não foi possível remover:</strong> <%= locals.erro %>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-warning">
+                        Esta ação é irreversível. Tem certeza que deseja remover a sala <strong><%= sala.nome %></strong>?
+                    </div>
+                <% } %>
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th>Nome</th>
+                                <td><%= sala.nome %></td>
+                            </tr>
+                            <tr>
+                                <th>Localização</th>
+                                <td><%= sala.localizacao %></td>
+                            </tr>
+                            <tr>
+                                <th>Capacidade</th>
+                                <td><%= sala.capacidade %></td>
+                            </tr>
+                            <tr>
+                                <th>Equipamentos</th>
+                                <td><%= sala.equipamentos || '-' %></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <% if (!locals.erro) { %>
+                    <form action="/salas/<%= sala.id %>/excluir" method="POST">
+                        <button type="submit" class="btn btn-danger mr-2">Remover Sala</button>
+                        <a href="/salas" class="btn btn-warning">Cancelar</a>
+                    </form>
+                <% } else { %>
+                    <a href="/salas" class="btn btn-warning">Voltar</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

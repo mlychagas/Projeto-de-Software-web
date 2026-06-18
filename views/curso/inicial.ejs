@@ -1,0 +1,73 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0">&raquo; Consulte todos os cursos disponíveis no sistema</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Cursos</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="basic-form">
+                    <form>
+                        <div class="form-row">
+                            <div class="col-auto">
+                                <input type="text" class="form-control" placeholder="Digite para pesquisar...">
+                            </div>
+                            <div class="col-auto mt-2 mt-lg-0">
+                                <button type="submit" class="btn btn-primary mb-2">Pesquisar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <a href="/cursos/criar" class="btn btn-success">Novo</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nome</th>
+                                <th>Instrumento</th>
+                                <th>Nível</th>
+                                <th>Carga Horária</th>
+                                <th>Duração (meses)</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (let i = 0; i < cursos.length; i++) { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td><%= cursos[i].nome %></td>
+                                    <td><%= cursos[i].instrumento %></td>
+                                    <td><%= cursos[i].nivel %></td>
+                                    <td><%= cursos[i].cargaHoraria %>h</td>
+                                    <td><%= cursos[i].duracaoMeses %></td>
+                                    <td>
+                                        <a href="/cursos/<%= cursos[i].id %>/editar" class="text-warning mr-2">
+                                            <i class="fa fa-pencil fa-lg"></i>
+                                        </a>
+                                        <a href="/cursos/<%= cursos[i].id %>/excluir" class="text-danger">
+                                            <i class="fa fa-trash fa-lg"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

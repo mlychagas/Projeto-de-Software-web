@@ -1,0 +1,87 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item"><a href="/contratos">Contratos</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)"><%= titulo %></a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="/contratos/<%= contrato && contrato.id ? contrato.id + '/editar' : 'criar' %>" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Aluno</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="alunoId" required>
+                                <option value="">Selecione...</option>
+                                <% alunos.forEach(a => { %>
+                                    <option value="<%= a.id %>" <%= contrato && contrato.aluno && contrato.aluno.id === a.id ? 'selected' : '' %>><%= a.nome %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Curso</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="cursoId" required>
+                                <option value="">Selecione...</option>
+                                <% cursos.forEach(c => { %>
+                                    <option value="<%= c.id %>" <%= contrato && contrato.curso && contrato.curso.id === c.id ? 'selected' : '' %>><%= c.nome %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Data Início</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" name="dataInicio" value="<%= contrato ? contrato.dataInicio : '' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Data Fim</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" name="dataFim" value="<%= contrato ? (contrato.dataFim || '') : '' %>">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Vencimento Parcela</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" name="dataVencimentoParcela" value="<%= contrato ? (contrato.dataVencimentoParcela || '') : '' %>">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Valor Mensal (R$)</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="valorMensal" value="<%= contrato ? String(contrato.valorMensal).replace('.', ',') : '0,00' %>" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Status</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="statusContrato">
+                                <% ['Ativo','Cancelado','Encerrado','Suspenso'].forEach(s => { %>
+                                    <option value="<%= s %>" <%= contrato && contrato.statusContrato === s ? 'selected' : '' %>><%= s %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-9 offset-sm-3">
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                            <a href="/contratos" class="btn btn-light ml-2">Cancelar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
