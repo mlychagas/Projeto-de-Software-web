@@ -2,101 +2,26 @@
     <div class="header-content">
         <nav class="navbar navbar-expand">
             <div class="collapse navbar-collapse justify-content-between">
-                <div class="header-left">
-                    <div class="search_bar dropdown">
-                        <span class="search_icon p-3 c-pointer" data-toggle="dropdown">
-                            <i class="mdi mdi-magnify"></i>
-                        </span>
-                        <div class="dropdown-menu p-0 m-0">
-                            <form>
-                                <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-                            </form>
-                        </div>
+                <div class="header-left d-flex align-items-center w-100">
+                    <div class="header-search">
+                        <i class="mdi mdi-magnify"></i>
+                        <input class="form-control" type="text" placeholder="Pesquise aqui">
+                    </div>
+                    
+                    <div class="theme-top-tabs d-none d-xl-flex flex-grow-1 justify-content-center align-items-center">
+                        <a href="#" class="btn btn-outline-light btn-icon text-muted border mr-2"><i class="mdi mdi-help-circle-outline"></i></a>
+                        <a href="/disponibilidade" class="btn btn-theme-primary mr-2"><i class="mdi mdi-calendar-check"></i> Disponibilidade</a>
+                        <a href="/atendimento" class="btn btn-theme-primary mr-2"><i class="mdi mdi-account-tie"></i> Atendimento</a>
+                        <a href="/agenda" class="btn btn-theme-primary mr-2"><i class="mdi mdi-calendar"></i> Agenda</a>
+                        <a href="/escola" class="btn btn-theme-primary mr-2"><i class="mdi mdi-domain"></i> Escola</a>
+                        <a href="/caixa" class="btn btn-theme-primary mr-2"><i class="mdi mdi-cash-register"></i> Caixa</a>
+                        <a href="/turmas" class="btn btn-theme-primary mr-2"><i class="mdi mdi-google-classroom"></i> Turmas</a>
+                        <a href="/ajuda" class="btn btn-theme-primary mr-2"><i class="mdi mdi-help-circle"></i> Ajuda <i class="mdi mdi-chevron-down"></i></a>
                     </div>
                 </div>
 
                 <ul class="navbar-nav header-right">
-                    <li class="nav-item dropdown notification_dropdown">
-                        <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                            <i class="mdi mdi-bell"></i>
-                            <div class="pulse-css"></div>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <ul class="list-unstyled">
-                                <li class="media dropdown-item">
-                                    <span class="success"><i class="ti-user"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong>Martin</strong> has added a <strong>customer</strong>
-                                                Successfully
-                                            </p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                                <li class="media dropdown-item">
-                                    <span class="primary"><i class="ti-shopping-cart"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong>Jennifer</strong> purchased Light Dashboard 2.0.</p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                                <li class="media dropdown-item">
-                                    <span class="danger"><i class="ti-bookmark"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong>Robin</strong> marked a <strong>ticket</strong> as unsolved.
-                                            </p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                                <li class="media dropdown-item">
-                                    <span class="primary"><i class="ti-heart"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong>David</strong> purchased Light Dashboard 1.0.</p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                                <li class="media dropdown-item">
-                                    <span class="success"><i class="ti-image"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong> James.</strong> has added a<strong>customer</strong>
-                                                Successfully
-                                            </p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                            </ul>
-                            <a class="all-notification" href="#">See all notifications <i
-                                    class="ti-arrow-right"></i></a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown header-profile">
-                        <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                            <i class="mdi mdi-account"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a href="/app-profile.html" class="dropdown-item">
-                                <i class="icon-user"></i>
-                                <span class="ml-2">Profile </span>
-                            </a>
-                            <a href="/email-inbox.html" class="dropdown-item">
-                                <i class="icon-envelope-open"></i>
-                                <span class="ml-2">Inbox </span>
-                            </a>
-                            <a href="/page-login.html" class="dropdown-item">
-                                <i class="icon-key"></i>
-                                <span class="ml-2">Logout </span>
-                            </a>
-                        </div>
-                    </li>
+                    <!-- Notifications and Account removed as requested -->
                 </ul>
             </div>
         </nav>
