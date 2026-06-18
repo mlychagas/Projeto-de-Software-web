@@ -2,6 +2,17 @@
     <div class="header-content">
         <nav class="navbar navbar-expand">
             <div class="collapse navbar-collapse justify-content-between">
+                <% if (typeof headerType !== 'undefined' && headerType === 'escola') { %>
+                <div class="header-left d-flex align-items-center w-100">
+                    <h4 class="m-0 text-dark font-weight-bold ml-3"><i class="mdi mdi-domain mr-2 text-theme-primary"></i> Recursos e Configurações da Escola</h4>
+                    
+                    <div class="d-none d-xl-flex flex-grow-1 justify-content-end align-items-center mr-4">
+                        <a href="/" class="btn btn-outline-light btn-icon text-theme-primary border mr-3"><i class="mdi mdi-home" style="font-size: 18px;"></i></a>
+                        <a href="/ajuda" class="btn btn-theme-primary mr-3"><i class="mdi mdi-help-circle"></i> Ajuda <i class="mdi mdi-chevron-down ml-1"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-icon text-theme-primary border"><i class="mdi mdi-help-circle-outline" style="font-size: 18px;"></i></a>
+                    </div>
+                </div>
+                <% } else { %>
                 <div class="header-left d-flex align-items-center w-100">
                     <div class="header-search">
                         <i class="mdi mdi-magnify"></i>
@@ -19,6 +30,7 @@
                         <a href="/ajuda" class="btn btn-theme-primary mr-2"><i class="mdi mdi-help-circle"></i> Ajuda <i class="mdi mdi-chevron-down"></i></a>
                     </div>
                 </div>
+                <% } %>
 
                 <ul class="navbar-nav header-right">
                     <!-- Notifications and Account removed as requested -->

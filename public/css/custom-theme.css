@@ -115,10 +115,24 @@ body {
     justify-content: center;
     align-items: center;
     border-radius: 4px;
-    background: #fff;
+    background-color: #ffffff !important;
 }
 .btn-icon:hover {
     background: #f1f2f6;
+}
+
+/* Config/Escola Cards */
+.config-card {
+    background-color: #ffffff !important;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    height: 100%;
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+    cursor: pointer;
 }
 
 /* Dashboard Cards */
