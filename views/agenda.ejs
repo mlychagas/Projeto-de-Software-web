@@ -1,0 +1,103 @@
+<div class="agenda-timeline-container">
+    <div class="timeline-content-wrapper" style="min-width: 1000px; position: relative; display: flex; flex-direction: column; flex-grow: 1;">
+        <!-- Linha vermelha do tempo atual -->
+        <div class="current-time-line">
+            <div class="current-time-badge" id="currentTimeBadge">17:10:42</div>
+        </div>
+
+        <!-- Cabeçalho (Eixo X) -->
+        <div class="timeline-header">
+            <div class="timeline-resource-header">
+                <h3 class="m-0 text-theme-primary font-weight-bold" style="font-size: 28px;">
+                    <%= dataAtualCompleta.split(' ')[0] %>
+                </h3>
+                <div class="ml-2 lh-1 text-theme-primary">
+                    <small class="d-block"><%= dataAtualCompleta.split(' ')[1] %></small>
+                    <small class="d-block font-weight-bold"><%= dataAtualCompleta.split(' ')[2] %></small>
+                </div>
+            </div>
+            <div class="timeline-hours-container">
+                <% for(let h=8; h<=23; h++) { %>
+                    <div class="timeline-hour-slot"><%= h.toString().padStart(2, '0') %>:00</div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="timeline-body">
+            <% recursos.forEach(rec => { %>
+                <div class="timeline-row">
+                    <div class="timeline-resource">
+                        <strong><%= rec.nome %></strong>
+                        <small><%= rec.subtitulo %></small>
+                    </div>
+                    <div class="timeline-grid">
+                        <!-- Colunas de Fundo para as horas -->
+                        <% for(let h=8; h<=23; h++) { %>
+                            <div class="timeline-grid-cell <%= (h >= rec.inicioTurno && h < rec.fimTurno) ? 'active-zone' : '' %>">
+                                <span class="cell-label"><%= rec.nome %><br><%= h.toString().padStart(2, '0') %>:00</span>
+                            </div>
+                        <% } %>
+                        
+                        <!-- Eventos posicionados por CSS -->
+                        <% rec.aulas.forEach(aula => { %>
+                            <!-- Subtraímos 8 da hora da aula pois o grid começa as 08:00 (índice 0) -->
+                            <div class="timeline-event <%= aula.cor %>" style="left: calc(100% / 16 * <%= aula.hora - 8 %> + 2px); width: calc(100% / 16 * 0.95);">
+                                <% if(aula.badge !== '0') { %>
+                                    <div class="event-badge bg-danger text-white"><%= aula.badge %></div>
+                                <% } %>
+                                <strong><%= aula.tituloCard %></strong>
+                                <small><%= aula.subtituloCard %></small>
+                            </div>
+                        <% }) %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Lógica para mover a linha vermelha do tempo em tempo real
+    function updateCurrentTimeLine() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+        
+        // Formatar o badge
+        document.getElementById('currentTimeBadge').innerText = 
+            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+        // Calcular posição X na timeline
+        // Nossa timeline vai de 08:00 a 23:59 = 16 horas. 
+        // Cada hora = 1/16 da largura do grid (aprox 6.25%).
+        if (hours >= 8 && hours < 24) {
+            const timeSince8 = (hours - 8) + (minutes / 60) + (seconds / 3600);
+            const percentage = (timeSince8 / 16) * 100;
+            
+            // O grid ocupa a área após o '.timeline-resource' (que tem 180px)
+            // A posição absolute é baseada no '.timeline-content-wrapper'
+            // Ajusta o top do badge dinamicamente para a altura exata do cabeçalho
+            const header = document.querySelector('.timeline-header');
+            const badge = document.querySelector('.current-time-badge');
+            if (header && badge) {
+                badge.style.top = header.offsetHeight + 'px';
+            }
+            
+            const redLine = document.querySelector('.current-time-line');
+            
+            // 180px (largura do recurso esquerdo) + a proporção da largura restante
+            if (redLine) {
+                redLine.style.left = `calc(180px + (100% - 180px) * ${percentage / 100})`;
+                redLine.style.display = 'block';
+            }
+        } else {
+            // Fora do horário comercial da timeline
+            document.querySelector('.current-time-line').style.display = 'none';
+        }
+    }
+    
+    // Iniciar e atualizar a cada 1 segundo
+    setInterval(updateCurrentTimeLine, 1000);
+    updateCurrentTimeLine();
+</script>

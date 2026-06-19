@@ -1,0 +1,252 @@
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <div style="display: flex; align-items: center; gap: 15px;">
+    <button class="btn btn-outline-secondary" onclick="window.history.back()"><i class="fa fa-arrow-left"></i></button>
+    <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+      <i class="fa fa-user-plus" style="color: #4a4fb6;"></i> Cadastro
+    </h3>
+  </div>
+  
+  <!-- Stepper Progress Bar -->
+  <div class="stepper-progress" style="display: flex; gap: 10px;">
+    <div class="step step-1 active" style="background: #e8e6fb; color: #7b61ff; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Dados Pessoais</div>
+    <div class="step step-2" style="background: #f8f9fa; color: #999; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Endereço</div>
+    <div class="step step-3" style="background: #f8f9fa; color: #999; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Aluno</div>
+    <div class="step step-4" style="background: #f8f9fa; color: #999; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Cobrança Automática</div>
+    <div class="step step-5" style="background: #f8f9fa; color: #999; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Confirmação</div>
+  </div>
+</div>
+
+<div class="card mx-auto" style="max-width: 800px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+  <div class="card-body p-5" style="min-height: 650px; display: flex; flex-direction: column;">
+    
+    <!-- PASSO 1: DADOS PESSOAIS -->
+    <div id="step-1" class="step-content">
+      <h5 class="mb-4 text-center font-italic">Dados Pessoais - Responsável pela matrícula</h5>
+      <hr>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Nome</label>
+        <div class="col-sm-9"><input type="text" class="form-control" placeholder="Digite o nome completo"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">CPF</label>
+        <div class="col-sm-9"><input type="text" class="form-control" placeholder="000.000.000-00"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">RG</label>
+        <div class="col-sm-9"><input type="text" class="form-control" placeholder="Número do RG"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Pronome</label>
+        <div class="col-sm-9 d-flex align-items-center">
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="ele" name="pronome" class="custom-control-input">
+            <label class="custom-control-label" for="ele">Ele</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="ela" name="pronome" class="custom-control-input">
+            <label class="custom-control-label" for="ela">Ela</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Data de Nascimento</label>
+        <div class="col-sm-9"><input type="date" class="form-control"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">E-mail</label>
+        <div class="col-sm-9"><input type="email" class="form-control" placeholder="exemplo@email.com"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Telefones</label>
+        <div class="col-sm-9"><input type="text" class="form-control" placeholder="(00) 00000-0000"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Observações</label>
+        <div class="col-sm-9"><textarea class="form-control" rows="3"></textarea></div>
+      </div>
+      
+      <div class="text-center mt-5">
+        <button class="btn btn-outline-secondary" style="border-radius: 20px;" onclick="window.history.back()">
+          <i class="fa fa-times"></i> Cancelar
+        </button>
+        <button class="btn btn-primary ml-2" style="background-color: #7b61ff; border-color: #7b61ff; border-radius: 20px;" onclick="nextStep(2)">
+          <i class="fa fa-arrow-right"></i> Prosseguir
+        </button>
+      </div>
+    </div>
+
+    <!-- PASSO 2: ENDEREÇO -->
+    <div id="step-2" class="step-content" style="display: none;">
+      <h5 class="mb-4 text-center font-italic">Endereço - Responsável pela matrícula</h5>
+      <hr>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">CEP</label>
+        <div class="col-sm-6"><input type="text" class="form-control" placeholder="00000-000"></div>
+        <div class="col-sm-3"><button class="btn btn-primary btn-block" style="background-color: #7b61ff; border-color: #7b61ff;">Buscar</button></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Logradouro</label>
+        <div class="col-sm-9"><input type="text" class="form-control" placeholder="Rua, Avenida, etc"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Número</label>
+        <div class="col-sm-9"><input type="text" class="form-control" placeholder="Número"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Complemento</label>
+        <div class="col-sm-9"><input type="text" class="form-control" placeholder="Apto, Bloco, etc"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Bairro</label>
+        <div class="col-sm-9"><input type="text" class="form-control" placeholder="Bairro"></div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Estado</label>
+        <div class="col-sm-9">
+          <select class="form-control">
+            <option value="">Selecione o Estado</option>
+            <option>Santa Catarina (SC)</option>
+            <option>São Paulo (SP)</option>
+            <option>Rio de Janeiro (RJ)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Cidade</label>
+        <div class="col-sm-9"><input type="text" class="form-control" placeholder="Cidade"></div>
+      </div>
+      
+      <div class="text-center mt-auto pt-4">
+        <button class="btn btn-outline-secondary" style="border-radius: 20px;" onclick="prevStep(1)">
+          <i class="fa fa-arrow-left"></i> Voltar
+        </button>
+        <button class="btn btn-primary ml-2" style="background-color: #7b61ff; border-color: #7b61ff; border-radius: 20px;" onclick="nextStep(3)">
+          <i class="fa fa-arrow-right"></i> Prosseguir
+        </button>
+      </div>
+    </div>
+
+    <!-- PASSO 3: ALUNO -->
+    <div id="step-3" class="step-content" style="display: none;">
+      <h5 class="mb-4 text-center font-italic">Aluno</h5>
+      <hr>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label text-right">Aluno</label>
+        <div class="col-sm-9">
+          <select class="form-control">
+            <option value="">Selecione...</option>
+            <option>O próprio responsável</option>
+            <option>+ Cadastrar Novo Aluno (Dependente)</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="text-center mt-auto pt-4">
+        <button class="btn btn-outline-secondary" style="border-radius: 20px;" onclick="prevStep(2)">
+          <i class="fa fa-arrow-left"></i> Voltar
+        </button>
+        <button class="btn btn-primary ml-2" style="background-color: #7b61ff; border-color: #7b61ff; border-radius: 20px;" onclick="nextStep(4)">
+          <i class="fa fa-arrow-right"></i> Prosseguir
+        </button>
+      </div>
+    </div>
+
+    <!-- PASSO 4: COBRANÇA AUTOMÁTICA -->
+    <div id="step-4" class="step-content" style="display: none;">
+      <h5 class="mb-4 text-center font-italic">Cobrança Automática</h5>
+      <hr>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label text-right">Ativar Cobrança Automática?</label>
+        <div class="col-sm-8 d-flex align-items-center">
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="cob-sim" name="cob_auto" class="custom-control-input" checked>
+            <label class="custom-control-label" for="cob-sim">Sim</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="cob-nao" name="cob_auto" class="custom-control-input">
+            <label class="custom-control-label" for="cob-nao">Não</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label text-right">Forma de Pagamento</label>
+        <div class="col-sm-8 d-flex align-items-center">
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="pag-bol" name="forma_pag" class="custom-control-input">
+            <label class="custom-control-label" for="pag-bol">Boleto + Pix</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="pag-pix" name="forma_pag" class="custom-control-input" checked>
+            <label class="custom-control-label" for="pag-pix">Cartão + Pix</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label text-right">Responsável pela Cobrança</label>
+        <div class="col-sm-8">
+          <select class="form-control" style="max-width: 200px;">
+            <option value="">Selecione...</option>
+            <option>O próprio Responsável</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="text-center mt-auto pt-4">
+        <button class="btn btn-outline-secondary" style="border-radius: 20px;" onclick="prevStep(3)">
+          <i class="fa fa-arrow-left"></i> Voltar
+        </button>
+        <button class="btn btn-primary ml-2" style="background-color: #7b61ff; border-color: #7b61ff; border-radius: 20px;" onclick="nextStep(5)">
+          <i class="fa fa-arrow-right"></i> Prosseguir
+        </button>
+      </div>
+    </div>
+
+    <!-- PASSO 5: CONFIRMAÇÃO -->
+    <div id="step-5" class="step-content" style="display: none;">
+      <h5 class="mb-4 text-center font-italic">Confirmação</h5>
+      
+      <div class="alert alert-warning text-center font-weight-bold" style="background-color: #fcf4a3; color: #5a5a00; border-color: #fcf4a3;">
+        Atenção!<br>Esta sala já tem aulas agendadas neste dia e horário.<br>Gostaria de continuar mesmo assim?
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-md-8">
+          <h6 class="text-muted mb-3">DADOS DA MATRÍCULA</h6>
+          <p><strong>Curso:</strong> <span class="text-muted">[Selecionado na tela anterior]</span></p>
+          <p><strong>Primeira Aula:</strong> <span class="text-muted">[Data Selecionada]</span></p>
+          <p><strong>Aluno(a):</strong> <span class="text-muted">[Nome do Aluno]</span></p>
+          <hr>
+          <p><strong>Contratante:</strong> <span class="text-muted">[Nome do Responsável]</span></p>
+          <p><strong>CPF:</strong> <span class="text-muted">[CPF]</span></p>
+          <p><strong>RG:</strong> <span class="text-muted">[RG]</span></p>
+          <p><strong>Celular:</strong> <span class="text-muted">[Telefone]</span></p>
+          <p><strong>Endereço:</strong> <span class="text-muted">[Endereço Completo]</span></p>
+          <p><strong>Bairro:</strong> <span class="text-muted">[Bairro]</span></p>
+        </div>
+        <div class="col-md-4 text-center">
+          <div style="background-color: #f4f6f9; border-radius: 8px; padding: 20px; border: 1px solid #e0e4e8;">
+            <div style="width: 120px; height: 120px; border-radius: 50%; background-color: #e0e0e0; margin: 0 auto; display: flex; align-items: center; justify-content: center; overflow: hidden; color: #999;">
+              <i class="fa fa-user fa-3x"></i>
+            </div>
+            <div class="mt-3">
+              <button class="btn btn-sm btn-primary" style="background-color: #7b61ff; border-color: #7b61ff;"><i class="fa fa-camera"></i></button>
+              <button class="btn btn-sm btn-primary" style="background-color: #7b61ff; border-color: #7b61ff;"><i class="fa fa-upload"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-auto pt-4">
+        <button class="btn btn-outline-secondary" style="border-radius: 20px;" onclick="prevStep(4)">
+          <i class="fa fa-arrow-left"></i> Voltar
+        </button>
+        <button class="btn btn-success ml-2" style="background-color: #7b61ff; border-color: #7b61ff; border-radius: 20px;" onclick="finalizarMatricula()">
+          <i class="fa fa-save"></i> Realizar Matrícula
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="/js/matricula-stepper.js"></script>

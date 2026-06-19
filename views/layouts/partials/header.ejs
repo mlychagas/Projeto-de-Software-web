@@ -2,101 +2,75 @@
     <div class="header-content">
         <nav class="navbar navbar-expand">
             <div class="collapse navbar-collapse justify-content-between">
-                <div class="header-left">
-                    <div class="search_bar dropdown">
-                        <span class="search_icon p-3 c-pointer" data-toggle="dropdown">
-                            <i class="mdi mdi-magnify"></i>
-                        </span>
-                        <div class="dropdown-menu p-0 m-0">
-                            <form>
-                                <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-                            </form>
+                <% if (typeof headerType !== 'undefined' && headerType === 'escola') { %>
+                <div class="header-left d-flex align-items-center w-100">
+                    <h4 class="m-0 text-dark font-weight-bold ml-3"><i class="mdi mdi-domain mr-2 text-theme-primary"></i> Recursos e Configurações da Escola</h4>
+                    
+                    <div class="d-none d-xl-flex flex-grow-1 justify-content-end align-items-center mr-4">
+                        <a href="/" class="btn btn-outline-light btn-icon text-theme-primary border mr-3"><i class="mdi mdi-home" style="font-size: 18px;"></i></a>
+                        <a href="/ajuda" class="btn btn-theme-primary mr-3"><i class="mdi mdi-help-circle"></i> Ajuda <i class="mdi mdi-chevron-down ml-1"></i></a>
+                        <a href="#" class="btn btn-outline-light btn-icon text-theme-primary border"><i class="mdi mdi-help-circle-outline" style="font-size: 18px;"></i></a>
+                    </div>
+                <% } else if (typeof headerType !== 'undefined' && headerType === 'agenda') { %>
+                <div class="header-left d-flex align-items-center w-100 px-3">
+                    <h4 class="m-0 text-dark font-weight-bold d-flex align-items-center mr-4" style="font-size: 16px;">
+                        <i class="mdi mdi-calendar text-theme-primary mr-2" style="font-size: 20px;"></i> Agenda
+                    </h4>
+                    
+                    <button class="btn btn-theme-primary btn-sm mr-2"><i class="mdi mdi-tag"></i> Legenda / Opções</button>
+                    <button class="btn btn-theme-primary btn-sm mr-4"><i class="mdi mdi-calendar-month"></i> Calendário</button>
+                    
+                    <div class="btn-group btn-group-toggle mr-3" data-toggle="buttons">
+                        <label class="btn btn-sm <%= modoRecurso === 'professores' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="navigateAgenda('/agenda?recurso=professores&date=<%= dataInput %>&filtro=<%= modoFiltro %>')">
+                            <input type="radio" name="recurso" id="professores" <%= modoRecurso === 'professores' ? 'checked' : '' %>> <i class="mdi <%= modoRecurso === 'professores' ? 'mdi-check-circle' : 'mdi-circle-outline' %> mr-1"></i> Professores
+                        </label>
+                        <label class="btn btn-sm <%= modoRecurso === 'salas' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="navigateAgenda('/agenda?recurso=salas&date=<%= dataInput %>&filtro=<%= modoFiltro %>')">
+                            <input type="radio" name="recurso" id="salas" <%= modoRecurso === 'salas' ? 'checked' : '' %>> <i class="mdi <%= modoRecurso === 'salas' ? 'mdi-check-circle' : 'mdi-circle-outline' %> mr-1"></i> Salas
+                        </label>
+                    </div>
+
+                    <div class="btn-group btn-group-toggle mr-auto" data-toggle="buttons">
+                        <label class="btn btn-sm <%= modoFiltro === 'todos' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="navigateAgenda('/agenda?recurso=<%= modoRecurso %>&date=<%= dataInput %>&filtro=todos')">
+                            <input type="radio" name="filtro" id="todos" <%= modoFiltro === 'todos' ? 'checked' : '' %>> <i class="mdi <%= modoFiltro === 'todos' ? 'mdi-check-circle' : 'mdi-circle-outline' %> mr-1"></i> Todos
+                        </label>
+                        <label class="btn btn-sm <%= modoFiltro === 'com-aula' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="navigateAgenda('/agenda?recurso=<%= modoRecurso %>&date=<%= dataInput %>&filtro=com-aula')">
+                            <input type="radio" name="filtro" id="com-aula" <%= modoFiltro === 'com-aula' ? 'checked' : '' %>> <i class="mdi <%= modoFiltro === 'com-aula' ? 'mdi-check-circle' : 'mdi-circle-outline' %> mr-1"></i> Com aula
+                        </label>
+                    </div>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="mr-2">
+                            <input type="date" class="form-control text-theme-primary border" value="<%= dataInput %>" onchange="navigateAgenda('/agenda?recurso=<%= modoRecurso %>&filtro=<%= modoFiltro %>&date=' + this.value)" style="height: 33px; font-size: 13px; font-weight: bold; cursor: pointer; background-color: #fff; border-radius: 4px;">
                         </div>
+                        <% datasRapidas.forEach((d, i) => { %>
+                            <a href="javascript:void(0);" onclick="navigateAgenda('/agenda?recurso=<%= modoRecurso %>&filtro=<%= modoFiltro %>&date=<%= d.fullDate %>')" class="btn btn-sm mr-1 <%= i !== 1 ? 'btn-outline-light text-muted border' : 'btn-outline-primary text-theme-primary' %>" style="<%= i !== 1 ? 'background-color:#fff;' : 'background-color:rgba(108,92,231,0.05); border:1px solid rgba(108,92,231,0.2);' %>">
+                                <strong><%= d.dia %></strong> <%= d.mes %> <%= d.ano %>
+                            </a>
+                        <% }) %>
                     </div>
                 </div>
+                <% } else { %>
+                <div class="header-left d-flex align-items-center w-100">
+                    <div class="header-search">
+                        <i class="mdi mdi-magnify"></i>
+                        <input class="form-control" type="text" placeholder="Pesquise aqui">
+                    </div>
+                    
+                    <div class="theme-top-tabs d-none d-xl-flex flex-grow-1 justify-content-center align-items-center">
+                        <a href="#" class="btn btn-outline-light btn-icon text-muted border mr-2"><i class="mdi mdi-help-circle-outline"></i></a>
+                        <a href="/disponibilidade" class="btn btn-theme-primary mr-2"><i class="mdi mdi-calendar-check"></i> Disponibilidade</a>
+                        <a href="/atendimento" class="btn btn-theme-primary mr-2"><i class="mdi mdi-account-tie"></i> Atendimento</a>
+                        <a href="/agenda" class="btn btn-theme-primary mr-2"><i class="mdi mdi-calendar"></i> Agenda</a>
+                        <a href="/escola" class="btn btn-theme-primary mr-2"><i class="mdi mdi-domain"></i> Escola</a>
+                        <a href="/caixa" class="btn btn-theme-primary mr-2"><i class="mdi mdi-cash-register"></i> Caixa</a>
+                        <a href="/turmas" class="btn btn-theme-primary mr-2"><i class="mdi mdi-google-classroom"></i> Turmas</a>
+                        <a href="/ajuda" class="btn btn-theme-primary mr-2"><i class="mdi mdi-help-circle"></i> Ajuda <i class="mdi mdi-chevron-down"></i></a>
+                    </div>
+                </div>
+                <% } %>
 
                 <ul class="navbar-nav header-right">
-                    <li class="nav-item dropdown notification_dropdown">
-                        <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                            <i class="mdi mdi-bell"></i>
-                            <div class="pulse-css"></div>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <ul class="list-unstyled">
-                                <li class="media dropdown-item">
-                                    <span class="success"><i class="ti-user"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong>Martin</strong> has added a <strong>customer</strong>
-                                                Successfully
-                                            </p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                                <li class="media dropdown-item">
-                                    <span class="primary"><i class="ti-shopping-cart"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong>Jennifer</strong> purchased Light Dashboard 2.0.</p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                                <li class="media dropdown-item">
-                                    <span class="danger"><i class="ti-bookmark"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong>Robin</strong> marked a <strong>ticket</strong> as unsolved.
-                                            </p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                                <li class="media dropdown-item">
-                                    <span class="primary"><i class="ti-heart"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong>David</strong> purchased Light Dashboard 1.0.</p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                                <li class="media dropdown-item">
-                                    <span class="success"><i class="ti-image"></i></span>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            <p><strong> James.</strong> has added a<strong>customer</strong>
-                                                Successfully
-                                            </p>
-                                        </a>
-                                    </div>
-                                    <span class="notify-time">3:20 am</span>
-                                </li>
-                            </ul>
-                            <a class="all-notification" href="#">See all notifications <i
-                                    class="ti-arrow-right"></i></a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown header-profile">
-                        <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                            <i class="mdi mdi-account"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a href="/app-profile.html" class="dropdown-item">
-                                <i class="icon-user"></i>
-                                <span class="ml-2">Profile </span>
-                            </a>
-                            <a href="/email-inbox.html" class="dropdown-item">
-                                <i class="icon-envelope-open"></i>
-                                <span class="ml-2">Inbox </span>
-                            </a>
-                            <a href="/page-login.html" class="dropdown-item">
-                                <i class="icon-key"></i>
-                                <span class="ml-2">Logout </span>
-                            </a>
-                        </div>
-                    </li>
+                    <!-- Notifications and Account removed as requested -->
                 </ul>
             </div>
         </nav>

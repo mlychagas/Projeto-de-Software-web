@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/vendor/owl-carousel/css/owl.theme.default.min.css">
     <link href="/vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/custom-theme.css" rel="stylesheet">
 
 </head>
 
@@ -86,6 +87,46 @@
 
     <script src="/js/dashboard/dashboard-1.js"></script>
 
+    <script>
+        window.navigateAgenda = function(url) {
+            const bodyContent = document.querySelector('.content-body');
+            const headerContent = document.querySelector('.header');
+            
+            if (bodyContent) bodyContent.style.opacity = '0.5';
+            if (headerContent) headerContent.style.opacity = '0.5';
+            
+            fetch(url)
+            .then(r => r.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                window.history.pushState({}, '', url);
+                
+                const newHeader = doc.querySelector('.header');
+                if (newHeader && headerContent) {
+                    headerContent.innerHTML = newHeader.innerHTML;
+                }
+                
+                const newBody = doc.querySelector('.content-body .container-fluid');
+                if (newBody && bodyContent) {
+                    document.querySelector('.content-body .container-fluid').innerHTML = newBody.innerHTML;
+                }
+                
+                if (bodyContent) bodyContent.style.opacity = '1';
+                if (headerContent) headerContent.style.opacity = '1';
+                
+                // Re-executa os scripts do EJS para reativar o relógio vermelho
+                const scriptContent = doc.querySelector('.content-body .container-fluid script');
+                if (scriptContent) {
+                    eval(scriptContent.innerText);
+                }
+            })
+            .catch(err => {
+                console.error('AJAX Error:', err);
+                window.location.href = url; // fallback em caso de falha
+            });
+        };
+    </script>
 </body>
-
 </html>

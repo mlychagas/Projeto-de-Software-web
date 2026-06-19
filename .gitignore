@@ -54,3 +54,10 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Módulos de teste não comitados
+src/modules/aluno/
+src/modules/responsavel-aluno/
+views/aluno/
+views/responsavel-aluno/
+src/modules/
