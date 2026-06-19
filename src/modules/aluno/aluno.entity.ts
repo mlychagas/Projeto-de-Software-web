@@ -31,9 +31,9 @@ export class Aluno extends BaseEntity {
     @Column({ type: 'date', name: 'data_nascimento' })
     dataNascimento!: Date;
 
-    @ManyToOne(() => ResponsavelAluno, { nullable: false })
+    @ManyToOne(() => ResponsavelAluno, { nullable: true })
     @JoinColumn({ name: 'fk_id_responsavel' })
-    responsavel!: ResponsavelAluno;
+    responsavel?: ResponsavelAluno;
 
     @Column({ type: 'date', name: 'data_matricula' })
     dataMatricula!: Date;
