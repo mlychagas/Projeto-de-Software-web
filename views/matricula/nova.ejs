@@ -1,0 +1,185 @@
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <div style="display: flex; align-items: center; gap: 15px;">
+    <button class="btn btn-outline-secondary" onclick="window.history.back()"><i class="fa fa-arrow-left"></i></button>
+    <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+      <i class="fa fa-address-card-o" style="color: #4a4fb6;"></i> Nova Matrícula
+    </h3>
+  </div>
+  <button class="btn btn-primary" style="background-color: #7b61ff; border-color: #7b61ff;">
+    <i class="fa fa-dollar"></i> Valores
+  </button>
+</div>
+
+<div class="card" style="border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+  <div class="card-body">
+    <!-- Linha 1: Aluno e Curso -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <label>Aluno</label>
+        <input type="text" class="form-control" placeholder="Selecione ou digite o nome do Aluno" id="alunoNome">
+      </div>
+      <div class="col-md-6">
+        <label>Curso</label>
+        <select class="form-control" id="cursoSelect">
+          <option value="">Selecione o Curso...</option>
+          <% if (typeof cursos !== 'undefined' && cursos.length > 0) { %>
+            <% cursos.forEach(curso => { %>
+              <option value="<%= curso.id %>"><%= curso.nome %> (<%= curso.instrumento %>)</option>
+            <% }) %>
+          <% } %>
+        </select>
+      </div>
+    </div>
+
+    <!-- Linha 2: Professor e Configuração de Datas -->
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <!-- TODO: Integrar com a tela de seleção de turma/professor. 
+             Ao clicar em 'Selecionar Turma', deve abrir um modal ou redirecionar para a tela onde 
+             o usuário seleciona o Professor, o Dia, o Horário, a Disciplina/Curso e todos os dados pertinentes 
+             para definir quem dará a aula e quando. Após a seleção, esses dados devem retornar e preencher este card. -->
+        <div class="p-3" style="background-color: #f8f9fa; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; height: 100%;">
+          <div>
+            <strong>[Professor]</strong><br>
+            <small class="text-muted">[Dia da semana] às [Horário] na [Sala]</small>
+          </div>
+          <button class="btn btn-sm btn-primary" style="background-color: #7b61ff; border-color: #7b61ff;"><i class="fa fa-edit"></i> Selecionar Turma</button>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="row">
+          <div class="col-md-4">
+            <label>Primeira Aula <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="primeiraAulaInput" required>
+          </div>
+          <div class="col-md-4">
+            <label>Última Aula</label>
+            <input type="date" class="form-control" id="ultimaAulaInput" disabled title="Calculado automaticamente">
+          </div>
+          <div class="col-md-4">
+            <label>Nr. de Aulas <span class="text-danger">*</span></label>
+            <select class="form-control" id="nrAulasInput" required>
+              <option value="">Selecione...</option>
+              <% for(let i = 1; i <= 120; i++) { %>
+                <option value="<%= i %>" <%= i === 24 ? 'selected' : '' %>><%= i %> <%= i === 1 ? 'Aula' : 'Aulas' %></option>
+              <% } %>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Linha 3: Grade de Aulas e Financeiro -->
+    <div class="row">
+      <!-- Coluna da Grade de Calendário -->
+      <div class="col-md-8">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm text-center" id="gridAulasTable" style="font-size: 13px;">
+            <thead style="background-color: #f4f6f9; color: #555;">
+              <tr>
+                <th style="width: 80px;">Mês</th>
+                <th colspan="5">Aulas Planejadas</th>
+                <th style="width: 120px;">Parcelas</th>
+              </tr>
+            </thead>
+            <tbody id="gridAulasBody">
+              <!-- Renderizado via JS dinâmico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Coluna Financeira -->
+      <div class="col-md-4">
+        <div class="p-3" style="background-color: #f8f9fa; border-radius: 6px;">
+          <div class="form-group row align-items-center mb-2">
+            <label class="col-sm-6 col-form-label text-right" style="font-size: 13px;">Plano de Pagamento</label>
+            <div class="col-sm-6">
+              <select class="form-control form-control-sm" id="planoPagamento">
+                <option>Semestral</option>
+                <option>Mensal</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row align-items-center mb-2">
+            <label class="col-sm-6 col-form-label text-right" style="font-size: 13px;">Primeira Parcela</label>
+            <div class="col-sm-6">
+              <input type="date" class="form-control form-control-sm" id="primeiraParcela" value="<%= new Date().toISOString().split('T')[0] %>" required>
+            </div>
+          </div>
+          <div class="form-group row align-items-center mb-2">
+            <label class="col-sm-6 col-form-label text-right" style="font-size: 13px;">Vencimento <span class="text-danger">*</span></label>
+            <div class="col-sm-6">
+              <select class="form-control form-control-sm" id="diaVencimento" required>
+                <option value="">Dia...</option>
+                <% const currentDay = new Date().getDate(); %>
+                <% for(let i = 1; i <= 31; i++) { %>
+                  <option value="<%= i %>" <%= i === currentDay ? 'selected' : '' %>>Dia <%= i %></option>
+                <% } %>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row align-items-center mb-4">
+            <label class="col-sm-6 col-form-label text-right" style="font-size: 13px;">Forma de Pagamento</label>
+            <div class="col-sm-6">
+              <select class="form-control form-control-sm">
+                <option>Qualquer forma de Pagto</option>
+                <option>Boleto</option>
+                <option>Cartão</option>
+              </select>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="d-flex justify-content-between mb-2" style="font-size: 13px;">
+            <span>Valor do Curso (Mensal)</span>
+            <span id="valorCurso">0,00</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2" style="font-size: 13px;">
+            <span>Desconto na Mensalidade</span>
+            <div class="input-group input-group-sm" style="width: 100px;">
+              <input type="text" class="form-control text-right text-primary" value="0,00" id="desconto">
+            </div>
+          </div>
+          <div class="d-flex justify-content-between mb-2" style="font-size: 13px;">
+            <span>Mensalidade</span>
+            <span id="valorMensalidade">0,00</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3" style="font-size: 13px;">
+            <span>Nr. de Mensalidades <span class="text-danger">*</span></span>
+            <select class="form-control form-control-sm" style="width: 80px;" id="nrMensalidades" required>
+              <% for(let i = 0; i <= 12; i++) { %>
+                <option value="<%= i %>" <%= i === 12 ? 'selected' : '' %>><%= i %> Parc.</option>
+              <% } %>
+            </select>
+          </div>
+          <div class="d-flex justify-content-between font-weight-bold mb-4">
+            <span>Total a Pagar</span>
+            <span id="totalPagar">0,00</span>
+          </div>
+
+          <hr>
+          
+          <div class="d-flex justify-content-between align-items-center mb-2" style="font-size: 13px;">
+            <span>Taxa de Matrícula</span>
+            <div class="input-group input-group-sm" style="width: 100px;">
+              <input type="text" class="form-control text-right text-primary" value="0,00" id="taxaMatricula">
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <button class="btn btn-outline-secondary btn-sm btn-block mb-2 text-primary" style="border-color: #e0e0e0; background: #fff;"><i class="fa fa-edit"></i> Adicionar Observação</button>
+            <!-- O fluxo do usuário indica que esse botão dispara o intermediário/Cadastro -->
+            <button class="btn btn-primary btn-block" style="background-color: #7b61ff; border-color: #7b61ff;" onclick="iniciarFluxoFazerMatricula()">
+              <i class="fa fa-save"></i> Fazer a Matrícula
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/matricula-grid.js"></script>
+<script src="/js/matricula-financeiro.js"></script>

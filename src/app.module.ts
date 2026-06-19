@@ -6,6 +6,7 @@ import { DatabaseModule } from './config/database/database.module';
 import { AlunoModule } from './modules/aluno/aluno.module';
 import { ResponsavelAlunoModule } from './modules/responsavel-aluno/responsavel-aluno.module';
 import { AulaModule } from './modules/aula/aula.module';
+import { MatriculaController } from './modules/matricula/matricula.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { AulaModule } from './modules/aula/aula.module';
     ResponsavelAlunoModule,
     AulaModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, MatriculaController],
   providers: [AppService],
 })
 export class AppModule {}
