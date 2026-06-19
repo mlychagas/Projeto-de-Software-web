@@ -1,11 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const inputs = ['desconto', 'nrMensalidades', 'taxaMatricula'];
-    inputs.forEach(id => {
+    const triggerIds = ['nrMensalidades', 'diaVencimento', 'valorMensalidade', 'primeiraParcela'];
+    triggerIds.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.addEventListener('input', calcularTotais);
+        if (el) el.addEventListener('change', calcularTotais);
     });
-
+    
+    // Calcular ao carregar a tela
     calcularTotais();
+
+    // Preencher dados vindos da tela de agendamento (via QueryString)
+    const urlParams = new URLSearchParams(window.location.search);
+    const profId = urlParams.get('prof');
+    const cursoId = urlParams.get('curso');
+    const alunoId = urlParams.get('aluno');
+
+    if (alunoId) {
+        const alunoNomeEl = document.getElementById('alunoNome');
+        if (alunoNomeEl) alunoNomeEl.value = "João da Silva"; // Mock para o nome baseado no ID
+    }
+
+    if (cursoId) {
+        const cursoSelect = document.getElementById('cursoSelect');
+        if (cursoSelect) cursoSelect.value = cursoId;
+    }
+
+    if (profId) {
+        // O card do professor é apenas HTML no template atual, então vamos injetar os dados
+        const divProf = document.getElementById('profCardDetails');
+        if (divProf) {
+            divProf.innerHTML = `
+                <strong>Prof. João Mixolídio</strong><br>
+                <small class="text-muted">Agendado (Sala 1)</small>
+            `;
+        }
+    }
 });
 
 function converterParaFloat(str) {
@@ -57,18 +85,58 @@ function iniciarFluxoFazerMatricula() {
         return;
     }
 
-    // Alerta intermediário sobre cadastro do responsável (Caso não possua)
+    // Coletar dados da URL (origem do agendamento)
+    const urlParams = new URLSearchParams(window.location.search);
+    const turmaId = urlParams.get('turma') || 1; // Mock fallback
+    
+    // Preparar payload para o backend
+    const payload = {
+        aluno: {
+            nome: alunoNome,
+            cpf: '123456789' + Math.floor(Math.random() * 99), // Mock para evitar conflito Unique
+            rg: '123456' + Math.floor(Math.random() * 99),
+            email: 'lead@exemplo.com',
+            telefone: '11999999999',
+            dataNascimento: '1990-01-01'
+        },
+        financeiro: {
+            cursoId: cursoSelect,
+            valorLiquido: document.getElementById('valorMensalidade') ? document.getElementById('valorMensalidade').value : 0,
+            diaVencimento: diaVencimento
+        },
+        agendamento: {
+            turmaId: turmaId
+        }
+    };
+
     Swal.fire({
-        title: 'Verificação de Responsável',
-        text: `O Aluno "${alunoNome}" não possui um responsável financeiro vinculado ou é necessário confirmar os dados.`,
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonColor: '#7b61ff',
-        cancelButtonColor: '#d33',
-        confirmButtonText: '<i class="fa fa-search"></i> Buscar Cadastrado',
-        cancelButtonText: '<i class="fa fa-user-plus"></i> Novo Responsável'
-    }).then((result) => {
-        // Redireciona para o Stepper de Cadastro, simulando a escolha do usuário
-        window.location.href = '/matricula/cadastro';
+        title: 'Salvando Matrícula...',
+        text: 'Aguarde enquanto registramos os dados no banco.',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    fetch('/matricula/api/salvar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            Swal.fire({
+                title: 'Matrícula Realizada com Sucesso! 🎉',
+                text: 'Aluno, Contrato e Turma vinculados no Banco de Dados.',
+                icon: 'success',
+                confirmButtonColor: '#7b61ff'
+            }).then(() => {
+                window.location.href = '/matricula/agendamento';
+            });
+        } else {
+            Swal.fire('Erro', data.message, 'error');
+        }
+    })
+    .catch(err => {
+        Swal.fire('Erro', 'Não foi possível comunicar com o servidor.', 'error');
     });
 }
