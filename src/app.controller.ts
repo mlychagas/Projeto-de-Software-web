@@ -119,6 +119,17 @@ export class AppController {
         if (!presencaAluno && presencaProf) return 'event-purple'; // Só professor
         return 'event-red'; // Só aluno (ou nenhum)
     };
+
+    const determineBadge = () => {
+        const isReagendado = Math.random() > 0.85; // 15% de chance de ser reagendado
+        if (isReagendado) return 'R';
+        
+        const aulasRestantes = Math.floor(Math.random() * 12); // Pacote fictício de até 11 aulas restantes
+        if (aulasRestantes <= 4 && aulasRestantes > 0) {
+            return aulasRestantes.toString();
+        }
+        return null;
+    };
     
     const recursos: any[] = [];
     
@@ -153,7 +164,7 @@ export class AppController {
                     tituloCard: `Aluno ${Math.floor(Math.random() * 1000)}`,
                     subtituloCard: `Sala ${1 + Math.floor(Math.random() * 5)}`,
                     cor: determineEventColor(dataAtual, horaAula),
-                    badge: Math.random() > 0.5 ? 'R' : Math.floor(Math.random() * 5).toString()
+                    badge: determineBadge()
                 });
                 lastHour = horaAula + 1;
             }
@@ -189,7 +200,7 @@ export class AppController {
                     tituloCard: `Aluno ${Math.floor(Math.random() * 1000)}`,
                     subtituloCard: profsList[Math.floor(Math.random() * profsList.length)],
                     cor: determineEventColor(dataAtual, horaAula),
-                    badge: Math.random() > 0.5 ? 'R' : Math.floor(Math.random() * 5).toString()
+                    badge: determineBadge()
                 });
                 lastHour = horaAula + 1;
             }

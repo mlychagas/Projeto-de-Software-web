@@ -21,29 +21,29 @@
                     <button class="btn btn-theme-primary btn-sm mr-4"><i class="mdi mdi-calendar-month"></i> Calendário</button>
                     
                     <div class="btn-group btn-group-toggle mr-3" data-toggle="buttons">
-                        <label class="btn btn-sm <%= modoRecurso === 'professores' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="window.location.href='/agenda?recurso=professores&date=<%= dataInput %>&filtro=<%= modoFiltro %>'">
+                        <label class="btn btn-sm <%= modoRecurso === 'professores' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="navigateAgenda('/agenda?recurso=professores&date=<%= dataInput %>&filtro=<%= modoFiltro %>')">
                             <input type="radio" name="recurso" id="professores" <%= modoRecurso === 'professores' ? 'checked' : '' %>> <i class="mdi <%= modoRecurso === 'professores' ? 'mdi-check-circle' : 'mdi-circle-outline' %> mr-1"></i> Professores
                         </label>
-                        <label class="btn btn-sm <%= modoRecurso === 'salas' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="window.location.href='/agenda?recurso=salas&date=<%= dataInput %>&filtro=<%= modoFiltro %>'">
+                        <label class="btn btn-sm <%= modoRecurso === 'salas' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="navigateAgenda('/agenda?recurso=salas&date=<%= dataInput %>&filtro=<%= modoFiltro %>')">
                             <input type="radio" name="recurso" id="salas" <%= modoRecurso === 'salas' ? 'checked' : '' %>> <i class="mdi <%= modoRecurso === 'salas' ? 'mdi-check-circle' : 'mdi-circle-outline' %> mr-1"></i> Salas
                         </label>
                     </div>
 
                     <div class="btn-group btn-group-toggle mr-auto" data-toggle="buttons">
-                        <label class="btn btn-sm <%= modoFiltro === 'todos' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="window.location.href='/agenda?recurso=<%= modoRecurso %>&date=<%= dataInput %>&filtro=todos'">
+                        <label class="btn btn-sm <%= modoFiltro === 'todos' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="navigateAgenda('/agenda?recurso=<%= modoRecurso %>&date=<%= dataInput %>&filtro=todos')">
                             <input type="radio" name="filtro" id="todos" <%= modoFiltro === 'todos' ? 'checked' : '' %>> <i class="mdi <%= modoFiltro === 'todos' ? 'mdi-check-circle' : 'mdi-circle-outline' %> mr-1"></i> Todos
                         </label>
-                        <label class="btn btn-sm <%= modoFiltro === 'com-aula' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="window.location.href='/agenda?recurso=<%= modoRecurso %>&date=<%= dataInput %>&filtro=com-aula'">
+                        <label class="btn btn-sm <%= modoFiltro === 'com-aula' ? 'btn-primary text-white' : 'btn-outline-light text-muted border' %>" onclick="navigateAgenda('/agenda?recurso=<%= modoRecurso %>&date=<%= dataInput %>&filtro=com-aula')">
                             <input type="radio" name="filtro" id="com-aula" <%= modoFiltro === 'com-aula' ? 'checked' : '' %>> <i class="mdi <%= modoFiltro === 'com-aula' ? 'mdi-check-circle' : 'mdi-circle-outline' %> mr-1"></i> Com aula
                         </label>
                     </div>
                     
                     <div class="d-flex align-items-center">
                         <div class="mr-2">
-                            <input type="date" class="form-control text-theme-primary border" value="<%= dataInput %>" onchange="window.location.href='/agenda?recurso=<%= modoRecurso %>&filtro=<%= modoFiltro %>&date=' + this.value" style="height: 33px; font-size: 13px; font-weight: bold; cursor: pointer; background-color: #fff; border-radius: 4px;">
+                            <input type="date" class="form-control text-theme-primary border" value="<%= dataInput %>" onchange="navigateAgenda('/agenda?recurso=<%= modoRecurso %>&filtro=<%= modoFiltro %>&date=' + this.value)" style="height: 33px; font-size: 13px; font-weight: bold; cursor: pointer; background-color: #fff; border-radius: 4px;">
                         </div>
                         <% datasRapidas.forEach((d, i) => { %>
-                            <a href="/agenda?recurso=<%= modoRecurso %>&filtro=<%= modoFiltro %>&date=<%= d.fullDate %>" class="btn btn-sm mr-1 <%= i !== 1 ? 'btn-outline-light text-muted border' : 'btn-outline-primary text-theme-primary' %>" style="<%= i !== 1 ? 'background-color:#fff;' : 'background-color:rgba(108,92,231,0.05); border:1px solid rgba(108,92,231,0.2);' %>">
+                            <a href="javascript:void(0);" onclick="navigateAgenda('/agenda?recurso=<%= modoRecurso %>&filtro=<%= modoFiltro %>&date=<%= d.fullDate %>')" class="btn btn-sm mr-1 <%= i !== 1 ? 'btn-outline-light text-muted border' : 'btn-outline-primary text-theme-primary' %>" style="<%= i !== 1 ? 'background-color:#fff;' : 'background-color:rgba(108,92,231,0.05); border:1px solid rgba(108,92,231,0.2);' %>">
                                 <strong><%= d.dia %></strong> <%= d.mes %> <%= d.ano %>
                             </a>
                         <% }) %>

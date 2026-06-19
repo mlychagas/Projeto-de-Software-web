@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { DatabaseModule } from './config/database/database.module';
 import { AlunoModule } from './modules/aluno/aluno.module';
 import { ResponsavelAlunoModule } from './modules/responsavel-aluno/responsavel-aluno.module';
+import { AulaModule } from './modules/aula/aula.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ResponsavelAlunoModule } from './modules/responsavel-aluno/responsavel-
     DatabaseModule,
     AlunoModule,
     ResponsavelAlunoModule,
+    AulaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
