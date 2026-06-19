@@ -284,3 +284,202 @@ body {
     cursor: pointer;
     accent-color: var(--theme-green);
 }
+
+/* ==========================================================================
+   AGENDA TIMELINE (Custom Grid CSS)
+   ========================================================================== */
+.agenda-timeline-container {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    height: calc(100vh - 120px);
+    width: 100%;
+    overflow: auto; /* Ambos X e Y aqui para sincronizar o scroll horizontal do topo e do corpo */
+}
+
+/* Red Time Line */
+.current-time-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: red;
+    z-index: 65;
+    pointer-events: none;
+}
+.current-time-badge {
+    position: sticky;
+    top: 65px; /* Altura aproximada do cabeçalho */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: red;
+    color: #fff;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 10px;
+    white-space: nowrap;
+    width: max-content;
+}
+
+/* Header */
+.timeline-header {
+    display: flex;
+    border-bottom: 2px solid #eaeaea;
+    background-color: #fafbfc;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    min-width: 1000px; /* Garante que o cabeçalho estique com o grid */
+}
+
+/* Body com rolagem */
+.timeline-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    position: relative;
+    min-width: 1000px;
+}
+
+.timeline-resource-header {
+    width: 180px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-right: 1px solid #eaeaea;
+    position: sticky;
+    left: 0;
+    background-color: #fafbfc;
+    z-index: 61;
+}
+.timeline-hours-container {
+    display: flex;
+    flex-grow: 1;
+}
+.timeline-hour-slot {
+    flex: 1 1 0;
+    min-width: 60px;
+    padding: 10px 5px;
+    text-align: center;
+    font-size: 13px;
+    color: #555;
+    border-right: 1px dashed #eaeaea;
+}
+
+/* Rows */
+.timeline-row {
+    display: flex;
+    border-bottom: 1px solid #eaeaea;
+    position: relative;
+    flex: 1 1 0; /* Cresce preenchendo a tela se houver poucos professores */
+    min-height: 70px; /* Limite mínimo antes de criar a barra de rolagem */
+}
+.timeline-resource {
+    width: 180px;
+    flex-shrink: 0;
+    padding: 15px;
+    border-right: 1px solid #eaeaea;
+    background-color: #fafbfc;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: sticky;
+    left: 0;
+    z-index: 40;
+}
+.timeline-resource strong {
+    color: #2b3a4a;
+    font-size: 14px;
+}
+.timeline-resource small {
+    color: #888;
+    font-size: 12px;
+}
+
+/* Grid & Active Zones */
+.timeline-grid {
+    display: flex;
+    flex-grow: 1;
+    position: relative;
+}
+.timeline-grid-cell {
+    flex: 1 1 0;
+    min-width: 60px;
+    border-right: 1px solid rgba(255,255,255,0.3);
+    background-color: #fcfcfc;
+    position: relative;
+}
+.timeline-grid-cell.active-zone {
+    background-color: #9fc6fc; /* Light blue from image */
+}
+.timeline-grid-cell.active-zone-green {
+    background-color: #a9d4b6; /* Light green block for Izadora */
+}
+.timeline-grid-cell .cell-label {
+    display: none;
+}
+
+/* Event Cards */
+.timeline-event {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 38px;
+    border-radius: 3px;
+    padding: 2px 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    cursor: pointer;
+    line-height: 1.1;
+    transition: transform 0.1s;
+}
+.timeline-event:hover {
+    transform: translateY(-50%) scale(1.02);
+    z-index: 20;
+}
+.timeline-event strong {
+    font-size: 11px;
+    color: #000;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.timeline-event small {
+    font-size: 10px;
+    color: #222;
+}
+.event-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    z-index: 15;
+}
+
+/* Colors based on Capture 18 */
+.event-green { background-color: #e2f5e2; border: 1px solid #148f14; }
+.event-blue { background-color: #e0f2ff; border: 1px solid #0465a3; }
+.event-purple { background-color: #f3e5f5; border: 1px solid #8e24aa; }
+.event-yellow { background-color: #fffac7; border: 1px solid #b89802; }
+.event-red { background-color: #ffebee; border: 1px solid #d32f2f; }

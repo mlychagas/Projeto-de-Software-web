@@ -59,7 +59,7 @@
                         <div class="col-sm-9">
                             <select class="form-control" name="parentesco" required>
                                 <option value="">Selecione...</option>
-                                <% ['Pai','Mãe','Avó','Tio','Tia','Tutor','Outro'].forEach(p => { %>
+                                <% ['Pai','Mae','Avo','Tio','Tia','Patrocinador','Outro'].forEach(p => { %>
                                     <option value="<%= p %>" <%= responsavel && responsavel.parentesco === p ? 'selected' : '' %>><%= p %></option>
                                 <% }) %>
                             </select>
