@@ -4,11 +4,11 @@
         <!-- Cursos -->
         <div class="mb-3">
             <h6 class="text-muted text-uppercase mb-2" style="font-size: 11px;">Cursos</h6>
-            <div class="donut-chart" style="background: conic-gradient(#3498db 0% 60%, #e67e22 60% 100%);">
+            <div class="donut-chart" style="background: conic-gradient(#3498db 0% <%= cursoTopPercent %>%, #e67e22 <%= cursoTopPercent %>% 100%);">
                 <div class="donut-content">
-                    <div class="label">2 Matric.</div>
-                    <div class="value">3%</div>
-                    <div class="label" style="font-size: 9px; line-height: 1.2;">Musicalização<br>Infantil</div>
+                    <div class="label"><%= cursoTopTotal %> Matric.</div>
+                    <div class="value"><%= cursoTopPercent %>%</div>
+                    <div class="label" style="font-size: 9px; line-height: 1.2;"><%= cursoTopNome %></div>
                 </div>
             </div>
         </div>
@@ -16,11 +16,11 @@
         <!-- Aulas Dia -->
         <div class="mb-3">
             <h6 class="text-muted text-uppercase mb-2" style="font-size: 11px;">Aulas Dia</h6>
-            <div class="donut-chart" style="background: conic-gradient(#f368e0 0% 75%, #48dbfb 75% 100%);">
+            <div class="donut-chart" style="background: conic-gradient(#f368e0 0% <%= percentAulasRealizadas %>%, #48dbfb <%= percentAulasRealizadas %>% 100%);">
                 <div class="donut-content">
-                    <div class="label">9 Aulas</div>
-                    <div class="value">75%</div>
-                    <div class="label">Passadas</div>
+                    <div class="label"><%= aulasHoje %> Aulas</div>
+                    <div class="value"><%= percentAulasRealizadas %>%</div>
+                    <div class="label">Realizadas</div>
                 </div>
             </div>
         </div>
@@ -28,11 +28,11 @@
         <!-- Presença Hoje -->
         <div class="mb-3">
             <h6 class="text-muted text-uppercase mb-2" style="font-size: 11px;">Presença Hoje</h6>
-            <div class="donut-chart" style="background: conic-gradient(#f1c40f 0% 55%, #f4f6f9 55% 100%);">
+            <div class="donut-chart" style="background: conic-gradient(#f1c40f 0% <%= percentPresencaHoje %>%, #f4f6f9 <%= percentPresencaHoje %>% 100%);">
                 <div class="donut-content">
-                    <div class="label">5 Pres.</div>
-                    <div class="value">55%</div>
-                    <div class="label">9 Presenças</div>
+                    <div class="label"><%= presencasHoje %> Pres.</div>
+                    <div class="value"><%= percentPresencaHoje %>%</div>
+                    <div class="label"><%= aulasHoje %> Presenças</div>
                 </div>
             </div>
         </div>
@@ -40,11 +40,11 @@
         <!-- Presença Ontem -->
         <div class="mb-3">
             <h6 class="text-muted text-uppercase mb-2" style="font-size: 11px;">Presença Ontem</h6>
-            <div class="donut-chart" style="background: conic-gradient(#e67e22 0% 40%, #f4f6f9 40% 100%);">
+            <div class="donut-chart" style="background: conic-gradient(#e67e22 0% <%= percentPresencaOntem %>%, #f4f6f9 <%= percentPresencaOntem %>% 100%);">
                 <div class="donut-content">
-                    <div class="label">2 Pres.</div>
-                    <div class="value">40%</div>
-                    <div class="label">5 Presenças</div>
+                    <div class="label"><%= presencasOntem %> Pres.</div>
+                    <div class="value"><%= percentPresencaOntem %>%</div>
+                    <div class="label"><%= totalAulasOntem %> Presenças</div>
                 </div>
             </div>
         </div>
@@ -70,42 +70,38 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>17:00</td>
-                            <td>
-                                <div class="avatar-cell">
-                                    <img src="/images/avatar/1.png" alt="Bia Souza">
-                                    <div class="stacked-names">
-                                        <span class="primary-name"><i class="mdi mdi-drum text-warning"></i> Bia Souza</span>
-                                        <span class="secondary-name"><i class="mdi mdi-account"></i> José das Notas</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"><i class="mdi mdi-square-edit-outline edit-icon-btn"></i></td>
-                            <td>Sala 1</td>
-                            <td class="text-center"><span class="circle-badge bg-light-orange">5</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-yellow">1</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-green">6m</span></td>
-                            <td class="text-center"><i class="mdi mdi-alert text-warning-icon"></i></td>
-                        </tr>
-                        <tr class="table-active" style="border: 2px solid #6c5ce7; background-color: #f8f9fc;">
-                            <td>17:00</td>
-                            <td>
-                                <div class="avatar-cell">
-                                    <img src="/images/avatar/2.png" alt="Beatriz Gomes">
-                                    <div class="stacked-names">
-                                        <span class="primary-name"><i class="mdi mdi-guitar-acoustic text-warning"></i> Beatriz Gomes</span>
-                                        <span class="secondary-name"><i class="mdi mdi-account"></i> Matheus Bemol</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"><i class="mdi mdi-square-edit-outline edit-icon-btn"></i></td>
-                            <td>Sala 4</td>
-                            <td class="text-center"><span class="circle-badge bg-light-orange">16</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-green">0</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-yellow">56</span></td>
-                            <td class="text-center"><i class="mdi mdi-alert text-warning-icon"></i></td>
-                        </tr>
+                        <% if (aulasEmAndamento && aulasEmAndamento.length > 0) { %>
+                            <% aulasEmAndamento.forEach(aula => { %>
+                                <tr>
+                                    <td><%= aula.horario %></td>
+                                    <td>
+                                        <div class="avatar-cell">
+                                            <img src="/images/avatar/1.png" alt="<%= aula.alunoNome %>">
+                                            <div class="stacked-names">
+                                                <span class="primary-name"><i class="mdi mdi-music-note text-warning"></i> <%= aula.alunoNome %></span>
+                                                <span class="secondary-name"><i class="mdi mdi-account"></i> <%= aula.professorNome %></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center"><i class="mdi mdi-square-edit-outline edit-icon-btn"></i></td>
+                                    <td><%= aula.salaNome %></td>
+                                    <td class="text-center">
+                                        <span class="circle-badge <%= aula.totalFaltas > 5 ? 'bg-light-red' : 'bg-light-orange' %>"><%= aula.totalFaltas %></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="circle-badge <%= aula.faturasAbertas > 0 ? 'bg-light-yellow' : 'bg-light-green' %>"><%= aula.faturasAbertas %></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="circle-badge bg-light-green"><%= aula.vencimentoLabel %></span>
+                                    </td>
+                                    <td class="text-center"><i class="mdi mdi-alert text-warning-icon"></i></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-3">Nenhuma aula em andamento no momento.</td>
+                            </tr>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
@@ -129,60 +125,38 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>20:00</td>
-                            <td>
-                                <div class="avatar-cell">
-                                    <img src="/images/avatar/3.png" alt="Ana Luiza">
-                                    <div class="stacked-names">
-                                        <span class="primary-name"><i class="mdi mdi-drum text-warning"></i> Ana Luiza</span>
-                                        <span class="secondary-name"><i class="mdi mdi-account"></i> José das Notas</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"><i class="mdi mdi-square-edit-outline edit-icon-btn"></i></td>
-                            <td>Sala 2</td>
-                            <td class="text-center"><span class="circle-badge bg-light-orange">6</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-green">0</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-yellow">48</span></td>
-                            <td class="text-center"><i class="mdi mdi-alert text-warning-icon"></i></td>
-                        </tr>
-                        <tr>
-                            <td>20:00</td>
-                            <td>
-                                <div class="avatar-cell">
-                                    <img src="/images/avatar/4.png" alt="Eduardo Cerqueira">
-                                    <div class="stacked-names">
-                                        <span class="primary-name"><i class="mdi mdi-guitar-electric text-warning"></i> Eduardo Cerqueira</span>
-                                        <span class="secondary-name"><i class="mdi mdi-account"></i> Izadora Sustenido</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"><i class="mdi mdi-square-edit-outline edit-icon-btn"></i></td>
-                            <td>Sala 1</td>
-                            <td class="text-center"><span class="circle-badge bg-light-orange">13</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-green">0</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-green">2m</span></td>
-                            <td class="text-center"><i class="mdi mdi-alert text-warning-icon"></i></td>
-                        </tr>
-                        <tr>
-                            <td>21:00</td>
-                            <td>
-                                <div class="avatar-cell">
-                                    <img src="/images/avatar/5.png" alt="Jennifer da Silva">
-                                    <div class="stacked-names">
-                                        <span class="primary-name"><i class="mdi mdi-music-note text-warning"></i> Jennifer da Silva</span>
-                                        <span class="secondary-name"><i class="mdi mdi-account"></i> Leonardo Com Sétima</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center"><i class="mdi mdi-square-edit-outline edit-icon-btn"></i></td>
-                            <td>Sala 2</td>
-                            <td class="text-center"><span class="circle-badge bg-light-orange">8</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-green">0</span></td>
-                            <td class="text-center"><span class="circle-badge bg-light-green">7m</span></td>
-                            <td class="text-center"><i class="mdi mdi-alert text-warning-icon"></i></td>
-                        </tr>
+                        <% if (proximasAulas && proximasAulas.length > 0) { %>
+                            <% proximasAulas.forEach(aula => { %>
+                                <tr>
+                                    <td><%= aula.horario %></td>
+                                    <td>
+                                        <div class="avatar-cell">
+                                            <img src="/images/avatar/1.png" alt="<%= aula.alunoNome %>">
+                                            <div class="stacked-names">
+                                                <span class="primary-name"><i class="mdi mdi-music-note text-warning"></i> <%= aula.alunoNome %></span>
+                                                <span class="secondary-name"><i class="mdi mdi-account"></i> <%= aula.professorNome %></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center"><i class="mdi mdi-square-edit-outline edit-icon-btn"></i></td>
+                                    <td><%= aula.salaNome %></td>
+                                    <td class="text-center">
+                                        <span class="circle-badge <%= aula.totalFaltas > 5 ? 'bg-light-red' : 'bg-light-orange' %>"><%= aula.totalFaltas %></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="circle-badge <%= aula.faturasAbertas > 0 ? 'bg-light-yellow' : 'bg-light-green' %>"><%= aula.faturasAbertas %></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="circle-badge bg-light-green"><%= aula.vencimentoLabel %></span>
+                                    </td>
+                                    <td class="text-center"><i class="mdi mdi-alert text-warning-icon"></i></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-3">Nenhuma próxima aula agendada para hoje.</td>
+                            </tr>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
@@ -205,26 +179,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td style="height: 40px;"></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td style="height: 40px;"></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td style="height: 40px;"></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td style="height: 40px;"></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td style="height: 40px;"></td>
-                            <td></td>
-                        </tr>
+                        <% if (anotacoes && anotacoes.length > 0) { %>
+                            <% anotacoes.forEach(registro => { %>
+                                <tr>
+                                    <td style="height: 40px;"><%= dateFormat(registro.dataHora, { day: '2-digit', month: '2-digit' }) %></td>
+                                    <td>
+                                        <small>
+                                            <strong><%= registro.tipoRegistro %></strong>
+                                            <% if (registro.aluno) { %>
+                                                - <%= registro.aluno.nome %>
+                                            <% } %>
+                                            <br><%= registro.descricao ? registro.descricao.substring(0, 80) : '' %>
+                                        </small>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-3">Nenhuma anotação registrada.</td>
+                            </tr>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
