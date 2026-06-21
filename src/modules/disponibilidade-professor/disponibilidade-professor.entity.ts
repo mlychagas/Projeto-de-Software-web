@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Professor } from "../professor/professor.entity";
+import { Pessoa } from "../pessoa/pessoa.entity";
 import { DiaSemana } from "../turma/turma.entity";
 
 export enum StatusDisponibilidade {
@@ -13,9 +13,9 @@ export class DisponibilidadeProfessor extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @ManyToOne(() => Professor, { nullable: false })
+    @ManyToOne(() => Pessoa, { nullable: false })
     @JoinColumn({ name: 'fk_professor_id' })
-    professor!: Professor;
+    professor!: Pessoa;
 
     @Column({ type: 'enum', enum: DiaSemana, name: 'dia_semana' })
     diaSemana!: DiaSemana;

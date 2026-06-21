@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Professor } from "../professor/professor.entity";
+import { Pessoa } from "../pessoa/pessoa.entity";
 import { Turma } from "../turma/turma.entity";
 import { Ministra } from "./ministra.entity";
 
@@ -21,8 +21,8 @@ export class MinistraService {
         return Turma.find({ order: { nome: 'ASC' } });
     }
 
-    async findAllProfessores(): Promise<Professor[]> {
-        return Professor.find({ order: { nome: 'ASC' } });
+    async findAllProfessores(): Promise<Pessoa[]> {
+        return Pessoa.find({ where: { isProfessor: true }, order: { nome: 'ASC' } });
     }
 
     async create(dados: any): Promise<Ministra> {

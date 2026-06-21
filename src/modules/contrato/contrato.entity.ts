@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Aluno } from "../aluno/aluno.entity";
+import { Pessoa } from "../pessoa/pessoa.entity";
 import { Curso } from "../curso/curso.entity";
 
 export enum StatusContrato {
@@ -14,9 +14,9 @@ export class Contrato extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @ManyToOne(() => Aluno, { nullable: false })
+    @ManyToOne(() => Pessoa, { nullable: false })
     @JoinColumn({ name: 'fk_aluno_id' })
-    aluno!: Aluno;
+    aluno!: Pessoa;
 
     @ManyToOne(() => Curso, { nullable: false })
     @JoinColumn({ name: 'fk_curso_id' })

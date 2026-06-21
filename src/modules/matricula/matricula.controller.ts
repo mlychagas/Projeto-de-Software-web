@@ -1,9 +1,8 @@
 import { Controller, Get, Param, Render, Post, Body, Inject } from '@nestjs/common';
 import { Curso } from '../curso/curso.entity';
-import { Professor } from '../professor/professor.entity';
+import { Pessoa, StatusPessoa } from '../pessoa/pessoa.entity';
 import { Ministra } from '../ministra/ministra.entity';
 import { Agenda, StatusAgenda } from '../agenda/agenda.entity';
-import { Aluno, StatusAluno } from '../aluno/aluno.entity';
 import { Turma } from '../turma/turma.entity';
 import { Contrato, StatusContrato } from '../contrato/contrato.entity';
 import { DataSource } from 'typeorm';
@@ -17,7 +16,7 @@ export class MatriculaController {
   @Render('matricula/selecionar-horario')
   async selecionarHorario() {
     const cursos = await Curso.find({ order: { nome: 'ASC' } });
-    const professores = await Professor.find({ order: { nome: 'ASC' } });
+    const professores = await Pessoa.find({ where: { isProfessor: true, statusProf: StatusPessoa.ATIVO }, order: { nome: 'ASC' } });
     return { title: 'Agendamento / Disponibilidade', cursos, professores };
   }
 
@@ -69,19 +68,19 @@ export class MatriculaController {
 
     try {
       // 2. Tratar Aluno
-      let aluno = await queryRunner.manager.findOne(Aluno, { where: { cpf: payload.aluno.cpf } });
+      let aluno = await queryRunner.manager.findOne(Pessoa, { where: { cpf: payload.aluno.cpf, isAluno: true } });
       
       if (!aluno) {
-        aluno = new Aluno();
+        aluno = new Pessoa();
         aluno.nome = payload.aluno.nome;
         aluno.cpf = payload.aluno.cpf;
         aluno.rg = payload.aluno.rg;
         aluno.email = payload.aluno.email;
         aluno.telefone = payload.aluno.telefone;
         aluno.dataNascimento = new Date(payload.aluno.dataNascimento);
+        aluno.isAluno = true;
         aluno.dataMatricula = new Date();
-        aluno.statusAluno = StatusAluno.ATIVO;
-        // responsavel is nullable agora
+        aluno.statusAluno = StatusPessoa.ATIVO;
         aluno = await queryRunner.manager.save(aluno);
       }
 
@@ -95,7 +94,6 @@ export class MatriculaController {
       contrato.dataInicio = new Date();
       contrato.valorMensal = payload.financeiro.valorLiquido;
       
-      // Montar a data de vencimento baseada no dia escolhido e mes atual/proximo
       const hoje = new Date();
       const vencimento = new Date(hoje.getFullYear(), hoje.getMonth(), payload.financeiro.diaVencimento);
       if (vencimento < hoje) {
@@ -114,7 +112,7 @@ export class MatriculaController {
           agenda.fkTurmaId = turma.id;
           agenda.aluno = aluno;
           agenda.turma = turma;
-          agenda.frequencia = 1; // Pode ser dinâmico
+          agenda.frequencia = 1; 
           agenda.statusAgenda = StatusAgenda.MATRICULADO;
           agenda.dataInscricao = new Date();
           await queryRunner.manager.save(agenda);

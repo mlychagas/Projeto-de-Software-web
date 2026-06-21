@@ -1,0 +1,734 @@
+
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+<style>
+/* ========= Perfil do pessoa ========= */
+.perfil-header {
+    background: linear-gradient(135deg, #4834d4, #686de0);
+    border-radius: 8px;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 0;
+    color: #fff;
+}
+.perfil-header .avatar-circle {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; font-weight: 700; color: #fff;
+    border: 3px solid rgba(255,255,255,0.4);
+    flex-shrink: 0;
+}
+.perfil-header .info { flex: 1; }
+.perfil-header .info h2 { margin: 0; font-size: 22px; font-weight: 700; }
+.perfil-header .info .badge-status { font-size: 12px; padding: 4px 12px; border-radius: 20px; }
+.perfil-header .header-actions { display: flex; gap: 10px; }
+.perfil-header .header-actions .btn { border-radius: 6px; font-weight: 600; }
+
+/* Tabs Navigation */
+.perfil-tabs {
+    background: #fff;
+    border-bottom: 2px solid #e8e8e8;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+.perfil-tabs li {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+}
+.perfil-tabs li:hover { color: #4834d4; }
+.perfil-tabs li.active {
+    color: #4834d4;
+    border-bottom-color: #4834d4;
+}
+
+/* Tab Content */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Cards de Dados */
+.info-section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.info-section h5 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.info-item .label { font-size: 11px; color: #999; text-transform: uppercase; margin-bottom: 2px; }
+.info-item .value { font-size: 14px; color: #333; font-weight: 600; }
+
+/* Tabela Estilo Customizado */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.custom-table thead th {
+    background: #f8f9fa;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 2px solid #e8e8e8;
+    font-size: 12px;
+}
+.custom-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+.custom-table tbody tr:hover { background: #fafafa; }
+
+/* Totalizador */
+.total-row {
+    background: #fff9c4 !important;
+    font-weight: 700;
+}
+.total-row td { border-bottom: 2px solid #f0e68c; }
+
+/* Status badges */
+.status-paga { color: #27ae60; }
+.status-vencida { color: #e74c3c; }
+.status-pendente { color: #f39c12; }
+
+/* Barra de progresso curso */
+.progress-curso {
+    height: 8px;
+    border-radius: 4px;
+    background: #e8e8e8;
+    overflow: hidden;
+    margin: 8px 0;
+}
+.progress-curso .bar {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    transition: width 0.5s;
+}
+
+/* Curso card */
+.curso-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 24px;
+}
+.curso-card .curso-info { flex: 1; }
+.curso-card .curso-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+}
+.curso-card .curso-acoes .btn {
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: left;
+    padding: 8px 16px;
+}
+
+/* Registro item */
+.registro-item {
+    display: flex;
+    padding: 16px 0;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 16px;
+    align-items: flex-start;
+}
+.registro-item .registro-icon {
+    width: 36px; height: 36px;
+    border-radius: 6px;
+    background: #e8f0fe;
+    display: flex; align-items: center; justify-content: center;
+    color: #4834d4;
+    flex-shrink: 0;
+}
+.registro-item .registro-body { flex: 1; }
+.registro-item .registro-body .data { font-size: 12px; color: #999; }
+.registro-item .registro-body .desc { font-size: 13px; color: #333; white-space: pre-line; margin-top: 4px; }
+.registro-item .registro-resp { font-size: 12px; color: #666; min-width: 120px; text-align: right; }
+
+/* Dependente card */
+.dependente-card {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    margin-bottom: 10px;
+    gap: 14px;
+}
+.dependente-card .dep-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: #e8f0fe;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #4834d4; font-size: 16px;
+}
+.dependente-card .dep-info { flex: 1; }
+.dependente-card .dep-info .dep-name { font-weight: 600; font-size: 14px; color: #333; }
+.dependente-card .dep-info .dep-parentesco { font-size: 12px; color: #888; }
+</style>
+
+<!-- ============== HEADER DO PERFIL ============== -->
+<div class="perfil-header">
+    <div class="avatar-circle">
+        <%= pessoa.nome.charAt(0).toUpperCase() %>
+    </div>
+    <div class="info">
+        <h2><%= pessoa.nome %></h2>
+        <span class="badge badge-status <%= pessoa.statusAluno === 'Ativo' ? 'badge-success' : 'badge-secondary' %>">
+            <i class="fa fa-circle" style="font-size:8px;"></i> <%= pessoa.statusAluno %>
+        </span>
+        <span style="margin-left: 12px; font-size: 13px; opacity: 0.8;">
+            pessoa desde <%= new Date(pessoa.dataMatricula).toLocaleDateString('pt-BR') %> · <%= tempoPessoa %> meses
+        </span>
+    </div>
+    <div class="header-actions">
+        <a href="/agenda" class="btn btn-light"><i class="fa fa-calendar"></i> Agenda</a>
+        <a href="/pessoas/<%= pessoa.id %>/editar" class="btn btn-warning text-white"><i class="fa fa-edit"></i> Editar Cadastro</a>
+    </div>
+</div>
+
+<!-- ============== TABS ============== -->
+<ul class="perfil-tabs" id="perfilTabs">
+    <li class="active" data-tab="dados-pessoais"><i class="fa fa-user"></i> Dados Pessoais</li>
+    <li data-tab="cursos"><i class="fa fa-music"></i> Cursos</li>
+    <li data-tab="faturas"><i class="fa fa-file-alt"></i> Faturas</li>
+    <li data-tab="historico-aulas"><i class="fa fa-history"></i> Histórico de Aulas</li>
+    <li data-tab="dependentes"><i class="fa fa-users"></i> Dependentes</li>
+    <li data-tab="historico-registros"><i class="fa fa-clipboard-list"></i> Histórico e Registros</li>
+</ul>
+
+<!-- ====================================================================== -->
+<!-- ======================== ABA: DADOS PESSOAIS ========================= -->
+<!-- ====================================================================== -->
+<div class="tab-panel active" id="tab-dados-pessoais">
+    <div class="row mt-3">
+        <!-- Coluna Principal -->
+        <div class="col-lg-8">
+            <div class="info-section">
+                <h5>Dados Pessoais</h5>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="label">Nome</div>
+                        <div class="value"><%= pessoa.nome %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Data de Nascimento</div>
+                        <div class="value"><%= new Date(pessoa.dataNascimento).toLocaleDateString('pt-BR') %> - Idade: <%= idade %> anos</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">CPF</div>
+                        <div class="value"><%= pessoa.cpf %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">RG</div>
+                        <div class="value"><%= pessoa.rg %></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">pessoa desde</div>
+                        <div class="value"><%= new Date(pessoa.dataMatricula).toLocaleDateString('pt-BR') %> - <%= tempoPessoa %> meses</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Status</div>
+                        <div class="value"><%= pessoa.statusAluno %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Coluna Lateral -->
+        <div class="col-lg-4">
+            <div class="info-section">
+                <h5>Informações de Contato</h5>
+                <div class="info-item mb-3">
+                    <div class="label">E-mail</div>
+                    <div class="value"><%= pessoa.email || '-' %></div>
+                </div>
+                <div class="info-item mb-3">
+                    <div class="label">Telefone</div>
+                    <div class="value"><%= pessoa.telefone || '-' %></div>
+                </div>
+            </div>
+            <div class="info-section">
+                <h5>Responsáveis</h5>
+                <% if (pessoa.responsavel) { %>
+                    <div class="dependente-card" style="box-shadow: none; background: #f8f9fa;">
+                        <div class="dep-avatar"><%= pessoa.responsavel.nome.charAt(0) %></div>
+                        <div class="dep-info">
+                            <div class="dep-name"><%= pessoa.responsavel.nome %></div>
+                            <div class="dep-parentesco"><%= pessoa.responsavel.parentesco %></div>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <p class="text-muted small">Nenhum responsável vinculado (pessoa adulto).</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- ======================== ABA: CURSOS ================================= -->
+<!-- ====================================================================== -->
+<div class="tab-panel" id="tab-cursos">
+    <div class="mt-3">
+        <% if (agendas.length === 0) { %>
+            <div class="info-section text-center text-muted">
+                <i class="fa fa-music fa-2x mb-2"></i>
+                <p>Nenhum curso vinculado a este pessoa.</p>
+            </div>
+        <% } else { %>
+            <% agendas.forEach(function(ag) { 
+                // Encontrar contrato correspondente
+                const contratoCorrespondente = contratos.find(c => c.curso && ag.turma && ag.turma.curso && c.curso.id === ag.turma.curso.id);
+                // Contar aulas do pessoa nesta turma
+                const aulasDestaTurma = aulas.filter(a => a.agenda && a.agenda.fkTurmaId === ag.fkTurmaId);
+                const totalAulas = contratoCorrespondente && contratoCorrespondente.curso ? contratoCorrespondente.curso.cargaHoraria : 24;
+                const aulasRealizadas = aulasDestaTurma.filter(a => a.statusPresencaAluno === 'Presente').length;
+                const aulasFaltas = aulasDestaTurma.filter(a => a.statusPresencaAluno === 'Faltou').length;
+                const percentual = totalAulas > 0 ? Math.round((aulasRealizadas / totalAulas) * 100) : 0;
+                const aulasRepor = aulasDestaTurma.filter(a => a.statusPresencaAluno === 'Faltou' && a.statusAula !== 'Cancelada').length;
+            %>
+            <div class="curso-card">
+                <div class="curso-info">
+                    <h5 style="margin: 0; color: #4834d4;">
+                        <i class="fa fa-music"></i> 
+                        <%= ag.turma && ag.turma.curso ? ag.turma.curso.nome : 'Curso' %>
+                    </h5>
+                    <span class="badge badge-success" style="margin: 6px 0; display: inline-block;">
+                        <%= ag.statusAgenda %>
+                    </span>
+
+                    <% if (contratoCorrespondente) { %>
+                    <div class="mt-3" style="border-top: 1px solid #eee; padding-top: 16px;">
+                        <h6 style="font-weight: 700; color: #555;">Contratos</h6>
+                        <% if (contratoCorrespondente.dataInicio && contratoCorrespondente.dataFim) { %>
+                            <span class="badge badge-light" style="font-size: 12px;">
+                                <i class="fa fa-calendar"></i> 
+                                <%= new Date(contratoCorrespondente.dataInicio).toLocaleDateString('pt-BR', {month:'short', year:'numeric'}) %> 
+                                à 
+                                <%= new Date(contratoCorrespondente.dataFim).toLocaleDateString('pt-BR', {month:'short', year:'numeric'}) %>
+                            </span>
+                        <% } %>
+                        <p style="margin: 8px 0 2px; font-size: 13px; font-weight: 600;">
+                            <%= ag.turma && ag.turma.curso ? ag.turma.curso.nome : '' %>
+                        </p>
+                        <p style="font-size: 12px; color: #666; margin: 0;">
+                            Plano <%= contratoCorrespondente.curso ? contratoCorrespondente.curso.duracaoMeses + ' meses' : '' %> · 
+                            R$ <%= Number(contratoCorrespondente.valorMensal).toFixed(2) %> / mês · 
+                            <%= contratoCorrespondente.statusContrato %>
+                        </p>
+                    </div>
+                    <% } %>
+
+                    <div class="mt-3" style="border-top: 1px solid #eee; padding-top: 16px;">
+                        <h6 style="font-weight: 700; color: #555;">
+                            <%= ag.turma && ag.turma.curso ? ag.turma.curso.nome : '' %>
+                        </h6>
+                        <div class="progress-curso">
+                            <div class="bar" style="width: <%= percentual %>%;"></div>
+                        </div>
+                        <span style="font-size: 12px; color: #666;">
+                            <%= aulasRealizadas %>/<%= totalAulas %> · <%= percentual %>%
+                        </span>
+                        <p style="font-size: 13px; color: #555; margin: 8px 0 2px;">
+                            <%= ag.turma ? ag.turma.diaSemana : '' %> das <%= ag.turma ? ag.turma.horarioInicio : '' %> às <%= ag.turma ? ag.turma.horarioFim : '' %> na <%= ag.turma && ag.turma.sala ? ag.turma.sala.nome : '' %>
+                        </p>
+                        <p style="font-size: 13px; color: #333; margin: 0;">
+                            Prof. <strong><%= ag.professor ? ag.professor.nome : '-' %></strong>
+                            <% if (aulasRepor > 0) { %> · Aulas a Repor: <span style="color: #4834d4;"><%= aulasRepor %></span><% } %>
+                            · Faltas: <span style="color: #e74c3c;"><%= aulasFaltas %></span>
+                            · Nr da próxima aula: <span style="color: #27ae60;"><%= aulasRealizadas + 1 %></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="curso-acoes">
+                    <button class="btn btn-primary"><i class="fa fa-exchange-alt"></i> Alterar Matrícula</button>
+                    <button class="btn btn-success"><i class="fa fa-sync"></i> Renovar Matrícula</button>
+                    <button class="btn btn-info text-white"><i class="fa fa-calendar-plus"></i> Aula Experimental</button>
+                    <button class="btn btn-secondary"><i class="fa fa-calendar-check"></i> Agendar Aula Extra</button>
+                    <button class="btn btn-outline-primary"><i class="fa fa-print"></i> Imprimir aulas do pessoa</button>
+                    <button class="btn btn-outline-secondary"><i class="fa fa-file-alt"></i> Declaração de Matrícula</button>
+                </div>
+            </div>
+            <% }); %>
+        <% } %>
+    </div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- ======================== ABA: FATURAS ================================ -->
+<!-- ====================================================================== -->
+<div class="tab-panel" id="tab-faturas">
+    <div class="mt-3">
+        <div class="info-section" style="padding: 16px;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <span class="badge badge-warning text-dark" style="font-size: 13px; padding: 6px 16px;">
+                        <i class="fa fa-filter"></i> Todas
+                    </span>
+                </div>
+                <span class="text-muted small"><%= faturas.length %> faturas encontradas</span>
+            </div>
+
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Data Prevista</th>
+                        <th>Data Pgto.</th>
+                        <th>Forma de Pagamento</th>
+                        <th>Recebedor</th>
+                        <th>Descrição</th>
+                        <th style="text-align:right;">Valor Devido</th>
+                        <th style="text-align:right;">Desconto / Juros</th>
+                        <th style="text-align:right;">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Linha de Total -->
+                    <tr class="total-row">
+                        <td colspan="6" style="text-align:right; font-weight:700;">Total:</td>
+                        <td style="text-align:right;"><%= faturas.reduce((s, f) => s + Number(f.valorDevido), 0).toFixed(2) %></td>
+                        <td style="text-align:right;"><%= faturas.reduce((s, f) => s + Number(f.descontoJuros), 0).toFixed(2) %></td>
+                        <td style="text-align:right;"><%= faturas.reduce((s, f) => s + Number(f.valorPago), 0).toFixed(2) %></td>
+                    </tr>
+                    <% faturas.forEach(function(f) { %>
+                    <tr>
+                        <td>
+                            <% if (f.statusFatura === 'Paga') { %>
+                                <i class="fa fa-check-circle status-paga"></i>
+                            <% } else if (f.statusFatura === 'Vencida') { %>
+                                <i class="fa fa-times-circle status-vencida"></i>
+                            <% } else { %>
+                                <i class="fa fa-clock status-pendente"></i>
+                            <% } %>
+                        </td>
+                        <td><%= new Date(f.dataVencimento).toLocaleDateString('pt-BR') %></td>
+                        <td><%= f.dataPagamento ? new Date(f.dataPagamento).toLocaleDateString('pt-BR') : '' %></td>
+                        <td><%= f.formaPagamento || '' %></td>
+                        <td><%= f.recebedor || '' %></td>
+                        <td><%= f.descricao %></td>
+                        <td style="text-align:right;"><%= Number(f.valorDevido).toFixed(2) %></td>
+                        <td style="text-align:right;"><%= Number(f.descontoJuros).toFixed(2) %></td>
+                        <td style="text-align:right;"><%= Number(f.valorPago).toFixed(2) %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- ======================== ABA: HISTÓRICO DE AULAS ===================== -->
+<!-- ====================================================================== -->
+<div class="tab-panel" id="tab-historico-aulas">
+    <div class="mt-3">
+        <div class="info-section" style="padding: 16px;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted small"><%= aulas.length %> registros de <%= aulas.length %> encontrados</span>
+            </div>
+
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>N.</th>
+                        <th>Data</th>
+                        <th>Hora pessoa</th>
+                        <th>Hora Prof.</th>
+                        <th>Professor / Conteúdo da Aula</th>
+                        <th>Data Original</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% aulas.forEach(function(a, i) { 
+                        const dataAula = new Date(a.dataPrevista);
+                        const diaSemana = dataAula.toLocaleDateString('pt-BR', { weekday: 'short' });
+                        const dataFormatada = dataAula.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' });
+                    %>
+                    <tr>
+                        <td><%= aulas.length - i %></td>
+                        <td><%= dataFormatada %> às <%= a.horarioInicio %></td>
+                        <td>
+                            <% if (a.statusPresencaAluno === 'Presente') { %>
+                                <i class="fa fa-edit status-paga"></i> <%= a.horarioInicio %>
+                            <% } else if (a.statusPresencaAluno === 'Faltou') { %>
+                                <i class="fa fa-times status-vencida" style="font-size:18px;"></i>
+                            <% } else { %>
+                                <i class="fa fa-clock status-pendente"></i>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (a.statusPresencaProfessor === 'Presente') { %>
+                                <i class="fa fa-edit status-paga"></i> <%= a.horarioInicio %>
+                            <% } else if (a.statusPresencaProfessor === 'Faltou') { %>
+                                <i class="fa fa-times status-vencida" style="font-size:18px;"></i>
+                            <% } else { %>
+                                <i class="fa fa-clock status-pendente"></i>
+                            <% } %>
+                        </td>
+                        <td>
+                            <i class="fa fa-edit" style="color:#999;"></i> 
+                            <%= a.professor ? a.professor.nome : '-' %> Notas -
+                            <%= a.observacoes || '' %>
+                        </td>
+                        <td>
+                            <% if (a.reagendado) { %>
+                                <%= dataFormatada %>
+                            <% } else { %>
+                                Normal
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- ======================== ABA: DEPENDENTES ============================ -->
+<!-- ====================================================================== -->
+<div class="tab-panel" id="tab-dependentes">
+    <div class="mt-3">
+        <div class="info-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 style="margin:0; border:none; padding:0;">Dependentes Vinculados</h5>
+                <button class="btn btn-primary btn-sm" onclick="abrirModalVincular()">
+                    <i class="fa fa-user-plus"></i> Vincular Dependente
+                </button>
+            </div>
+
+            <div id="listaDependentes">
+                <% if (dependentes.length === 0) { %>
+                    <p class="text-muted text-center py-4">
+                        <i class="fa fa-users fa-2x d-block mb-2"></i>
+                        Nenhum dependente vinculado a este pessoa.
+                    </p>
+                <% } else { %>
+                    <% dependentes.forEach(function(dep) { %>
+                    <div class="dependente-card" id="dep-<%= dep.id %>">
+                        <div class="dep-avatar"><%= dep.nome.charAt(0) %></div>
+                        <div class="dep-info">
+                            <div class="dep-name"><%= dep.nome %></div>
+                            <div class="dep-parentesco">
+                                <% if (dep.responsavel) { %>
+                                    <%= dep.responsavel.parentesco || 'Dependente' %>
+                                <% } else { %>
+                                    Dependente
+                                <% } %>
+                            </div>
+                        </div>
+                        <a href="/pessoas/<%= dep.id %>/perfil" class="btn btn-outline-primary btn-sm">
+                            <i class="fa fa-eye"></i> Ver Perfil
+                        </a>
+                        <button class="btn btn-outline-danger btn-sm" onclick="desvincularDependente(<%= dep.id %>, '<%= dep.nome %>')">
+                            <i class="fa fa-unlink"></i> Desvincular
+                        </button>
+                    </div>
+                    <% }); %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- ======================== ABA: HISTÓRICO E REGISTROS ================== -->
+<!-- ====================================================================== -->
+<div class="tab-panel" id="tab-historico-registros">
+    <div class="mt-3">
+        <div class="info-section" style="padding: 16px;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 style="margin:0; border:none; padding:0;">Registros</h5>
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm"><i class="fa fa-filter"></i> Filtrar</button>
+                    <button class="btn btn-primary btn-sm"><i class="fa fa-edit"></i> Adicionar anotação</button>
+                </div>
+            </div>
+
+            <span class="text-muted small d-block mb-3"><%= registros.length %> registros de <%= registros.length %> encontrados</span>
+
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Data e hora</th>
+                        <th></th>
+                        <th>Histórico do atendimento</th>
+                        <th>Responsável pelo registro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% registros.forEach(function(r) { 
+                        const dataReg = new Date(r.dataHora);
+                        const diaSemanaReg = dataReg.toLocaleDateString('pt-BR', { weekday: 'long' });
+                        const dataFormatadaReg = diaSemanaReg.charAt(0).toUpperCase() + diaSemanaReg.slice(1) + ', ' + dataReg.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' às ' + dataReg.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    %>
+                    <tr>
+                        <td style="white-space: nowrap;"><%= dataFormatadaReg %></td>
+                        <td>
+                            <% if (r.tipoRegistro === 'Aula Reagendada') { %>
+                                <i class="fa fa-file-alt" style="color: #4834d4; font-size: 18px;"></i>
+                            <% } else if (r.tipoRegistro === 'Matrícula Renovada' || r.tipoRegistro === 'Matrícula Criada') { %>
+                                <i class="fa fa-file-contract" style="color: #27ae60; font-size: 18px;"></i>
+                            <% } else if (r.tipoRegistro === 'Professor Alterado') { %>
+                                <i class="fa fa-exchange-alt" style="color: #f39c12; font-size: 18px;"></i>
+                            <% } else { %>
+                                <i class="fa fa-info-circle" style="color: #999; font-size: 18px;"></i>
+                            <% } %>
+                        </td>
+                        <td style="white-space: pre-line;"><%= r.descricao %></td>
+                        <td><%= r.responsavelRegistro %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- ======================== SCRIPTS ===================================== -->
+<!-- ====================================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// ========= Navegação por Abas =========
+document.querySelectorAll('.perfil-tabs li').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.perfil-tabs li').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+});
+
+// ========= Dependentes: Vincular =========
+const alunoId = <%= pessoa.id %>;
+
+function abrirModalVincular() {
+    Swal.fire({
+        title: 'Vincular Dependente',
+        html: `
+            <input type="text" id="buscaDep" class="swal2-input" placeholder="Digite o nome do pessoa..." style="width: 90%;">
+            <div id="resultadosBusca" style="max-height: 200px; overflow-y: auto; margin-top: 10px; text-align: left;"></div>
+        `,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Fechar',
+        didOpen: () => {
+            const input = document.getElementById('buscaDep');
+            let timeout;
+            input.addEventListener('input', () => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => buscarDependente(input.value), 300);
+            });
+        }
+    });
+}
+
+async function buscarDependente(q) {
+    const container = document.getElementById('resultadosBusca');
+    if (!q || q.length < 2) { container.innerHTML = '<p class="text-muted small">Digite pelo menos 2 caracteres...</p>'; return; }
+    
+    const res = await fetch(`/pessoas/${alunoId}/api/dependentes/buscar?q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    
+    if (data.length === 0) {
+        container.innerHTML = '<p class="text-muted small">Nenhum pessoa encontrado.</p>';
+        return;
+    }
+    
+    container.innerHTML = data.map(a => `
+        <div style="padding: 10px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong>${a.nome}</strong>
+                <br><small class="text-muted">CPF: ${a.cpf}</small>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="confirmarVinculo(${a.id}, '${a.nome}')">
+                <i class="fa fa-link"></i> Vincular
+            </button>
+        </div>
+    `).join('');
+}
+
+async function confirmarVinculo(depId, nome) {
+    const result = await Swal.fire({
+        title: 'Confirmar Vínculo',
+        text: `Deseja vincular "${nome}" como dependente?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#4834d4',
+        confirmButtonText: 'Sim, vincular!',
+        cancelButtonText: 'Cancelar',
+    });
+    
+    if (result.isConfirmed) {
+        const res = await fetch(`/pessoas/${alunoId}/api/dependentes/vincular`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dependenteId: depId }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            Swal.fire('Vinculado!', data.message, 'success').then(() => location.reload());
+        } else {
+            Swal.fire('Erro', data.message, 'error');
+        }
+    }
+}
+
+async function desvincularDependente(depId, nome) {
+    const result = await Swal.fire({
+        title: 'Desvincular Dependente',
+        text: `Deseja desvincular "${nome}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        confirmButtonText: 'Sim, desvincular!',
+        cancelButtonText: 'Cancelar',
+    });
+    
+    if (result.isConfirmed) {
+        const res = await fetch(`/pessoas/${alunoId}/api/dependentes/desvincular`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dependenteId: depId }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            Swal.fire('Desvinculado!', data.message, 'success').then(() => location.reload());
+        } else {
+            Swal.fire('Erro', data.message, 'error');
+        }
+    }
+}
+</script>

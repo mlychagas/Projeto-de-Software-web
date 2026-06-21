@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Aluno } from "../aluno/aluno.entity";
+import { Pessoa } from "../pessoa/pessoa.entity";
 import { Turma } from "../turma/turma.entity";
 import { Agenda } from "./agenda.entity";
 
@@ -17,8 +17,8 @@ export class AgendaService {
         });
     }
 
-    async findAllAlunos(): Promise<Aluno[]> {
-        return Aluno.find({ order: { nome: 'ASC' } });
+    async findAllAlunos(): Promise<Pessoa[]> {
+        return Pessoa.find({ where: { isAluno: true }, order: { nome: 'ASC' } });
     }
 
     async findAllTurmas(): Promise<Turma[]> {

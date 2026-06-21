@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Aluno } from "../aluno/aluno.entity";
+import { Pessoa } from "../pessoa/pessoa.entity";
 
 export enum TipoRegistro {
     AULA_REAGENDADA = 'Aula Reagendada',
@@ -18,9 +18,9 @@ export class HistoricoRegistro extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @ManyToOne(() => Aluno, { nullable: false })
-    @JoinColumn({ name: 'fk_aluno_id' })
-    aluno!: Aluno;
+    @ManyToOne(() => Pessoa, { nullable: false })
+    @JoinColumn({ name: 'fk_aluno_id' }) // Mantemos o nome da coluna no banco para não quebrar queries muito cruas
+    pessoa!: Pessoa;
 
     @Column({ type: 'datetime', name: 'data_hora' })
     dataHora!: Date;

@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
-import { Aluno } from "../aluno/aluno.entity";
+import { Pessoa } from "../pessoa/pessoa.entity";
 import { Turma } from "../turma/turma.entity";
 
 export enum StatusAgenda {
@@ -17,9 +17,9 @@ export class Agenda extends BaseEntity {
     @PrimaryColumn({ name: 'fk_turma_id' })
     fkTurmaId!: number;
 
-    @ManyToOne(() => Aluno, { nullable: false })
+    @ManyToOne(() => Pessoa, { nullable: false })
     @JoinColumn({ name: 'fk_aluno_id' })
-    aluno!: Aluno;
+    aluno!: Pessoa;
 
     @ManyToOne(() => Turma, { nullable: false })
     @JoinColumn({ name: 'fk_turma_id' })

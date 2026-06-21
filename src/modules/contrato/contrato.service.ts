@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Aluno } from "../aluno/aluno.entity";
+import { Pessoa } from "../pessoa/pessoa.entity";
 import { Curso } from "../curso/curso.entity";
 import { Contrato } from "./contrato.entity";
 
@@ -14,8 +14,8 @@ export class ContratoService {
         return Contrato.findOne({ where: { id }, relations: ['aluno', 'curso'] });
     }
 
-    async findAllAlunos(): Promise<Aluno[]> {
-        return Aluno.find({ order: { nome: 'ASC' } });
+    async findAllAlunos(): Promise<Pessoa[]> {
+        return Pessoa.find({ where: { isAluno: true }, order: { nome: 'ASC' } });
     }
 
     async findAllCursos(): Promise<Curso[]> {

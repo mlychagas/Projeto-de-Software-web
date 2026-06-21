@@ -1,9 +1,8 @@
 import { Controller, Get, Inject, Render, Query, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DataSource } from 'typeorm';
-import { Aluno } from './modules/aluno/aluno.entity';
+import { Pessoa, StatusPessoa } from './modules/pessoa/pessoa.entity';
 import { Curso } from './modules/curso/curso.entity';
-import { Professor, StatusProfessor } from './modules/professor/professor.entity';
 import { Sala } from './modules/sala/sala.entity';
 import { Turma } from './modules/turma/turma.entity';
 import { Aula, StatusPresenca, StatusAula } from './modules/aula/aula.entity';
@@ -11,7 +10,6 @@ import { Ministra } from './modules/ministra/ministra.entity';
 import { Agenda } from './modules/agenda/agenda.entity';
 import { Contrato } from './modules/contrato/contrato.entity';
 import { HistoricoRegistro } from './modules/historico-registro/historico-registro.entity';
-import { ResponsavelAluno } from './modules/responsavel-aluno/responsavel-aluno.entity';
 import { DisponibilidadeProfessor } from './modules/disponibilidade-professor/disponibilidade-professor.entity';
 
 @Controller()
@@ -25,10 +23,10 @@ export class AppController {
   @Render('inicial')
   async getHello(): Promise<object> {
     // --- Métricas reais do banco ---
-    const totalAlunos = await this.dataSource.getRepository(Aluno).count();
+    const totalAlunos = await this.dataSource.getRepository(Pessoa).count({ where: { isAluno: true } });
     const totalCursos = await this.dataSource.getRepository(Curso).count();
-    const professoresAtivos = await this.dataSource.getRepository(Professor).count({
-      where: { statusProf: StatusProfessor.ATIVO },
+    const professoresAtivos = await this.dataSource.getRepository(Pessoa).count({
+      where: { isProfessor: true, statusProf: StatusPessoa.ATIVO },
     });
 
     // Data de hoje formatada para comparação SQL (YYYY-MM-DD)
@@ -47,9 +45,8 @@ export class AppController {
     // Buscar todas as aulas de hoje com relações
     const aulasDodia = await this.dataSource.getRepository(Aula)
       .createQueryBuilder('aula')
-      .leftJoinAndSelect('aula.agenda', 'agenda')
-      .leftJoinAndSelect('agenda.aluno', 'aluno')
-      .leftJoinAndSelect('agenda.turma', 'turma')
+      .leftJoinAndSelect('aula.aluno', 'aluno')
+      .leftJoinAndSelect('aula.turma', 'turma')
       .leftJoinAndSelect('turma.curso', 'curso')
       .leftJoinAndSelect('turma.sala', 'sala')
       .where('aula.data_prevista = :hoje', { hoje: hojeStr })
@@ -60,9 +57,9 @@ export class AppController {
     const aulasComProfessor: any[] = [];
     for (const aula of aulasDodia) {
       let professorNome = 'Sem Professor';
-      if (aula.agenda?.turma) {
+      if (aula.turma) {
         const ministra = await this.dataSource.getRepository(Ministra).findOne({
-          where: { fkTurmaId: aula.agenda.fkTurmaId },
+          where: { fkTurmaId: aula.turma.id },
           relations: ['professor'],
         });
         if (ministra?.professor) {
@@ -72,12 +69,12 @@ export class AppController {
 
       // Contar faltas do aluno
       let totalFaltas = 0;
-      if (aula.agenda) {
+      if (aula.aluno && aula.turma) {
         totalFaltas = await this.dataSource.getRepository(Aula)
           .createQueryBuilder('a')
           .where('a.fk_aluno_id = :alunoId AND a.fk_turma_id = :turmaId', {
-            alunoId: aula.agenda.fkAlunoId,
-            turmaId: aula.agenda.fkTurmaId,
+            alunoId: aula.aluno.id,
+            turmaId: aula.turma.id,
           })
           .andWhere('a.status_presenca_aluno = :status', { status: StatusPresenca.FALTOU })
           .getCount();
@@ -85,9 +82,9 @@ export class AppController {
 
       // Contar faturas pendentes/vencidas do aluno
       let faturasAbertas = 0;
-      if (aula.agenda?.aluno) {
+      if (aula.aluno) {
         const contratos = await this.dataSource.getRepository(Contrato).find({
-          where: { aluno: { id: aula.agenda.aluno.id } },
+          where: { aluno: { id: aula.aluno.id } },
         });
         if (contratos.length > 0) {
           const ids = contratos.map(c => c.id);
@@ -101,9 +98,9 @@ export class AppController {
 
       // Calcular meses até vencimento do contrato
       let vencimentoLabel = '-';
-      if (aula.agenda?.aluno) {
+      if (aula.aluno) {
         const contrato = await this.dataSource.getRepository(Contrato).findOne({
-          where: { aluno: { id: aula.agenda.aluno.id }, statusContrato: 'Ativo' as any },
+          where: { aluno: { id: aula.aluno.id }, statusContrato: 'Ativo' as any },
           order: { dataInicio: 'DESC' },
         });
         if (contrato?.dataFim) {
@@ -122,10 +119,10 @@ export class AppController {
 
       aulasComProfessor.push({
         horario: aula.horarioInicio?.substring(0, 5) || '--:--',
-        alunoNome: aula.agenda?.aluno?.nome || 'Sem Aluno',
+        alunoNome: aula.aluno?.nome || 'Sem Aluno',
         professorNome,
-        cursoNome: aula.agenda?.turma?.curso?.instrumento || 'N/A',
-        salaNome: aula.agenda?.turma?.sala?.nome || 'Sem Sala',
+        cursoNome: aula.turma?.curso?.instrumento || 'N/A',
+        salaNome: aula.turma?.sala?.nome || 'Sem Sala',
         statusPresencaAluno: aula.statusPresencaAluno,
         statusPresencaProfessor: aula.statusPresencaProfessor,
         statusAula: aula.statusAula,
@@ -223,13 +220,13 @@ export class AppController {
   @Render('escola')
   async getEscola() {
     // Contagens reais do banco de dados
-    const totalAlunos = await this.dataSource.getRepository(Aluno).count();
-    const totalResponsaveis = await this.dataSource.getRepository(ResponsavelAluno).count();
+    const totalAlunos = await this.dataSource.getRepository(Pessoa).count({ where: { isAluno: true } });
+    const totalResponsaveis = await this.dataSource.getRepository(Pessoa).count({ where: { isResponsavel: true } });
     const totalTurmas = await this.dataSource.getRepository(Turma).count();
     const totalCursos = await this.dataSource.getRepository(Curso).count();
     const totalSalas = await this.dataSource.getRepository(Sala).count();
-    const totalProfessores = await this.dataSource.getRepository(Professor).count({
-      where: { statusProf: StatusProfessor.ATIVO },
+    const totalProfessores = await this.dataSource.getRepository(Pessoa).count({
+      where: { isProfessor: true, statusProf: StatusPessoa.ATIVO },
     });
 
     // Instrumentos distintos dos cursos
@@ -242,9 +239,10 @@ export class AppController {
     // Aniversariantes do mês atual
     const mesAtual = hoje().getMonth() + 1;
     const diaAtual = hoje().getDate();
-    const aniversariantes = await this.dataSource.getRepository(Aluno)
+    const aniversariantes = await this.dataSource.getRepository(Pessoa)
       .createQueryBuilder('a')
-      .where('MONTH(a.data_nascimento) = :mes', { mes: mesAtual })
+      .where('a.is_aluno = 1')
+      .andWhere('MONTH(a.data_nascimento) = :mes', { mes: mesAtual })
       .andWhere('DAY(a.data_nascimento) = :dia', { dia: diaAtual })
       .getMany();
 
@@ -316,8 +314,8 @@ export class AppController {
 
     if (modoRecurso === 'professores') {
       // Buscar professores ativos
-      const professores = await this.dataSource.getRepository(Professor).find({
-        where: { statusProf: StatusProfessor.ATIVO },
+      const professores = await this.dataSource.getRepository(Pessoa).find({
+        where: { isProfessor: true, statusProf: StatusPessoa.ATIVO },
         order: { nome: 'ASC' },
       });
 
@@ -353,8 +351,7 @@ export class AppController {
           // Buscar aulas desta turma na data selecionada
           const aulasDodia = await this.dataSource.getRepository(Aula)
             .createQueryBuilder('aula')
-            .leftJoinAndSelect('aula.agenda', 'agenda')
-            .leftJoinAndSelect('agenda.aluno', 'aluno')
+            .leftJoinAndSelect('aula.aluno', 'aluno')
             .where('aula.fk_turma_id = :turmaId', { turmaId: turma.id })
             .andWhere('aula.data_prevista = :data', { data: dataStr })
             .getMany();
@@ -364,7 +361,7 @@ export class AppController {
               const horaInicio = parseInt(turma.horarioInicio.split(':')[0], 10);
               aulas.push({
                 hora: horaInicio,
-                tituloCard: aula.agenda?.aluno?.nome || 'Aluno',
+                tituloCard: aula.aluno?.nome || 'Aluno',
                 subtituloCard: turma.sala?.nome || 'Sem Sala',
                 cor: this.determinarCorEvento(aula),
                 badge: this.determinarBadge(aula),
@@ -424,8 +421,7 @@ export class AppController {
           // Buscar aulas na data
           const aulasDodia = await this.dataSource.getRepository(Aula)
             .createQueryBuilder('aula')
-            .leftJoinAndSelect('aula.agenda', 'agenda')
-            .leftJoinAndSelect('agenda.aluno', 'aluno')
+            .leftJoinAndSelect('aula.aluno', 'aluno')
             .where('aula.fk_turma_id = :turmaId', { turmaId: turma.id })
             .andWhere('aula.data_prevista = :data', { data: dataStr })
             .getMany();
@@ -435,7 +431,7 @@ export class AppController {
               const horaInicio = parseInt(turma.horarioInicio.split(':')[0], 10);
               aulas.push({
                 hora: horaInicio,
-                tituloCard: aula.agenda?.aluno?.nome || 'Aluno',
+                tituloCard: aula.aluno?.nome || 'Aluno',
                 subtituloCard: profNome,
                 cor: this.determinarCorEvento(aula),
                 badge: this.determinarBadge(aula),
@@ -531,62 +527,31 @@ export class AppController {
 
     const termoLike = `%${termo.trim()}%`;
 
-    // Buscar alunos
-    const alunos = await this.dataSource.getRepository(Aluno)
-      .createQueryBuilder('a')
-      .where('a.nome LIKE :termo', { termo: termoLike })
-      .orderBy('a.nome', 'ASC')
-      .take(10)
-      .getMany();
-
-    // Buscar professores
-    const professores = await this.dataSource.getRepository(Professor)
+    const pessoas = await this.dataSource.getRepository(Pessoa)
       .createQueryBuilder('p')
       .where('p.nome LIKE :termo', { termo: termoLike })
       .orderBy('p.nome', 'ASC')
-      .take(10)
+      .take(15)
       .getMany();
 
-    // Buscar responsáveis
-    const responsaveis = await this.dataSource.getRepository(ResponsavelAluno)
-      .createQueryBuilder('r')
-      .where('r.nome LIKE :termo', { termo: termoLike })
-      .orderBy('r.nome', 'ASC')
-      .take(10)
-      .getMany();
-
-    // Montar resultado unificado
     const resultados: any[] = [];
+    pessoas.forEach(p => {
+      let tipo = '';
+      let icone = '';
+      let cor = '';
+      let detalhe = p.email || p.telefone || '';
 
-    alunos.forEach(a => resultados.push({
-      tipo: 'Aluno',
-      icone: 'mdi-account',
-      cor: '#6c5ce7',
-      nome: a.nome,
-      detalhe: a.email || a.telefone || '',
-      status: a.statusAluno,
-      url: `/alunos/${a.id}/perfil`,
-    }));
+      if (p.isAluno) { tipo = 'Aluno'; icone = 'mdi-account'; cor = '#6c5ce7'; }
+      else if (p.isProfessor) { tipo = 'Professor'; icone = 'mdi-account-tie'; cor = '#00b894'; }
+      else if (p.isResponsavel) { tipo = 'Responsável'; icone = 'mdi-account-group'; cor = '#fdcb6e'; }
+      else { tipo = 'Pessoa'; icone = 'mdi-account-circle'; cor = '#aaa'; }
 
-    professores.forEach(p => resultados.push({
-      tipo: 'Professor',
-      icone: 'mdi-account-tie',
-      cor: '#00b894',
-      nome: p.nome,
-      detalhe: p.especialidade || p.email || '',
-      status: p.statusProf,
-      url: `/professores/${p.id}/editar`,
-    }));
-
-    responsaveis.forEach(r => resultados.push({
-      tipo: 'Responsável',
-      icone: 'mdi-account-group',
-      cor: '#fdcb6e',
-      nome: r.nome,
-      detalhe: r.parentesco || r.email || '',
-      status: '',
-      url: `/responsaveis/${r.id}/editar`,
-    }));
+      resultados.push({
+        tipo, icone, cor, nome: p.nome, detalhe,
+        status: p.statusAluno || p.statusProf || '',
+        url: `/pessoas/${p.id}/perfil`,
+      });
+    });
 
     // Ordenar por relevância (nome que começa com o termo primeiro)
     const termoLower = termo.trim().toLowerCase();
