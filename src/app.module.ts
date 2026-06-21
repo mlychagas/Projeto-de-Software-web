@@ -6,7 +6,15 @@ import { DatabaseModule } from './config/database/database.module';
 import { AlunoModule } from './modules/aluno/aluno.module';
 import { ResponsavelAlunoModule } from './modules/responsavel-aluno/responsavel-aluno.module';
 import { AulaModule } from './modules/aula/aula.module';
-import { MatriculaController } from './modules/matricula/matricula.controller';
+import { ProfessorModule } from './modules/professor/professor.module';
+import { CursoModule } from './modules/curso/curso.module';
+import { SalaModule } from './modules/sala/sala.module';
+import { TurmaModule } from './modules/turma/turma.module';
+import { ContratoModule } from './modules/contrato/contrato.module';
+import { AgendaModule } from './modules/agenda/agenda.module';
+import { MinistraModule } from './modules/ministra/ministra.module';
+import { DisponibilidadeProfessorModule } from './modules/disponibilidade-professor/disponibilidade-professor.module';
+import { MatriculaModule } from './modules/matricula/matricula.module';
 
 @Module({
   imports: [
@@ -15,8 +23,17 @@ import { MatriculaController } from './modules/matricula/matricula.controller';
     AlunoModule,
     ResponsavelAlunoModule,
     AulaModule,
+    ProfessorModule,
+    CursoModule,
+    SalaModule,
+    TurmaModule,
+    ContratoModule,
+    AgendaModule,
+    MinistraModule,
+    DisponibilidadeProfessorModule,
+    MatriculaModule,
   ],
-  controllers: [AppController, MatriculaController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
