@@ -59,15 +59,16 @@ async function seed() {
         await connection.query(`
             INSERT IGNORE INTO turma (id, nome, fk_curso, fk_sala, status_turma, dia_semana, horario_inicio, horario_fim, capacidade, data_inicio, data_fim)
             VALUES 
-            (1, 'Violão Básico - Qui 17h', 1, 1, 'Em Andamento', 'Quinta', '17:00', '18:00', 5, '2024-01-15', NULL),
-            (2, 'Teclado Avançado - Qua 11h', 2, 2, 'Em Andamento', 'Quarta', '11:00', '12:00', 3, '2024-07-01', NULL);
+            (1, 'Violão Básico - Dom 10h', 1, 1, 'Em Andamento', 'Domingo', '10:00', '11:00', 5, '2026-06-01', NULL),
+            (2, 'Teclado Avançado - Dom 11h', 2, 2, 'Em Andamento', 'Domingo', '11:00', '12:00', 3, '2026-06-01', NULL),
+            (3, 'Violão Intermediário - Seg 15h', 1, 1, 'Em Andamento', 'Segunda', '15:00', '16:00', 5, '2026-06-01', NULL);
         `);
         console.log('✓ Turmas inseridas');
 
         // 7. Ministra (Professor <-> Turma)
         await connection.query(`
             INSERT IGNORE INTO ministra (fk_turma_id, fk_professor_id, data_atribuicao)
-            VALUES (1, 1, '2024-01-15'), (2, 1, '2024-07-01');
+            VALUES (1, 1, '2026-06-01'), (2, 1, '2026-06-01'), (3, 1, '2026-06-01');
         `);
         console.log('✓ Ministra inserida');
 
@@ -75,65 +76,88 @@ async function seed() {
         await connection.query(`
             INSERT IGNORE INTO contrato (id, fk_aluno_id, fk_curso_id, data_inicio, data_fim, data_vencimento_parcela, valor_mensal, status_contrato)
             VALUES 
-            (1, 1, 1, '2024-01-16', '2025-01-16', '2024-01-16', 300.00, 'Ativo'),
-            (2, 1, 2, '2024-07-01', '2025-01-01', '2024-07-16', 310.00, 'Ativo');
+            (1, 1, 1, '2026-06-01', '2027-06-01', '2026-06-05', 300.00, 'Ativo'),
+            (2, 2, 2, '2026-06-01', '2027-06-01', '2026-06-10', 310.00, 'Ativo'),
+            (3, 3, 1, '2026-06-01', '2027-06-01', '2026-06-15', 300.00, 'Ativo');
         `);
         console.log('✓ Contratos inseridos');
 
         // 9. Agenda (Aluno <-> Turma)
         await connection.query(`
             INSERT IGNORE INTO agenda (fk_aluno_id, fk_turma_id, frequencia, status_agenda, data_inscricao)
-            VALUES (1, 1, 0, 'Matriculado', '2024-01-16'), (1, 2, 0, 'Matriculado', '2024-07-01');
+            VALUES 
+            (1, 1, 0, 'Matriculado', '2026-06-01'), 
+            (2, 2, 0, 'Matriculado', '2026-06-01'),
+            (3, 3, 0, 'Matriculado', '2026-06-01');
         `);
         console.log('✓ Agenda inserida');
 
-        // 10. Aulas (histórico)
+        // 10. Aulas (histórico e futuras)
         const aulas = [];
-        const datasAulas = [
-            '2024-09-19', '2024-09-26', '2024-10-03', '2024-10-10', '2024-10-17',
-            '2024-10-24', '2024-10-31', '2024-11-07', '2024-11-14', '2024-11-21', '2024-11-28'
-        ];
-        const presencas = [
-            ['Presente','Presente'],['Presente','Presente'],['Faltou','Faltou'],
-            ['Presente','Presente'],['Presente','Presente'],['Presente','Presente'],
-            ['Presente','Presente'],['Presente','Presente'],['Faltou','Faltou'],
-            ['Presente','Presente'],['Faltou','Faltou']
-        ];
-        for (let i = 0; i < datasAulas.length; i++) {
-            aulas.push(`(${i+1}, 1, 1, '${datasAulas[i]}', ${presencas[i][0]==='Presente'?`'${datasAulas[i]}'`:'NULL'}, '17:00', '18:00', '${presencas[i][0]}', '${presencas[i][1]}', ${presencas[i][0]==='Faltou'?1:0}, '${presencas[i][0]==='Presente'?'Realizada':'Cancelada'}', NULL)`);
+        
+        // Vamos pegar a data de hoje para gerar as aulas em torno dela
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = (hoje.getMonth() + 1).toString().padStart(2, '0');
+        const dia = hoje.getDate().toString().padStart(2, '0');
+        const dataHojeStr = `${ano}-${mes}-${dia}`;
+
+        // Aula 1: Hoje, atrasada ou terminando (Faltou/Presente) - Turma 1
+        aulas.push(`(1, 1, 1, '${dataHojeStr}', '${dataHojeStr}', '08:00', '09:00', 'Presente', 'Presente', 0, 'Realizada', 'Aula concluída hoje cedo')`);
+        
+        // Aula 2: Hoje, no horário atual (Em Andamento) - Turma 1
+        const horaAtual = hoje.getHours();
+        const proxHora = (horaAtual + 1).toString().padStart(2, '0');
+        const horaAtualStr = horaAtual.toString().padStart(2, '0');
+        aulas.push(`(2, 1, 1, '${dataHojeStr}', NULL, '${horaAtualStr}:00', '${proxHora}:00', 'Pendente', 'Pendente', 0, 'Agendada', 'Aula em andamento')`);
+        
+        // Aula 3: Hoje, mais tarde (Próxima) - Turma 2
+        let horaMaisTarde = (horaAtual + 2) % 24;
+        let horaMaisTardeStr = horaMaisTarde.toString().padStart(2, '0');
+        let proxHoraMaisTarde = ((horaAtual + 3) % 24).toString().padStart(2, '0');
+        if (horaMaisTarde <= horaAtual) { 
+           // se virou o dia, ajusta pra ser hoje ainda, se possivel, ou só põe 23:00
+           horaMaisTardeStr = '22:00';
+           proxHoraMaisTarde = '23:00';
         }
+        aulas.push(`(3, 2, 2, '${dataHojeStr}', NULL, '${horaMaisTardeStr}:00', '${proxHoraMaisTarde}:00', 'Pendente', 'Pendente', 0, 'Agendada', 'Próxima aula de hoje')`);
+
+        // Aula 4: Amanhã - Turma 3
+        const amanha = new Date(hoje);
+        amanha.setDate(amanha.getDate() + 1);
+        const amanhaStr = `${amanha.getFullYear()}-${(amanha.getMonth() + 1).toString().padStart(2, '0')}-${amanha.getDate().toString().padStart(2, '0')}`;
+        aulas.push(`(4, 3, 3, '${amanhaStr}', NULL, '15:00', '16:00', 'Pendente', 'Pendente', 0, 'Agendada', 'Aula de amanhã')`);
+
+        // Aula 5: Ontem - Turma 1
+        const ontem = new Date(hoje);
+        ontem.setDate(ontem.getDate() - 1);
+        const ontemStr = `${ontem.getFullYear()}-${(ontem.getMonth() + 1).toString().padStart(2, '0')}-${ontem.getDate().toString().padStart(2, '0')}`;
+        aulas.push(`(5, 1, 1, '${ontemStr}', '${ontemStr}', '10:00', '11:00', 'Faltou', 'Presente', 0, 'Realizada', 'Aluno faltou ontem')`);
+
         await connection.query(`INSERT IGNORE INTO aula (id, fk_aluno_id, fk_turma_id, data_prevista, data_realizada, horario_inicio, horario_fim, status_presenca_aluno, status_presenca_professor, reagendado, status_aula, observacoes) VALUES ${aulas.join(',')};`);
         console.log('✓ Aulas inseridas');
 
         // 11. Faturas
         const faturas = [];
-        const meses = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-        const statusPagos = ['Paga','Paga','Paga','Paga','Paga','Paga','Paga','Paga','Paga','Paga','Vencida','Vencida'];
-        const formasPag = ['Boleto','Boleto','Pix','Pix','Pix','Cartão de Crédito','Pix','Pix','Pix','Pix',null,null];
-        const datasPag = ['2024-01-16','2024-02-16','2024-03-19','2024-04-17','2024-05-20','2024-06-17','2024-07-11','2024-08-16','2024-09-11','2024-10-21',null,null];
-        const valoresDevidos = [200,200,300,300,300,300,10,10,10,10,10,10];
-        const descontos = [0,0,6.30,6.10,6.40,6.10,0.49,0.39,0.28,0.22,0.24,0];
+        
+        // Fatura vencida no mês passado (Maio/2026)
+        faturas.push(`(1, 1, '2026-05-05', NULL, 300.00, 0, 0, 'Vencida', NULL, NULL, 'Parcela 05/2026')`);
+        
+        // Fatura paga do mês atual (Junho/2026)
+        faturas.push(`(2, 2, '2026-06-10', '2026-06-08', 310.00, 10.00, 300.00, 'Paga', 'Pix', 'Sistema', 'Parcela 06/2026')`);
+        
+        // Fatura pendente do mês atual (Junho/2026)
+        faturas.push(`(3, 3, '2026-06-25', NULL, 300.00, 0, 0, 'Pendente', NULL, NULL, 'Parcela 06/2026')`);
 
-        for (let i = 0; i < 12; i++) {
-            const dataPag = datasPag[i] ? `'${datasPag[i]}'` : 'NULL';
-            const forma = formasPag[i] ? `'${formasPag[i]}'` : 'NULL';
-            const receb = datasPag[i] ? (i < 2 ? "'Maria'" : "'Sistema'") : 'NULL';
-            const valorPago = datasPag[i] ? (valoresDevidos[i] + descontos[i]) : 0;
-            faturas.push(`(${i+1}, 1, '2024-${meses[i]}-16', ${dataPag}, ${valoresDevidos[i]}.00, ${descontos[i]}, ${valorPago}, '${statusPagos[i]}', ${forma}, ${receb}, 'Parcela ${meses[i]}/2024 do curso de Curso Básico de Violão')`);
-        }
         await connection.query(`INSERT IGNORE INTO fatura (id, fk_contrato_id, data_vencimento, data_pagamento, valor_devido, desconto_juros, valor_pago, status_fatura, forma_pagamento, recebedor, descricao) VALUES ${faturas.join(',')};`);
         console.log('✓ Faturas inseridas');
 
         // 12. Histórico e Registros
         const registros = [
-            [1, '2024-08-13 16:12:00', 'Aula alterada por Equipe da Escola\nReagendada\nde prof. Júlio Nona para prof. José Notas', 'Professor Alterado', 'Equipe da Escola'],
-            [1, '2024-10-10 13:59:00', 'Matrícula renovada por Equipe da Escola\nCurso de Básico de Violão renovado até 19/06/2025.\nProf: José Notas\nNr de Aulas: 35\nPrimeira Aula: 19/09/2024', 'Matrícula Renovada', 'Equipe da Escola'],
-            [1, '2024-10-10 14:34:00', 'Aula alterada por Equipe da Escola\nReagendada\nQuinta, 10/10/2024 de 18:00h para 17:00h', 'Aula Reagendada', 'Equipe da Escola'],
-            [1, '2024-10-17 14:32:00', 'Aula alterada por Equipe da Escola\nReagendada\nQuinta, 17/10/2024 de 18:00h para 17:00h', 'Aula Reagendada', 'Equipe da Escola'],
-            [1, '2024-10-24 15:55:00', 'Aula alterada por Equipe da Escola\nReagendada\nQuinta, 24/10/2024 de 18:00h para 17:00h', 'Aula Reagendada', 'Equipe da Escola'],
-            [1, '2024-10-31 17:29:00', 'Aula alterada por Equipe da Escola\nReagendada\nQuinta, 31/10/2024 de 18:00h para 19:00h', 'Aula Reagendada', 'Equipe da Escola'],
-            [1, '2024-11-14 14:05:00', 'Aula alterada por Equipe da Escola\nReagendada\nQuinta, 14/11/2024 de 18:00h para 19:00h', 'Aula Reagendada', 'Equipe da Escola'],
-            [1, '2024-11-28 16:00:00', 'Aula alterada por Equipe da Escola\nReagendada\nQuinta, 28/11/2024 de 18:00h para 17:00h', 'Aula Reagendada', 'Equipe da Escola'],
+            [1, `${dataHojeStr} 08:00:00`, 'Aula concluída. Aluno presente.', 'Aula Realizada', 'Professor José'],
+            [1, `${ontemStr} 10:00:00`, 'Falta registrada para o aluno.', 'Falta', 'Professor José'],
+            [2, `${dataHojeStr} 09:00:00`, 'Mensalidade paga via Pix.', 'Pagamento Efetuado', 'Sistema Financeiro'],
+            [3, `${dataHojeStr} 07:30:00`, 'Nova matrícula efetuada.', 'Matrícula', 'Secretaria'],
         ];
         const regValues = registros.map((r, i) => {
             const desc = r[2].replace(/'/g, "\\'");
