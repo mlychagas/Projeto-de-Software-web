@@ -14,10 +14,14 @@ export class MatriculaController {
 
   @Get('agendamento')
   @Render('matricula/selecionar-horario')
-  async selecionarHorario() {
+  async selecionarHorario(@Query('pessoa') pessoaId?: string) {
     const cursos = await Curso.find({ order: { nome: 'ASC' } });
     const professores = await Pessoa.find({ where: { isProfessor: true, statusProf: StatusPessoa.ATIVO }, order: { nome: 'ASC' } });
-    return { title: 'Agendamento / Disponibilidade', cursos, professores };
+    let pessoa = null;
+    if (pessoaId) {
+      pessoa = await Pessoa.findOne({ where: { id: parseInt(pessoaId, 10) } });
+    }
+    return { title: 'Agendamento / Disponibilidade', cursos, professores, pessoa };
   }
 
   @Get('api/agenda-professor/:id')
@@ -48,9 +52,29 @@ export class MatriculaController {
 
   @Get('nova')
   @Render('matricula/nova')
-  async novaMatricula() {
+  async novaMatricula(
+    @Query('pessoa') pessoaId?: string, 
+    @Query('turma') turmaId?: string, 
+    @Query('curso') cursoId?: string,
+    @Query('prof') profId?: string,
+    @Query('dia') dia?: string,
+    @Query('hora') hora?: string,
+    @Query('sala') sala?: string
+  ) {
     const cursos = await Curso.find({ order: { nome: 'ASC' } });
-    return { title: 'Nova Matrícula', cursos };
+    let pessoa = null;
+    if (pessoaId) {
+      pessoa = await Pessoa.findOne({ where: { id: parseInt(pessoaId, 10) } });
+    }
+    let turma = null;
+    if (turmaId) {
+      turma = await Turma.findOne({ where: { id: parseInt(turmaId, 10) }, relations: ['curso', 'sala'] });
+    }
+    let professor = null;
+    if (profId) {
+      professor = await Pessoa.findOne({ where: { id: parseInt(profId, 10), isProfessor: true } });
+    }
+    return { title: 'Nova Matrícula', cursos, pessoa, turma, cursoIdSelecionado: cursoId, professor, dia, hora, sala };
   }
 
   @Get('cadastro')

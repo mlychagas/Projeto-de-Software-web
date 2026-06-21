@@ -64,6 +64,7 @@ function gerarGradeAgendamentoVazia() {
 }
 
 let slotSelecionado = null; // Guardará: { grid, dia, hora, numHora }
+let agendamentoFinal = null;
 
 async function filtrarGrade() {
     const profSelect = document.getElementById('filtroProfessor');
@@ -85,16 +86,12 @@ async function filtrarGrade() {
         const turmas = await response.json();
 
         turmas.forEach(turma => {
-            // Converter "Segunda-feira" ou "Segunda" para o nome usado na tela
-            // No array da tela usamos: 'Segunda-feira', 'Terça-feira', etc.
-            // O DB usa enum DiaSemana que pode ser 'Segunda', 'Terça', 'Sábado', etc.
             let diaDB = turma.diaSemana;
             if (!diaDB.includes('-feira') && diaDB !== 'Sábado' && diaDB !== 'Domingo') {
                 diaDB += '-feira';
             }
             if (diaDB === 'Sábado') diaDB = 'Sábado'; // keep
 
-            // Procurar a row correta
             const rows = timelineBody.querySelectorAll('.timeline-row');
             let targetGrid = null;
             rows.forEach(row => {
@@ -105,9 +102,7 @@ async function filtrarGrade() {
             });
 
             if (targetGrid && turma.horarioInicio) {
-                // converter horario_inicio (ex: "14:00:00") para hora inicio
                 const horaStart = parseInt(turma.horarioInicio.split(':')[0], 10);
-                // "1 aluno(s) de 5", etc
                 const sub = `Sala: ${turma.sala} | Alunos: ${turma.alunosMatriculados}/${turma.capacidade}`;
                 
                 let classes = 'bg-danger text-white opacity-75';
@@ -155,11 +150,19 @@ function confirmarAula() {
 
     const profNome = document.getElementById('modalProf').textContent;
     const sala = document.getElementById('modalSala').value;
-    const alunoNome = "João da Silva"; // Mocked
+    
+    const pessoaCard = document.querySelector('[data-pessoa-id]');
+    const alunoNome = pessoaCard ? pessoaCard.querySelector('h5').textContent : "Novo Aluno";
 
     const subtitulo = `${sala} - ${alunoNome}`;
     
     adicionarEventoAoGrid(slotSelecionado.grid, slotSelecionado.numHora, profNome, subtitulo, 'bg-primary text-white', false);
+
+    agendamentoFinal = {
+        dia: slotSelecionado.dia,
+        hora: slotSelecionado.hora,
+        sala: sala
+    };
 
     $('#modalAdicionarAula').modal('hide');
     
@@ -174,7 +177,6 @@ function confirmarAula() {
 }
 
 function adicionarEventoAoGrid(grid, startHour, titulo, subtitulo, classes, isBlocked) {
-    // startHour from 8 to 22. Total hours = 15.
     const totalHours = 15;
     const index = startHour - 8;
     
@@ -218,13 +220,19 @@ function avancarParaFinanceiro() {
     
     const profId = profSelect ? profSelect.value : '';
     const cursoId = cursoSelect ? cursoSelect.value : '';
-    const alunoId = 1; // João da Silva (Mock)
     
-    // Convert to query string
+    const pessoaCard = document.querySelector('[data-pessoa-id]');
+    const pessoaId = pessoaCard ? pessoaCard.getAttribute('data-pessoa-id') : '';
+    
     const params = new URLSearchParams();
     if(profId) params.append('prof', profId);
     if(cursoId) params.append('curso', cursoId);
-    params.append('aluno', alunoId);
+    if(pessoaId) params.append('pessoa', pessoaId);
+    if(agendamentoFinal) {
+        params.append('dia', agendamentoFinal.dia);
+        params.append('hora', agendamentoFinal.hora);
+        params.append('sala', agendamentoFinal.sala);
+    }
     
     window.location.href = `/matricula/nova?${params.toString()}`;
 }

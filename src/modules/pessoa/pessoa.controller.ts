@@ -88,33 +88,31 @@ export class PessoaController {
             order: { dataHora: 'DESC' }
         });
 
-        // Se for Aluno, buscar dados acadêmicos e financeiros
-        if (pessoa.isAluno) {
-            result.agendas = await this.dataSource.getRepository(Agenda).find({
-                where: { aluno: { id: pessoa.id } },
-                relations: ['turma', 'turma.curso']
-            });
+        // Buscar dados acadêmicos e financeiros (agendas/cursos, contratos, aulas, faturas) para qualquer pessoa
+        result.agendas = await this.dataSource.getRepository(Agenda).find({
+            where: { aluno: { id: pessoa.id } },
+            relations: ['turma', 'turma.curso']
+        });
 
-            result.contratos = await this.dataSource.getRepository(Contrato).find({
-                where: { aluno: { id: pessoa.id } },
-                relations: ['curso']
-            });
+        result.contratos = await this.dataSource.getRepository(Contrato).find({
+            where: { aluno: { id: pessoa.id } },
+            relations: ['curso']
+        });
 
-            result.aulas = await this.dataSource.getRepository(Aula).find({
-                where: { aluno: { id: pessoa.id } },
-                relations: ['turma', 'turma.curso'],
-                order: { dataPrevista: 'DESC', horarioInicio: 'DESC' }
-            });
+        result.aulas = await this.dataSource.getRepository(Aula).find({
+            where: { aluno: { id: pessoa.id } },
+            relations: ['turma', 'turma.curso'],
+            order: { dataPrevista: 'DESC', horarioInicio: 'DESC' }
+        });
 
-            // Faturas associadas aos contratos do aluno
-            const contratoIds = result.contratos.map((c: Contrato) => c.id);
-            if (contratoIds.length > 0) {
-                result.faturas = await this.dataSource.getRepository(Fatura)
-                    .createQueryBuilder('fatura')
-                    .where('fatura.fk_contrato_id IN (:...ids)', { ids: contratoIds })
-                    .orderBy('fatura.dataVencimento', 'DESC')
-                    .getMany();
-            }
+        // Faturas associadas aos contratos da pessoa
+        const contratoIds = result.contratos.map((c: Contrato) => c.id);
+        if (contratoIds.length > 0) {
+            result.faturas = await this.dataSource.getRepository(Fatura)
+                .createQueryBuilder('fatura')
+                .where('fatura.fk_contrato_id IN (:...ids)', { ids: contratoIds })
+                .orderBy('fatura.dataVencimento', 'DESC')
+                .getMany();
         }
 
         // Se for Responsável, buscar faturas dos dependentes

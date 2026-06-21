@@ -188,7 +188,7 @@ export class AppController {
     const anotacoes = await this.dataSource.getRepository(HistoricoRegistro).find({
       order: { dataHora: 'DESC' },
       take: 10,
-      relations: ['aluno'],
+      relations: ['pessoa'],
     });
 
     return {

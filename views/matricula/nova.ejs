@@ -16,7 +16,10 @@
     <div class="row mb-4">
       <div class="col-md-6">
         <label>Aluno</label>
-        <input type="text" class="form-control" placeholder="Selecione ou digite o nome do Aluno" id="alunoNome">
+        <input type="text" class="form-control" placeholder="Selecione ou digite o nome do Aluno" id="alunoNome"
+               value="<%= typeof pessoa !== 'undefined' && pessoa ? pessoa.nome : '' %>"
+               <%= typeof pessoa !== 'undefined' && pessoa ? 'disabled' : '' %>
+               data-pessoa-id="<%= typeof pessoa !== 'undefined' && pessoa ? pessoa.id : '' %>">
       </div>
       <div class="col-md-6">
         <label>Curso</label>
@@ -24,7 +27,9 @@
           <option value="">Selecione o Curso...</option>
           <% if (typeof cursos !== 'undefined' && cursos.length > 0) { %>
             <% cursos.forEach(curso => { %>
-              <option value="<%= curso.id %>"><%= curso.nome %> (<%= curso.instrumento %>)</option>
+              <option value="<%= curso.id %>" <%= typeof cursoIdSelecionado !== 'undefined' && cursoIdSelecionado == curso.id ? 'selected' : '' %>>
+                <%= curso.nome %> (<%= curso.instrumento %>)
+              </option>
             <% }) %>
           <% } %>
         </select>
@@ -34,16 +39,16 @@
     <!-- Linha 2: Professor e Configuração de Datas -->
     <div class="row mb-4">
       <div class="col-md-4">
-        <!-- TODO: Integrar com a tela de seleção de turma/professor. 
-             Ao clicar em 'Selecionar Turma', deve abrir um modal ou redirecionar para a tela onde 
-             o usuário seleciona o Professor, o Dia, o Horário, a Disciplina/Curso e todos os dados pertinentes 
-             para definir quem dará a aula e quando. Após a seleção, esses dados devem retornar e preencher este card. -->
         <div class="p-3" style="background-color: #f8f9fa; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; height: 100%;">
           <div>
-            <strong>[Professor]</strong><br>
-            <small class="text-muted">[Dia da semana] às [Horário] na [Sala]</small>
+            <strong><%= typeof professor !== 'undefined' && professor ? 'Prof. ' + professor.nome : 'Professor não selecionado' %></strong><br>
+            <small class="text-muted">
+              <%= typeof dia !== 'undefined' && dia ? dia : 'Sem dia' %> 
+              <%= typeof hora !== 'undefined' && hora ? 'às ' + hora : '' %> 
+              <%= typeof sala !== 'undefined' && sala ? ' na ' + sala : '' %>
+            </small>
           </div>
-          <button class="btn btn-sm btn-primary" style="background-color: #7b61ff; border-color: #7b61ff;"><i class="fa fa-edit"></i> Selecionar Turma</button>
+          <button class="btn btn-sm btn-primary" style="background-color: #7b61ff; border-color: #7b61ff;" onclick="window.location.href='/matricula/agendamento<%= typeof pessoa !== 'undefined' && pessoa ? \'?pessoa=\' + pessoa.id : \'\' %>'"><i class="fa fa-edit"></i> Alterar Horário</button>
         </div>
       </div>
       <div class="col-md-8">
