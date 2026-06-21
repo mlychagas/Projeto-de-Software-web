@@ -122,11 +122,87 @@
                     eval(scriptContent.innerText);
                 }
             })
+            })
             .catch(err => {
                 console.error('AJAX Error:', err);
                 window.location.href = url; // fallback em caso de falha
             });
         };
+
+        // --- Lógica do Autocomplete ---
+        const searchInput = document.getElementById('searchPessoas');
+        const searchDropdown = document.getElementById('searchResults');
+        let searchTimeout;
+
+        if (searchInput && searchDropdown) {
+            // Fechar dropdown ao clicar fora
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                    searchDropdown.classList.remove('active');
+                }
+            });
+
+            // Abrir dropdown ao focar (se houver texto)
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value.trim().length >= 2) {
+                    searchDropdown.classList.add('active');
+                }
+            });
+
+            // Digitação
+            searchInput.addEventListener('input', (e) => {
+                const termo = e.target.value.trim();
+
+                clearTimeout(searchTimeout);
+
+                if (termo.length < 2) {
+                    searchDropdown.classList.remove('active');
+                    return;
+                }
+
+                // Loading
+                searchDropdown.innerHTML = '<div class="search-loading"><i class="mdi mdi-loading mdi-spin mr-2" style="font-size: 18px;"></i> Buscando...</div>';
+                searchDropdown.classList.add('active');
+
+                // Debounce de 300ms
+                searchTimeout = setTimeout(() => {
+                    fetch('/api/busca-pessoas?q=' + encodeURIComponent(termo))
+                        .then(res => res.json())
+                        .then(data => {
+                            if (!data || data.length === 0) {
+                                searchDropdown.innerHTML = `
+                                    <div class="search-empty-state">
+                                        <i class="mdi mdi-account-search-outline"></i>
+                                        Nenhuma pessoa encontrada com "${termo}"
+                                    </div>
+                                `;
+                                return;
+                            }
+
+                            let html = '';
+                            data.forEach(item => {
+                                html += `
+                                    <a href="${item.url}" class="search-result-item">
+                                        <div class="search-result-icon" style="background-color: ${item.cor}">
+                                            <i class="mdi ${item.icone}"></i>
+                                        </div>
+                                        <div class="search-result-info">
+                                            <div class="search-result-name">${item.nome}</div>
+                                            <div class="search-result-detail">${item.detalhe}</div>
+                                        </div>
+                                        <div class="search-result-badge tipo-${item.tipo}">${item.tipo}</div>
+                                    </a>
+                                `;
+                            });
+                            searchDropdown.innerHTML = html;
+                        })
+                        .catch(err => {
+                            console.error('Erro na busca:', err);
+                            searchDropdown.innerHTML = '<div class="search-loading text-danger">Erro ao buscar dados.</div>';
+                        });
+                }, 300);
+            });
+        }
     </script>
 </body>
 </html>

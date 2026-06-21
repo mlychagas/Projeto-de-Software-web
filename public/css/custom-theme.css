@@ -506,3 +506,106 @@ body {
 .event-purple { background-color: #f3e5f5; border: 1px solid #8e24aa; }
 .event-yellow { background-color: #fffac7; border: 1px solid #b89802; }
 .event-red { background-color: #ffebee; border: 1px solid #d32f2f; }
+
+/* ==========================================================================
+   SEARCH AUTOCOMPLETE DROPDOWN
+   ========================================================================== */
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    min-width: 360px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e1e5eb;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    z-index: 9999;
+    display: none;
+}
+.search-results-dropdown.active {
+    display: block;
+    animation: searchDropIn 0.15s ease-out;
+}
+@keyframes searchDropIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    gap: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.15s;
+    text-decoration: none;
+    color: inherit;
+}
+.search-result-item:hover {
+    background: #f8f5ff;
+    text-decoration: none;
+    color: inherit;
+}
+.search-result-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+    color: #fff;
+}
+.search-result-info {
+    flex: 1;
+    min-width: 0;
+}
+.search-result-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.search-result-detail {
+    font-size: 12px;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.search-result-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.search-result-badge.tipo-Aluno     { background: #f0ecff; color: #6c5ce7; }
+.search-result-badge.tipo-Professor { background: #e6f8f0; color: #00b894; }
+.search-result-badge.tipo-Responsável { background: #fef5e0; color: #d68910; }
+.search-empty-state {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+}
+.search-empty-state i {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 6px;
+    color: #ccc;
+}
+.search-loading {
+    padding: 16px;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+}
+

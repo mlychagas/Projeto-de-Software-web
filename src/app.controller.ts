@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Render, Query } from '@nestjs/common';
+import { Controller, Get, Inject, Render, Query, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DataSource } from 'typeorm';
 import { Aluno } from './modules/aluno/aluno.entity';
@@ -521,6 +521,83 @@ export class AppController {
   private determinarBadge(aula: Aula): string | null {
     if (aula.reagendado) return 'R';
     return null;
+  }
+
+  @Get('/api/busca-pessoas')
+  async buscarPessoas(@Query('q') termo?: string) {
+    if (!termo || termo.trim().length < 2) {
+      return [];
+    }
+
+    const termoLike = `%${termo.trim()}%`;
+
+    // Buscar alunos
+    const alunos = await this.dataSource.getRepository(Aluno)
+      .createQueryBuilder('a')
+      .where('a.nome LIKE :termo', { termo: termoLike })
+      .orderBy('a.nome', 'ASC')
+      .take(10)
+      .getMany();
+
+    // Buscar professores
+    const professores = await this.dataSource.getRepository(Professor)
+      .createQueryBuilder('p')
+      .where('p.nome LIKE :termo', { termo: termoLike })
+      .orderBy('p.nome', 'ASC')
+      .take(10)
+      .getMany();
+
+    // Buscar responsáveis
+    const responsaveis = await this.dataSource.getRepository(ResponsavelAluno)
+      .createQueryBuilder('r')
+      .where('r.nome LIKE :termo', { termo: termoLike })
+      .orderBy('r.nome', 'ASC')
+      .take(10)
+      .getMany();
+
+    // Montar resultado unificado
+    const resultados: any[] = [];
+
+    alunos.forEach(a => resultados.push({
+      tipo: 'Aluno',
+      icone: 'mdi-account',
+      cor: '#6c5ce7',
+      nome: a.nome,
+      detalhe: a.email || a.telefone || '',
+      status: a.statusAluno,
+      url: `/alunos/${a.id}/perfil`,
+    }));
+
+    professores.forEach(p => resultados.push({
+      tipo: 'Professor',
+      icone: 'mdi-account-tie',
+      cor: '#00b894',
+      nome: p.nome,
+      detalhe: p.especialidade || p.email || '',
+      status: p.statusProf,
+      url: `/professores/${p.id}/editar`,
+    }));
+
+    responsaveis.forEach(r => resultados.push({
+      tipo: 'Responsável',
+      icone: 'mdi-account-group',
+      cor: '#fdcb6e',
+      nome: r.nome,
+      detalhe: r.parentesco || r.email || '',
+      status: '',
+      url: `/responsaveis/${r.id}/editar`,
+    }));
+
+    // Ordenar por relevância (nome que começa com o termo primeiro)
+    const termoLower = termo.trim().toLowerCase();
+    resultados.sort((a, b) => {
+      const aStarts = a.nome.toLowerCase().startsWith(termoLower) ? 0 : 1;
+      const bStarts = b.nome.toLowerCase().startsWith(termoLower) ? 0 : 1;
+      if (aStarts !== bStarts) return aStarts - bStarts;
+      return a.nome.localeCompare(b.nome);
+    });
+
+    return resultados.slice(0, 15);
   }
 }
 
