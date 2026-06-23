@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Render, Query, Param } from '@nestjs/common';
+import { Controller, Get, Inject, Render, Query, Param, Post, Body, Redirect } from '@nestjs/common';
 import { AppService } from './app.service';
 import { DataSource } from 'typeorm';
 import { Pessoa, StatusPessoa } from './modules/pessoa/pessoa.entity';
@@ -201,6 +201,239 @@ export class AppController {
       totalInstrumentos,
       aniversariantes,
       totalAniversariantes: aniversariantes.length,
+    };
+  }
+
+  // ========================
+  // ESCOLA - PROFESSORES
+  // ========================
+  @Get('/escola/professores')
+  @Render('professor/inicial')
+  async getProfessores() {
+    const professores = await this.dataSource.getRepository(Pessoa).find({
+      where: { isProfessor: true },
+      order: { nome: 'ASC' },
+    });
+
+    // Enriquecer com turmas e instrumentos
+    const professoresEnriquecidos: any[] = [];
+    for (const prof of professores) {
+      const ministras = await this.dataSource.getRepository(Ministra).find({
+        where: { fkProfessorId: prof.id },
+        relations: ['turma', 'turma.curso'],
+      });
+      const turmasAtivas = ministras.length;
+      const instrumentos = [...new Set(ministras.map(m => m.turma?.curso?.instrumento).filter(Boolean))];
+      
+      professoresEnriquecidos.push({
+        ...prof,
+        turmasAtivas,
+        instrumentosLecionados: instrumentos.join(', ') || prof.especialidade || '-',
+      });
+    }
+
+    return { 
+      titulo: 'Professores', 
+      headerType: 'escola',
+      professores: professoresEnriquecidos 
+    };
+  }
+
+  @Get('/escola/professores/criar')
+  @Render('professor/formulario')
+  async formCriarProfessor() {
+    return {
+      titulo: 'Novo Professor',
+      professor: {
+        nome: '', email: '', telefone: '', cpf: '', rg: '',
+        dataNascimento: '', especialidade: '', valorHoraAula: '',
+        dataAdmissao: new Date().toISOString().split('T')[0],
+        statusProf: 'Ativo'
+      },
+    };
+  }
+
+  @Get('/escola/professores/:id/editar')
+  @Render('professor/formulario')
+  async formEditarProfessor(@Param('id') id: number) {
+    const professor = await this.dataSource.getRepository(Pessoa).findOne({ where: { id } });
+    if (!professor) throw new Error('Professor não encontrado');
+    return { titulo: 'Editar Professor', professor };
+  }
+
+  @Post('/escola/professores/criar')
+  @Redirect('/escola/professores')
+  async salvarProfessor(@Body() dados: any) {
+    const professor = new Pessoa();
+    professor.nome = dados.nome;
+    professor.email = dados.email || null;
+    professor.telefone = dados.telefone || null;
+    professor.cpf = dados.cpf || null;
+    professor.rg = dados.rg || null;
+    professor.dataNascimento = dados.dataNascimento || null;
+    professor.dataAdmissao = dados.dataAdmissao || null;
+    professor.statusProf = dados.statusProf || 'Ativo' as any;
+    professor.especialidade = dados.especialidade || null;
+    professor.valorHoraAula = dados.valorHoraAula || null;
+    professor.observacoes = dados.observacoes || null;
+    professor.isProfessor = true;
+    await professor.save();
+  }
+
+  @Post('/escola/professores/:id/editar')
+  @Redirect('/escola/professores')
+  async editarProfessor(@Param('id') id: number, @Body() dados: any) {
+    const professor = await this.dataSource.getRepository(Pessoa).findOne({ where: { id } });
+    if (!professor) throw new Error('Professor não encontrado');
+    professor.nome = dados.nome;
+    professor.email = dados.email || null;
+    professor.telefone = dados.telefone || null;
+    professor.cpf = dados.cpf || null;
+    professor.rg = dados.rg || null;
+    professor.dataNascimento = dados.dataNascimento || null;
+    professor.dataAdmissao = dados.dataAdmissao || null;
+    professor.statusProf = dados.statusProf || 'Ativo' as any;
+    professor.especialidade = dados.especialidade || null;
+    professor.valorHoraAula = dados.valorHoraAula || null;
+    professor.observacoes = dados.observacoes || null;
+    await professor.save();
+  }
+
+  // ========================
+  // ESCOLA - INSTRUMENTOS
+  // ========================
+  @Get('/escola/instrumentos')
+  @Render('escola/instrumentos')
+  async getInstrumentos() {
+    const cursos = await this.dataSource.getRepository(Curso).find();
+    
+    const categorias: Record<string, string> = {
+      'violão': 'Cordas', 'guitarra': 'Cordas', 'baixo': 'Cordas', 'ukulele': 'Cordas', 'cavaquinho': 'Cordas', 'viola': 'Cordas', 'harpa': 'Cordas', 'violino': 'Cordas', 'cello': 'Cordas', 'contrabaixo': 'Cordas',
+      'piano': 'Teclas', 'teclado': 'Teclas', 'acordeão': 'Teclas', 'órgão': 'Teclas', 'sintetizador': 'Teclas',
+      'flauta': 'Sopro', 'saxofone': 'Sopro', 'clarinete': 'Sopro', 'trompete': 'Sopro', 'trombone': 'Sopro', 'oboé': 'Sopro', 'fagote': 'Sopro',
+      'bateria': 'Percussão', 'cajón': 'Percussão', 'pandeiro': 'Percussão', 'xilofone': 'Percussão', 'congas': 'Percussão',
+      'canto': 'Voz', 'vocal': 'Voz', 'coral': 'Voz',
+    };
+
+    const instrumentosMap = new Map<string, { nome: string, categoria: string, cursos: number, ativo: boolean }>();
+    for (const curso of cursos) {
+      const nome = curso.instrumento;
+      const key = nome.toLowerCase().trim();
+      const categoria = categorias[key] || 'Outros';
+      const isAtivo = !curso.statusCurso || curso.statusCurso === 'Ativo' as any;
+      
+      if (instrumentosMap.has(key)) {
+        const existing = instrumentosMap.get(key)!;
+        existing.cursos++;
+        if (isAtivo) existing.ativo = true;
+      } else {
+        instrumentosMap.set(key, { nome, categoria, cursos: 1, ativo: isAtivo });
+      }
+    }
+
+    const instrumentos = Array.from(instrumentosMap.values()).sort((a, b) => a.nome.localeCompare(b.nome));
+
+    return {
+      titulo: 'Tipos de Instrumentos',
+      headerType: 'escola',
+      instrumentos,
+    };
+  }
+
+  // ========================
+  // ESCOLA - ALUNOS
+  // ========================
+  @Get('/escola/alunos')
+  @Render('escola/alunos')
+  async getAlunos() {
+    const alunos = await this.dataSource.getRepository(Pessoa).find({
+      where: { isAluno: true },
+      order: { nome: 'ASC' },
+    });
+
+    const alunosEnriquecidos: any[] = [];
+    for (const aluno of alunos) {
+      const agendas = await this.dataSource.getRepository(Agenda).find({
+        where: { fkAlunoId: aluno.id },
+        relations: ['turma', 'turma.curso'],
+      });
+      const contratosAtivos = await this.dataSource.getRepository(Contrato).count({
+        where: { aluno: { id: aluno.id }, statusContrato: 'Ativo' as any },
+      });
+      const totalAulas = await this.dataSource.getRepository(Aula).count({
+        where: { aluno: { id: aluno.id }, statusAula: StatusAula.REALIZADA },
+      });
+
+      const cursosNomes = [...new Set(agendas.map(a => a.turma?.curso?.nome).filter(Boolean))];
+
+      alunosEnriquecidos.push({
+        ...aluno,
+        cursosNomes: cursosNomes.join(', ') || '-',
+        contratosAtivos,
+        totalAulasRealizadas: totalAulas,
+      });
+    }
+
+    return {
+      titulo: 'Matrículas e Alunos',
+      headerType: 'escola',
+      alunos: alunosEnriquecidos,
+    };
+  }
+
+  // ========================
+  // ESCOLA - ANIVERSARIANTES
+  // ========================
+  @Get('/escola/aniversariantes')
+  @Render('escola/aniversariantes')
+  async getAniversariantes() {
+    const hojeDate = hoje();
+    const mesAtual = hojeDate.getMonth() + 1;
+    const diaAtual = hojeDate.getDate();
+    const diaSemana = hojeDate.getDay();
+
+    // Aniversariantes do dia
+    const anivDia = await this.dataSource.getRepository(Pessoa)
+      .createQueryBuilder('p')
+      .where('p.is_aluno = 1')
+      .andWhere('MONTH(p.data_nascimento) = :mes', { mes: mesAtual })
+      .andWhere('DAY(p.data_nascimento) = :dia', { dia: diaAtual })
+      .orderBy('p.nome', 'ASC')
+      .getMany();
+
+    // Aniversariantes da semana (próximos 7 dias)
+    const anivSemana: any[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(hojeDate);
+      d.setDate(d.getDate() + i);
+      const m = d.getMonth() + 1;
+      const dd = d.getDate();
+      const pessoas = await this.dataSource.getRepository(Pessoa)
+        .createQueryBuilder('p')
+        .where('p.is_aluno = 1')
+        .andWhere('MONTH(p.data_nascimento) = :mes', { mes: m })
+        .andWhere('DAY(p.data_nascimento) = :dia', { dia: dd })
+        .orderBy('p.nome', 'ASC')
+        .getMany();
+      anivSemana.push(...pessoas);
+    }
+
+    // Aniversariantes do mês
+    const anivMes = await this.dataSource.getRepository(Pessoa)
+      .createQueryBuilder('p')
+      .where('p.is_aluno = 1')
+      .andWhere('MONTH(p.data_nascimento) = :mes', { mes: mesAtual })
+      .orderBy('DAY(p.data_nascimento)', 'ASC')
+      .addOrderBy('p.nome', 'ASC')
+      .getMany();
+
+    return {
+      titulo: 'Aniversariantes',
+      headerType: 'escola',
+      anivDia,
+      anivSemana,
+      anivMes,
+      hoje: hojeDate,
     };
   }
 

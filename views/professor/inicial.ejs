@@ -8,6 +8,7 @@
     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item"><a href="/escola">Escola</a></li>
             <li class="breadcrumb-item active"><a href="javascript:void(0)">Professores</a></li>
         </ol>
     </div>
@@ -29,7 +30,7 @@
                         </div>
                     </form>
                 </div>
-                <a href="/professores/criar" class="btn btn-success">Novo</a>
+                <a href="/escola/professores/criar" class="btn btn-success">Novo Professor</a>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -39,8 +40,10 @@
                                 <th>#</th>
                                 <th>Nome</th>
                                 <th>Especialidade</th>
+                                <th>Instrumentos</th>
                                 <th>Telefone</th>
                                 <th>Valor/Hora</th>
+                                <th>Turmas</th>
                                 <th>Admissão</th>
                                 <th>Status</th>
                                 <th>Ações</th>
@@ -50,26 +53,45 @@
                             <% for (let i = 0; i < professores.length; i++) { %>
                                 <tr>
                                     <td><%= i + 1 %></td>
-                                    <td><%= professores[i].nome %></td>
-                                    <td><%= professores[i].especialidade %></td>
-                                    <td><%= professores[i].telefone %></td>
-                                    <td><%= moneyFormat(professores[i].valorHoraAula) %></td>
-                                    <td><%= dateFormat(professores[i].dataAdmissao) %></td>
+                                    <td>
+                                        <a href="/pessoas/<%= professores[i].id %>/perfil" style="color: inherit; font-weight: 600;">
+                                            <%= professores[i].nome %>
+                                        </a>
+                                    </td>
+                                    <td><%= professores[i].especialidade || '-' %></td>
+                                    <td><%= professores[i].instrumentosLecionados || '-' %></td>
+                                    <td><%= professores[i].telefone || '-' %></td>
+                                    <td><%= professores[i].valorHoraAula ? 'R$ ' + Number(professores[i].valorHoraAula).toFixed(2) : '-' %></td>
+                                    <td>
+                                        <span class="badge badge-info"><%= professores[i].turmasAtivas || 0 %></span>
+                                    </td>
+                                    <td>
+                                        <% if (professores[i].dataAdmissao) { %>
+                                            <%= new Date(professores[i].dataAdmissao).toLocaleDateString('pt-BR') %>
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </td>
                                     <td>
                                         <% if (professores[i].statusProf === 'Ativo') { %>
                                             <span class="badge badge-primary"><%= professores[i].statusProf %></span>
                                         <% } else { %>
-                                            <span class="badge badge-danger"><%= professores[i].statusProf %></span>
+                                            <span class="badge badge-danger"><%= professores[i].statusProf || 'Inativo' %></span>
                                         <% } %>
                                     </td>
                                     <td>
-                                        <a href="/professores/<%= professores[i].id %>/editar" class="text-warning mr-2">
+                                        <a href="/escola/professores/<%= professores[i].id %>/editar" class="text-warning mr-2" title="Editar">
                                             <i class="fa fa-pencil fa-lg"></i>
                                         </a>
-                                        <a href="/professores/<%= professores[i].id %>/excluir" class="text-danger">
-                                            <i class="fa fa-trash fa-lg"></i>
+                                        <a href="/pessoas/<%= professores[i].id %>/perfil" class="text-primary" title="Ver Perfil">
+                                            <i class="fa fa-user fa-lg"></i>
                                         </a>
                                     </td>
+                                </tr>
+                            <% } %>
+                            <% if (professores.length === 0) { %>
+                                <tr>
+                                    <td colspan="10" class="text-center text-muted py-4">Nenhum professor cadastrado.</td>
                                 </tr>
                             <% } %>
                         </tbody>

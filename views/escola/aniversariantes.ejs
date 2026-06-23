@@ -1,0 +1,190 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0">&raquo; Acompanhe os aniversários dos alunos e fortaleça o relacionamento</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item"><a href="/escola">Escola</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Aniversariantes</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <!-- Abas -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#tabHoje">
+                            <i class="mdi mdi-cake-variant mr-1"></i> Hoje 
+                            <% if (anivDia.length > 0) { %>
+                                <span class="badge badge-danger ml-1"><%= anivDia.length %></span>
+                            <% } %>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tabSemana">
+                            <i class="mdi mdi-calendar-week mr-1"></i> Esta Semana
+                            <% if (anivSemana.length > 0) { %>
+                                <span class="badge badge-info ml-1"><%= anivSemana.length %></span>
+                            <% } %>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tabMes">
+                            <i class="mdi mdi-calendar-month mr-1"></i> Este Mês
+                            <% if (anivMes.length > 0) { %>
+                                <span class="badge badge-primary ml-1"><%= anivMes.length %></span>
+                            <% } %>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content mt-3">
+                    <!-- TAB HOJE -->
+                    <div class="tab-pane fade show active" id="tabHoje">
+                        <% if (anivDia.length === 0) { %>
+                            <div class="text-center py-5 text-muted">
+                                <i class="mdi mdi-cake-variant" style="font-size: 48px; opacity: 0.3;"></i>
+                                <p class="mt-2">Nenhum aniversariante hoje.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Data de Nascimento</th>
+                                            <th>Idade</th>
+                                            <th>Telefone</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% anivDia.forEach(p => { %>
+                                            <% const idade = p.dataNascimento ? Math.abs(new Date(Date.now() - new Date(p.dataNascimento).getTime()).getUTCFullYear() - 1970) : '-'; %>
+                                            <tr>
+                                                <td>
+                                                    <i class="mdi mdi-cake-variant text-danger mr-1"></i>
+                                                    <a href="/pessoas/<%= p.id %>/perfil" style="font-weight: 600; color: inherit;"><%= p.nome %></a>
+                                                </td>
+                                                <td><%= p.dataNascimento ? new Date(p.dataNascimento).toLocaleDateString('pt-BR') : '-' %></td>
+                                                <td><%= idade %> anos</td>
+                                                <td><%= p.telefone || '-' %></td>
+                                                <td>
+                                                    <% if (p.telefone) { %>
+                                                        <a href="https://wa.me/55<%= p.telefone.replace(/\D/g, '') %>?text=Feliz%20anivers%C3%A1rio%20<%= encodeURIComponent(p.nome.split(' ')[0]) %>!%20🎂🎉" target="_blank" class="btn btn-sm btn-success" title="Enviar WhatsApp">
+                                                            <i class="fa fa-whatsapp"></i> WhatsApp
+                                                        </a>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- TAB SEMANA -->
+                    <div class="tab-pane fade" id="tabSemana">
+                        <% if (anivSemana.length === 0) { %>
+                            <div class="text-center py-5 text-muted">
+                                <i class="mdi mdi-calendar-week" style="font-size: 48px; opacity: 0.3;"></i>
+                                <p class="mt-2">Nenhum aniversariante nos próximos 7 dias.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Data</th>
+                                            <th>Idade</th>
+                                            <th>Telefone</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% anivSemana.forEach(p => { %>
+                                            <% const idade = p.dataNascimento ? Math.abs(new Date(Date.now() - new Date(p.dataNascimento).getTime()).getUTCFullYear() - 1970) : '-'; %>
+                                            <% const isHoje = p.dataNascimento && new Date(p.dataNascimento).getDate() === hoje.getDate() && new Date(p.dataNascimento).getMonth() === hoje.getMonth(); %>
+                                            <tr style="<%= isHoje ? 'background: #fff9e6;' : '' %>">
+                                                <td>
+                                                    <% if (isHoje) { %><i class="mdi mdi-cake-variant text-danger mr-1"></i><% } %>
+                                                    <a href="/pessoas/<%= p.id %>/perfil" style="font-weight: 600; color: inherit;"><%= p.nome %></a>
+                                                </td>
+                                                <td><%= p.dataNascimento ? new Date(p.dataNascimento).toLocaleDateString('pt-BR') : '-' %></td>
+                                                <td><%= idade %> anos</td>
+                                                <td><%= p.telefone || '-' %></td>
+                                                <td>
+                                                    <% if (p.telefone) { %>
+                                                        <a href="https://wa.me/55<%= p.telefone.replace(/\D/g, '') %>" target="_blank" class="btn btn-sm btn-outline-success" title="WhatsApp">
+                                                            <i class="fa fa-whatsapp"></i>
+                                                        </a>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- TAB MÊS -->
+                    <div class="tab-pane fade" id="tabMes">
+                        <% if (anivMes.length === 0) { %>
+                            <div class="text-center py-5 text-muted">
+                                <i class="mdi mdi-calendar-month" style="font-size: 48px; opacity: 0.3;"></i>
+                                <p class="mt-2">Nenhum aniversariante neste mês.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Data</th>
+                                            <th>Idade</th>
+                                            <th>Telefone</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% anivMes.forEach(p => { %>
+                                            <% const idade = p.dataNascimento ? Math.abs(new Date(Date.now() - new Date(p.dataNascimento).getTime()).getUTCFullYear() - 1970) : '-'; %>
+                                            <% const isHoje = p.dataNascimento && new Date(p.dataNascimento).getDate() === hoje.getDate() && new Date(p.dataNascimento).getMonth() === hoje.getMonth(); %>
+                                            <tr style="<%= isHoje ? 'background: #fff9e6;' : '' %>">
+                                                <td>
+                                                    <% if (isHoje) { %><i class="mdi mdi-cake-variant text-danger mr-1"></i><% } %>
+                                                    <a href="/pessoas/<%= p.id %>/perfil" style="font-weight: 600; color: inherit;"><%= p.nome %></a>
+                                                </td>
+                                                <td><%= p.dataNascimento ? new Date(p.dataNascimento).toLocaleDateString('pt-BR') : '-' %></td>
+                                                <td><%= idade %> anos</td>
+                                                <td><%= p.telefone || '-' %></td>
+                                                <td>
+                                                    <% if (p.telefone) { %>
+                                                        <a href="https://wa.me/55<%= p.telefone.replace(/\D/g, '') %>" target="_blank" class="btn btn-sm btn-outline-success" title="WhatsApp">
+                                                            <i class="fa fa-whatsapp"></i>
+                                                        </a>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

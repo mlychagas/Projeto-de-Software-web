@@ -1,0 +1,86 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0">&raquo; Visualize todos os alunos matriculados na escola</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item"><a href="/escola">Escola</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Alunos</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Alunos Matriculados</h4>
+                <a href="/matricula/agendamento" class="btn btn-success"><i class="fa fa-plus mr-1"></i> Nova Matrícula</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nome</th>
+                                <th>Curso(s)</th>
+                                <th>Contratos Ativos</th>
+                                <th>Aulas Realizadas</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% alunos.forEach((aluno, i) => { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td>
+                                        <a href="/pessoas/<%= aluno.id %>/perfil" style="color: inherit; font-weight: 600;">
+                                            <%= aluno.nome %>
+                                        </a>
+                                    </td>
+                                    <td><%= aluno.cursosNomes %></td>
+                                    <td>
+                                        <% if (aluno.contratosAtivos > 0) { %>
+                                            <span class="badge badge-success"><%= aluno.contratosAtivos %></span>
+                                        <% } else { %>
+                                            <span class="badge badge-secondary">0</span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= aluno.totalAulasRealizadas %></td>
+                                    <td>
+                                        <% if (aluno.statusAluno === 'Ativo') { %>
+                                            <span class="badge badge-primary">Ativo</span>
+                                        <% } else if (aluno.statusAluno === 'Inativo') { %>
+                                            <span class="badge badge-dark">Inativo</span>
+                                        <% } else { %>
+                                            <span class="badge badge-warning"><%= aluno.statusAluno || 'Ativo' %></span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <a href="/pessoas/<%= aluno.id %>/perfil" class="text-primary mr-2" title="Ver Perfil">
+                                            <i class="fa fa-user fa-lg"></i>
+                                        </a>
+                                        <a href="/pessoas/<%= aluno.id %>/perfil?tab=faturas" class="text-success" title="Faturas">
+                                            <i class="fa fa-money fa-lg"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                            <% if (alunos.length === 0) { %>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">Nenhum aluno cadastrado.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,120 +1,138 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0">&raquo; Gerencie todos os recursos e configurações da escola</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Escola</a></li>
+        </ol>
+    </div>
+</div>
+
 <div class="row">
             
-            <!-- Salas -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="config-card">
-                    <div class="config-card-icon">
-                        <i class="mdi mdi-desk"></i>
-                    </div>
-                    <div class="config-card-info">
-                        <h5>Salas</h5>
-                        <p><%= totalSalas %> Salas configuradas</p>
-                    </div>
+    <!-- Salas -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/salas" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-desk"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Salas</h5>
+                    <p><%= totalSalas %> Salas configuradas</p>
                 </div>
             </div>
+        </a>
+    </div>
 
-            <!-- Cursos -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="config-card">
-                    <div class="config-card-icon">
-                        <i class="mdi mdi-domain"></i>
-                    </div>
-                    <div class="config-card-info">
-                        <h5>Cursos</h5>
-                        <p><%= totalCursos %> Cursos Ativos</p>
-                    </div>
+    <!-- Cursos -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/cursos" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-domain"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Cursos</h5>
+                    <p><%= totalCursos %> Cursos Ativos</p>
                 </div>
             </div>
+        </a>
+    </div>
 
-            <!-- Professores -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="config-card">
-                    <div class="config-card-icon">
-                        <i class="mdi mdi-human-male-board"></i>
-                    </div>
-                    <div class="config-card-info">
-                        <h5>Professores</h5>
-                        <p><%= totalProfessores %> Professores disponíveis</p>
-                    </div>
+    <!-- Professores -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/escola/professores" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-human-male-board"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Professores</h5>
+                    <p><%= totalProfessores %> Professores disponíveis</p>
                 </div>
             </div>
+        </a>
+    </div>
 
-            <!-- Tipos de Instrumentos -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="config-card">
-                    <div class="config-card-icon">
-                        <i class="mdi mdi-saxophone"></i>
-                    </div>
-                    <div class="config-card-info">
-                        <h5>Tipos de Instrumentos</h5>
-                        <p><%= totalInstrumentos %> Instrumentos Habilitados</p>
-                    </div>
+    <!-- Tipos de Instrumentos -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/escola/instrumentos" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-saxophone"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Tipos de Instrumentos</h5>
+                    <p><%= totalInstrumentos %> Instrumentos Habilitados</p>
                 </div>
             </div>
+        </a>
+    </div>
 
-            <!-- Turmas -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="config-card">
-                    <div class="config-card-icon">
-                        <i class="mdi mdi-account-group"></i>
-                    </div>
-                    <div class="config-card-info">
-                        <h5>Turmas</h5>
-                        <p><%= totalTurmas %> Turmas Ativas<br><small class="text-muted">Aulas em grupo</small></p>
-                    </div>
+    <!-- Turmas -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/turmas" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-account-group"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Turmas</h5>
+                    <p><%= totalTurmas %> Turmas Ativas<br><small class="text-muted">Aulas em grupo</small></p>
                 </div>
             </div>
+        </a>
+    </div>
 
-            <!-- Cadastro de Pessoas -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="config-card">
-                    <div class="config-card-icon">
-                        <i class="mdi mdi-account"></i>
-                    </div>
-                    <div class="config-card-info">
-                        <h5>Cadastro de Pessoas</h5>
-                        <p><%= totalResponsaveis %> Pessoas cadastradas</p>
-                    </div>
+    <!-- Cadastro de Pessoas -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/pessoas" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-account"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Cadastro de Pessoas</h5>
+                    <p><%= totalResponsaveis %> Pessoas cadastradas</p>
                 </div>
             </div>
+        </a>
+    </div>
 
-            <!-- Matrículas e Alunos -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="config-card">
-                    <div class="config-card-icon">
-                        <i class="mdi mdi-account-badge"></i>
-                    </div>
-                    <div class="config-card-info">
-                        <h5>Matrículas e Alunos</h5>
-                        <p><%= totalAlunos %> alunos ativos</p>
-                    </div>
+    <!-- Matrículas e Alunos -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/escola/alunos" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-account-badge"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Matrículas e Alunos</h5>
+                    <p><%= totalAlunos %> alunos ativos</p>
                 </div>
             </div>
+        </a>
+    </div>
 
-            <!-- Aniversariantes -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="config-card">
-                    <div class="config-card-icon">
-                        <i class="mdi mdi-calendar-star"></i>
-                    </div>
-                    <div class="config-card-info">
-                        <h5>Aniversariantes</h5>
-                        <p><%= totalAniversariantes %> Aluno(s) fazendo aniversário hoje</p>
-                    </div>
+    <!-- Aniversariantes -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/escola/aniversariantes" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-calendar-star"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Aniversariantes</h5>
+                    <p><%= totalAniversariantes %> Aluno(s) fazendo aniversário hoje</p>
                 </div>
             </div>
-
-            <!-- Calendário da Escola -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="config-card">
-                    <div class="config-card-icon">
-                        <i class="mdi mdi-calendar-month"></i>
-                    </div>
-                    <div class="config-card-info">
-                        <h5>Calendário da Escola</h5>
-                        <p>Feriados, Recessos e Eventos da escola</p>
-                    </div>
-                </div>
-            </div>
+        </a>
+    </div>
 
 </div>

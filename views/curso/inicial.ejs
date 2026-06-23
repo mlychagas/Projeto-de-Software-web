@@ -8,6 +8,7 @@
     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item"><a href="/escola">Escola</a></li>
             <li class="breadcrumb-item active"><a href="javascript:void(0)">Cursos</a></li>
         </ol>
     </div>
@@ -40,8 +41,11 @@
                                 <th>Nome</th>
                                 <th>Instrumento</th>
                                 <th>Nível</th>
+                                <th>Modalidade</th>
                                 <th>Carga Horária</th>
-                                <th>Duração (meses)</th>
+                                <th>Duração</th>
+                                <th>Valor Mensal</th>
+                                <th>Status</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -51,9 +55,26 @@
                                     <td><%= i + 1 %></td>
                                     <td><%= cursos[i].nome %></td>
                                     <td><%= cursos[i].instrumento %></td>
-                                    <td><%= cursos[i].nivel %></td>
+                                    <td>
+                                        <% if (cursos[i].nivel === 'Iniciante') { %>
+                                            <span class="badge badge-success"><%= cursos[i].nivel %></span>
+                                        <% } else if (cursos[i].nivel === 'Intermediário') { %>
+                                            <span class="badge badge-warning"><%= cursos[i].nivel %></span>
+                                        <% } else { %>
+                                            <span class="badge badge-danger"><%= cursos[i].nivel %></span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= cursos[i].modalidade || 'Individual' %></td>
                                     <td><%= cursos[i].cargaHoraria %>h</td>
-                                    <td><%= cursos[i].duracaoMeses %></td>
+                                    <td><%= cursos[i].duracaoMeses %> meses</td>
+                                    <td>R$ <%= cursos[i].valorMensalidade ? Number(cursos[i].valorMensalidade).toFixed(2) : '0.00' %></td>
+                                    <td>
+                                        <% if (!cursos[i].statusCurso || cursos[i].statusCurso === 'Ativo') { %>
+                                            <span class="badge badge-primary">Ativo</span>
+                                        <% } else { %>
+                                            <span class="badge badge-dark">Inativo</span>
+                                        <% } %>
+                                    </td>
                                     <td>
                                         <a href="/cursos/<%= cursos[i].id %>/editar" class="text-warning mr-2">
                                             <i class="fa fa-pencil fa-lg"></i>

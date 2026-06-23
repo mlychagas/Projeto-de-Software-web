@@ -19,7 +19,7 @@
             <div class="card-body">
                 <form action="/cursos/<%= curso && curso.id ? curso.id + '/editar' : 'criar' %>" method="POST">
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Nome</label>
+                        <label class="col-sm-3 col-form-label">Nome *</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" name="nome" value="<%= curso ? curso.nome : '' %>" required>
                         </div>
@@ -31,13 +31,13 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Instrumento</label>
+                        <label class="col-sm-3 col-form-label">Instrumento *</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="instrumento" value="<%= curso ? curso.instrumento : '' %>" required>
+                            <input type="text" class="form-control" name="instrumento" value="<%= curso ? curso.instrumento : '' %>" required placeholder="Ex: Violão, Piano, Bateria...">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Nível</label>
+                        <label class="col-sm-3 col-form-label">Nível *</label>
                         <div class="col-sm-9">
                             <select class="form-control" name="nivel" required>
                                 <% ['Iniciante','Intermediário','Avançado'].forEach(n => { %>
@@ -47,15 +47,41 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Carga Horária (h)</label>
+                        <label class="col-sm-3 col-form-label">Modalidade</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="modalidade">
+                                <% ['Individual','Grupo'].forEach(m => { %>
+                                    <option value="<%= m %>" <%= curso && curso.modalidade === m ? 'selected' : '' %>><%= m %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Carga Horária (h) *</label>
                         <div class="col-sm-9">
                             <input type="number" class="form-control" name="cargaHoraria" value="<%= curso ? curso.cargaHoraria : 0 %>" min="1" required>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Duração (meses)</label>
+                        <label class="col-sm-3 col-form-label">Duração (meses) *</label>
                         <div class="col-sm-9">
                             <input type="number" class="form-control" name="duracaoMeses" value="<%= curso ? curso.duracaoMeses : 0 %>" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Valor da Mensalidade (R$)</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control" name="valorMensalidade" step="0.01" min="0" value="<%= curso && curso.valorMensalidade ? curso.valorMensalidade : '0.00' %>" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Status</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="statusCurso">
+                                <% ['Ativo','Inativo'].forEach(s => { %>
+                                    <option value="<%= s %>" <%= curso && curso.statusCurso === s ? 'selected' : '' %>><%= s %></option>
+                                <% }) %>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group row">

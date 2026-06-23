@@ -1,0 +1,68 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0">&raquo; Instrumentos derivados dos cursos cadastrados</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item"><a href="/escola">Escola</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Instrumentos</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Instrumentos Ensinados</h4>
+                <p class="text-muted mb-0">Os instrumentos são extraídos automaticamente dos cursos cadastrados. Para adicionar um novo instrumento, <a href="/cursos/criar">cadastre um novo curso</a>.</p>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Instrumento</th>
+                                <th>Categoria</th>
+                                <th>Cursos Vinculados</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% instrumentos.forEach((inst, i) => { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td>
+                                        <strong><%= inst.nome %></strong>
+                                    </td>
+                                    <td>
+                                        <% const catColors = { 'Cordas': 'warning', 'Teclas': 'primary', 'Sopro': 'info', 'Percussão': 'danger', 'Voz': 'success', 'Outros': 'secondary' }; %>
+                                        <span class="badge badge-<%= catColors[inst.categoria] || 'secondary' %>"><%= inst.categoria %></span>
+                                    </td>
+                                    <td><%= inst.cursos %> curso(s)</td>
+                                    <td>
+                                        <% if (inst.ativo) { %>
+                                            <span class="badge badge-primary">Ativo</span>
+                                        <% } else { %>
+                                            <span class="badge badge-dark">Inativo</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                            <% if (instrumentos.length === 0) { %>
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">Nenhum instrumento cadastrado. <a href="/cursos/criar">Cadastre um curso</a> para adicionar instrumentos.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
