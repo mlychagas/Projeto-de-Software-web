@@ -41,8 +41,14 @@
                         <!-- Eventos posicionados por CSS -->
                         <% rec.aulas.forEach(aula => { %>
                             <!-- Subtraímos 8 da hora da aula pois o grid começa as 08:00 (índice 0) -->
-                            <div class="timeline-event <%= aula.cor %>" style="left: calc(100% / 16 * <%= aula.hora - 8 %> + 2px); width: calc(100% / 16 * 0.95);">
-                                <% if(aula.badge !== '0') { %>
+                            <div class="timeline-event <%= aula.cor %>" 
+                                 style="--h: <%= aula.hora - 8 %>; left: calc(100% / 16 * var(--h) + 2px); width: calc(100% / 16 * 0.95); cursor: pointer;" 
+                                 onclick="abrirModalAgenda(this.getAttribute('data-titulo'), this.getAttribute('data-sub'), this.getAttribute('data-horario'), this.getAttribute('data-alunoid'))"
+                                 data-titulo="<%= aula.tituloCard %>"
+                                 data-sub="<%= aula.subtituloCard %>"
+                                 data-horario="<%= aula.hora.toString().padStart(2, '0') %>:00"
+                                 data-alunoid="<%= aula.alunoId || '' %>">
+                                <% if(aula.badge !== '0' && aula.badge !== null) { %>
                                     <div class="event-badge bg-danger text-white"><%= aula.badge %></div>
                                 <% } %>
                                 <strong><%= aula.tituloCard %></strong>
@@ -56,6 +62,7 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Lógica para mover a linha vermelha do tempo em tempo real
     function updateCurrentTimeLine() {
@@ -100,4 +107,34 @@
     // Iniciar e atualizar a cada 1 segundo
     setInterval(updateCurrentTimeLine, 1000);
     updateCurrentTimeLine();
+
+    // Lógica para abrir o Modal da Agenda
+    function abrirModalAgenda(titulo, subtitulo, horario, alunoId) {
+        let htmlBotoes = '';
+        if (alunoId) {
+            htmlBotoes = `
+                <div style="margin-top: 20px;">
+                    <a href="/pessoas/${alunoId}/perfil" class="btn btn-primary" style="background-color: #4834d4; border-color: #4834d4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px;">
+                        <i class="fa fa-user"></i> Acessar Perfil do Aluno
+                    </a>
+                </div>
+            `;
+        }
+
+        Swal.fire({
+            title: '<strong>Detalhes da Aula</strong>',
+            icon: 'info',
+            html: `
+                <div style="text-align: left; margin-top: 15px; font-size: 15px; line-height: 1.6;">
+                    <p><strong><i class="fa fa-user"></i> Aluno:</strong> ${titulo}</p>
+                    <p><strong><i class="fa fa-map-marker"></i> Info (Sala/Prof):</strong> ${subtitulo}</p>
+                    <p><strong><i class="fa fa-clock"></i> Horário:</strong> ${horario}</p>
+                </div>
+                ${htmlBotoes}
+            `,
+            showCloseButton: true,
+            showConfirmButton: false,
+            focusConfirm: false,
+        });
+    }
 </script>

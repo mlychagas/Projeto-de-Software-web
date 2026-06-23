@@ -150,7 +150,7 @@ function finalizarMatricula() {
                 timer: 2000,
                 showConfirmButton: false
             }).then(() => {
-                window.location.href = '/'; 
+                window.location.href = `/pessoas/${alunoId}/perfil?tab=faturas`;
             });
         } else {
             Swal.fire('Erro', data.message, 'error');

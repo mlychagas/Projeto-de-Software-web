@@ -11,7 +11,7 @@
     <div class="step step-1 active" style="background: #e8e6fb; color: #7b61ff; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Dados Pessoais</div>
     <div class="step step-2" style="background: #f8f9fa; color: #999; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Endereço</div>
     <div class="step step-3" style="background: #f8f9fa; color: #999; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Aluno</div>
-    <div class="step step-4" style="background: #f8f9fa; color: #999; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Cobrança Automática</div>
+    <div class="step step-4" style="display: none; background: #f8f9fa; color: #999; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Cobrança Automática</div>
     <div class="step step-5" style="background: #f8f9fa; color: #999; padding: 5px 15px; border-radius: 20px; font-size: 13px;">Confirmação</div>
   </div>
 </div>
@@ -82,34 +82,34 @@
       <hr>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label text-right">CEP</label>
-        <div class="col-sm-6"><input type="text" id="respCep" class="form-control" placeholder="00000-000"></div>
+        <div class="col-sm-6"><input type="text" id="respCep" class="form-control" placeholder="00000-000" value="<%= typeof aluno !== 'undefined' && aluno ? aluno.cep || '' : '' %>"></div>
         <div class="col-sm-3"><button class="btn btn-primary btn-block" style="background-color: #7b61ff; border-color: #7b61ff;" onclick="buscarCep()">Buscar</button></div>
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label text-right">Logradouro</label>
-        <div class="col-sm-9"><input type="text" id="respLogradouro" class="form-control" placeholder="Rua, Avenida, etc"></div>
+        <div class="col-sm-9"><input type="text" id="respLogradouro" class="form-control" placeholder="Rua, Avenida, etc" value="<%= typeof aluno !== 'undefined' && aluno ? aluno.logradouro || '' : '' %>"></div>
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label text-right">Número</label>
-        <div class="col-sm-9"><input type="text" id="respNumero" class="form-control" placeholder="Número"></div>
+        <div class="col-sm-9"><input type="text" id="respNumero" class="form-control" placeholder="Número" value="<%= typeof aluno !== 'undefined' && aluno ? aluno.numero || '' : '' %>"></div>
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label text-right">Complemento</label>
-        <div class="col-sm-9"><input type="text" id="respComplemento" class="form-control" placeholder="Apto, Bloco, etc"></div>
+        <div class="col-sm-9"><input type="text" id="respComplemento" class="form-control" placeholder="Apto, Bloco, etc" value="<%= typeof aluno !== 'undefined' && aluno ? aluno.complemento || '' : '' %>"></div>
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label text-right">Bairro</label>
-        <div class="col-sm-9"><input type="text" id="respBairro" class="form-control" placeholder="Bairro"></div>
+        <div class="col-sm-9"><input type="text" id="respBairro" class="form-control" placeholder="Bairro" value="<%= typeof aluno !== 'undefined' && aluno ? aluno.bairro || '' : '' %>"></div>
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label text-right">Estado</label>
         <div class="col-sm-9">
-          <input type="text" id="respEstado" class="form-control" placeholder="UF">
+          <input type="text" id="respEstado" class="form-control" placeholder="UF" maxlength="2" style="text-transform: uppercase;" value="<%= typeof aluno !== 'undefined' && aluno ? aluno.estado || '' : '' %>">
         </div>
       </div>
       <div class="form-group row">
         <label class="col-sm-3 col-form-label text-right">Cidade</label>
-        <div class="col-sm-9"><input type="text" id="respCidade" class="form-control" placeholder="Cidade"></div>
+        <div class="col-sm-9"><input type="text" id="respCidade" class="form-control" placeholder="Cidade" value="<%= typeof aluno !== 'undefined' && aluno ? aluno.cidade || '' : '' %>"></div>
       </div>
       
       <div class="text-center mt-auto pt-4">
@@ -141,7 +141,7 @@
         <button class="btn btn-outline-secondary" style="border-radius: 20px;" onclick="prevStep(2)">
           <i class="fa fa-arrow-left"></i> Voltar
         </button>
-        <button class="btn btn-primary ml-2" style="background-color: #7b61ff; border-color: #7b61ff; border-radius: 20px;" onclick="nextStep(4)">
+        <button class="btn btn-primary ml-2" style="background-color: #7b61ff; border-color: #7b61ff; border-radius: 20px;" onclick="nextStep(5)">
           <i class="fa fa-arrow-right"></i> Prosseguir
         </button>
       </div>
@@ -230,7 +230,7 @@
       </div>
 
       <div class="text-center mt-auto pt-4">
-        <button class="btn btn-outline-secondary" style="border-radius: 20px;" onclick="prevStep(4)">
+        <button class="btn btn-outline-secondary" style="border-radius: 20px;" onclick="prevStep(3)">
           <i class="fa fa-arrow-left"></i> Voltar
         </button>
         <button class="btn btn-success ml-2" style="background-color: #7b61ff; border-color: #7b61ff; border-radius: 20px;" onclick="finalizarMatricula()">

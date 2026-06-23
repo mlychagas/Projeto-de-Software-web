@@ -321,16 +321,22 @@
                 const aulasFaltas = aulasDestaTurma.filter(a => a.statusPresencaAluno === 'Faltou').length;
                 const percentual = totalAulas > 0 ? Math.round((aulasRealizadas / totalAulas) * 100) : 0;
                 const aulasRepor = aulasDestaTurma.filter(a => a.statusPresencaAluno === 'Faltou' && a.statusAula !== 'Cancelada').length;
+                const isInativo = ag.statusAgenda === 'Cancelado' || ag.statusAgenda === 'Concluído';
             %>
-            <div class="curso-card mt-3">
+            <div class="curso-card mt-3" style="<%= isInativo ? 'opacity: 0.65; background-color: #fcfcfc;' : '' %>">
                 <div class="curso-info">
-                    <h5 style="margin: 0; color: #4834d4;">
+                    <h5 style="margin: 0; <%= isInativo ? 'color: #777;' : 'color: #4834d4;' %>">
                         <i class="fa fa-music"></i> 
                         <%= ag.turma && ag.turma.curso ? ag.turma.curso.nome : 'Curso' %>
                     </h5>
-                    <span class="badge badge-success" style="margin: 6px 0; display: inline-block;">
+                    <span class="badge <%= isInativo ? (ag.statusAgenda === 'Cancelado' ? 'badge-danger' : 'badge-secondary') : 'badge-success' %>" style="margin: 6px 0; display: inline-block;">
                         <%= ag.statusAgenda %>
                     </span>
+                    <% if (isInativo && ag.dataCancelamento) { %>
+                        <span style="font-size: 12px; color: #777; margin-left: 8px;">
+                            encerrado em <%= new Date(ag.dataCancelamento).toLocaleDateString('pt-BR') %>
+                        </span>
+                    <% } %>
 
                     <% if (contratoCorrespondente) { %>
                     <div class="mt-3" style="border-top: 1px solid #eee; padding-top: 16px;">
@@ -367,10 +373,15 @@
                     </div>
                 </div>
                 <div class="curso-acoes">
-                    <button class="btn btn-outline-primary"><i class="fa fa-exchange-alt"></i> Alterar Matrícula</button>
-                    <a href="/contratos/renovar?curso=<%= ag.turma?.curso?.id %>&pessoa=<%= pessoa.id %>" class="btn btn-success text-white"><i class="fa fa-sync"></i> Renovar Matrícula</a>
-                    <button class="btn btn-outline-secondary"><i class="fa fa-calendar-check"></i> Agendar Aula Extra</button>
-                    <button class="btn btn-outline-dark"><i class="fa fa-print"></i> Declaração / Histórico</button>
+                    <% if (!isInativo) { %>
+                        <a href="/matricula/nova?pessoa=<%= pessoa.id %>&curso=<%= ag.turma?.curso?.id %>&turmaAntiga=<%= ag.turma?.id %>&turma=<%= ag.turma?.id %>&alterar=true" class="btn btn-outline-primary"><i class="fa fa-exchange-alt"></i> Alterar Matrícula</a>
+                        <a href="/contratos/renovar?curso=<%= ag.turma?.curso?.id %>&pessoa=<%= pessoa.id %>" class="btn btn-success text-white"><i class="fa fa-sync"></i> Renovar Matrícula</a>
+                        <button class="btn btn-outline-secondary"><i class="fa fa-calendar-check"></i> Agendar Aula Extra</button>
+                        <button class="btn btn-outline-danger" onclick="finalizarMatricula(<%= pessoa.id %>, <%= ag.turma?.id %>, '<%= ag.turma?.curso?.nome %>', <%= contratoCorrespondente ? contratoCorrespondente.id : 'null' %>)"><i class="fa fa-times-circle"></i> Finalizar Matrícula</button>
+                    <% } else { %>
+                        <button class="btn btn-outline-dark"><i class="fa fa-print"></i> Declaração / Histórico</button>
+                        <a href="/matricula/agendamento?pessoa=<%= pessoa.id %>" class="btn btn-outline-primary mt-2"><i class="fa fa-plus-circle"></i> Nova Matrícula</a>
+                    <% } %>
                 </div>
             </div>
             <% }); %>
@@ -726,4 +737,116 @@ async function desvincularDependente(depId, nome) {
         }
     }
 }
+
+async function finalizarMatricula(idAluno, idTurma, cursoNome, idContrato) {
+    let selectFaturasHtml = '<option value="">Excluir TODAS as faturas pendentes</option>';
+    if (idContrato) {
+        try {
+            const res = await fetch(`/matricula/api/contrato/${idContrato}/faturas`);
+            const faturas = await res.json();
+            
+            faturas.forEach(f => {
+                const dataFormatada = new Date(f.dataVencimento).toLocaleDateString('pt-BR');
+                const valorFormatado = Number(f.valorDevido).toFixed(2);
+                selectFaturasHtml += `<option value="${f.id}">Vencimento: ${dataFormatada} - R$ ${valorFormatado} - ${f.statusFatura}</option>`;
+            });
+        } catch(e) {
+            console.error("Erro ao carregar faturas", e);
+        }
+    }
+
+    const htmlContent = `
+        <div style="text-align: left; margin-top: 15px;">
+            <p>Deseja realmente encerrar a matrícula no curso <strong>"${cursoNome}"</strong>?</p>
+            <p style="font-size: 13px; color: #666;">O aluno será desvinculado desta turma e o contrato será cancelado.</p>
+            
+            <div class="form-group mt-3">
+                <label style="font-weight: bold; font-size: 14px;">Motivo do Cancelamento *</label>
+                <select id="swal-motivo" class="swal2-select" style="display: flex; width: 100%; margin: 5px 0 15px; font-size: 14px;">
+                    <option value="">Selecione um motivo...</option>
+                    <option value="Desistência">Desistência / Falta de Tempo</option>
+                    <option value="Financeiro">Problemas Financeiros</option>
+                    <option value="Mudança">Mudança de Endereço/Cidade</option>
+                    <option value="Insatisfação">Insatisfação com o Curso</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+
+            <div class="form-group mt-3">
+                <label style="font-weight: bold; font-size: 14px;">Data da Última Aula Realizada *</label>
+                <p style="font-size: 12px; color: #888; margin-bottom: 5px;">Aulas agendadas <b>após</b> esta data serão removidas do histórico.</p>
+                <input type="date" id="swal-data-aula" class="swal2-input" value="<%= new Date().toISOString().split('T')[0] %>" style="display: flex; width: 100%; margin: 5px 0 15px; font-size: 14px;">
+            </div>
+
+            <div class="form-group mt-3">
+                <label style="font-weight: bold; font-size: 14px;">Última Fatura a ser Cobrada</label>
+                <p style="font-size: 12px; color: #888; margin-bottom: 5px;">Todas as faturas <b>após</b> esta data serão excluídas permanentemente do sistema.</p>
+                <select id="swal-fatura" class="swal2-select" style="display: flex; width: 100%; margin: 5px 0; font-size: 14px;">
+                    ${selectFaturasHtml}
+                </select>
+            </div>
+        </div>
+    `;
+
+    const result = await Swal.fire({
+        title: 'Finalizar Matrícula?',
+        html: htmlContent,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        confirmButtonText: 'Sim, finalizar!',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+            const motivo = document.getElementById('swal-motivo').value;
+            const dataUltimaAula = document.getElementById('swal-data-aula').value;
+            if (!motivo) {
+                Swal.showValidationMessage('Selecione um motivo para o cancelamento!');
+                return false;
+            }
+            if (!dataUltimaAula) {
+                Swal.showValidationMessage('Informe a data da última aula realizada!');
+                return false;
+            }
+            return {
+                motivo: motivo,
+                dataUltimaAula: dataUltimaAula,
+                ultimaFaturaId: document.getElementById('swal-fatura').value
+            };
+        }
+    });
+    
+    if (result.isConfirmed) {
+        Swal.fire({ title: 'Processando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        const res = await fetch(`/matricula/api/cancelar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                alunoId: idAluno,
+                turmaId: idTurma,
+                contratoId: idContrato,
+                motivo: result.value.motivo,
+                dataUltimaAula: result.value.dataUltimaAula,
+                ultimaFaturaId: result.value.ultimaFaturaId
+            })
+        });
+        
+        if (res.ok) {
+            Swal.fire('Finalizado!', 'A matrícula e faturas foram atualizadas.', 'success').then(() => location.reload());
+        } else {
+            Swal.fire('Erro', 'Não foi possível finalizar. Tente novamente.', 'error');
+        }
+    }
+}
+
+// Auto-activate tab from URL parameters
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam) {
+        const tabEl = document.querySelector(`li[data-tab="${tabParam}"]`);
+        if (tabEl) {
+            tabEl.click();
+        }
+    }
+});
 </script>

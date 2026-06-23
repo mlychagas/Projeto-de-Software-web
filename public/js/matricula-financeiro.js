@@ -46,7 +46,8 @@ function formatarMoeda(valor) {
 }
 
 function calcularTotais() {
-    const valorCursoBase = 310.00;
+    const valorCursoBaseExistenteEl = document.getElementById('valorCursoBaseExistente');
+    const valorCursoBase = valorCursoBaseExistenteEl && valorCursoBaseExistenteEl.value ? parseFloat(valorCursoBaseExistenteEl.value) : 310.00;
     const desconto = converterParaFloat(document.getElementById('desconto').value);
     const taxaMatricula = converterParaFloat(document.getElementById('taxaMatricula').value);
     const nrMensalidades = parseInt(document.getElementById('nrMensalidades').value) || 1;
@@ -87,7 +88,12 @@ function iniciarFluxoFazerMatricula() {
 
     // Coletar dados da URL (origem do agendamento)
     const urlParams = new URLSearchParams(window.location.search);
-    const turmaId = urlParams.get('turma') || 1; // Mock fallback
+    const turmaId = urlParams.get('turma');
+    const profId = urlParams.get('prof');
+    const dia = urlParams.get('dia');
+    const hora = urlParams.get('hora');
+    const sala = urlParams.get('sala');
+    
     const alunoId = document.getElementById('alunoNome').getAttribute('data-pessoa-id');
     const valorMensalidadeElement = document.getElementById('valorMensalidade');
     const valorLiquido = valorMensalidadeElement ? converterParaFloat(valorMensalidadeElement.textContent) : 0;
@@ -109,7 +115,11 @@ function iniciarFluxoFazerMatricula() {
             diaVencimento: diaVencimento
         },
         agendamento: {
-            turmaId: turmaId
+            turmaId: turmaId ? parseInt(turmaId) : null,
+            profId: profId ? parseInt(profId) : null,
+            dia: dia,
+            hora: hora,
+            sala: sala
         }
     };
 
@@ -128,15 +138,7 @@ function iniciarFluxoFazerMatricula() {
     .then(res => res.json())
     .then(data => {
         if(data.success) {
-            Swal.fire({
-                title: 'Quase lá! 🎉',
-                text: 'Redirecionando para a finalização do cadastro...',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                window.location.href = '/matricula/cadastro?aluno=' + data.alunoId;
-            });
+            window.location.href = '/matricula/cadastro?aluno=' + data.alunoId;
         } else {
             Swal.fire('Erro', data.message, 'error');
         }
@@ -144,4 +146,81 @@ function iniciarFluxoFazerMatricula() {
     .catch(err => {
         Swal.fire('Erro', 'Não foi possível comunicar com o servidor.', 'error');
     });
+}
+
+function iniciarFluxoAlterarMatricula() {
+    const alunoNome = document.getElementById('alunoNome').value;
+    const cursoSelect = document.getElementById('cursoSelect').value;
+    const primeiraAula = document.getElementById('primeiraAulaInput').value;
+    const nrAulas = document.getElementById('nrAulasInput').value;
+    const diaVencimento = document.getElementById('diaVencimento').value;
+
+    if (!alunoNome || !cursoSelect || !primeiraAula || !nrAulas || !diaVencimento) {
+        Swal.fire({
+            title: 'Campos Obrigatórios',
+            text: 'Por favor, preencha todos os campos antes de prosseguir.',
+            icon: 'warning',
+            confirmButtonColor: '#7b61ff'
+        });
+        return;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const turmaId = urlParams.get('turma');
+    const profId = urlParams.get('prof');
+    const dia = urlParams.get('dia');
+    const hora = urlParams.get('hora');
+    const sala = urlParams.get('sala');
+    
+    const alunoId = document.getElementById('alunoNome').getAttribute('data-pessoa-id');
+    const valorMensalidadeElement = document.getElementById('valorMensalidade');
+    const valorLiquido = valorMensalidadeElement ? converterParaFloat(valorMensalidadeElement.textContent) : 0;
+    const turmaAntigaId = document.getElementById('turmaAntigaId').value;
+    
+    const payload = {
+        aluno: { id: parseInt(alunoId) },
+        financeiro: {
+            cursoId: cursoSelect,
+            valorLiquido: valorLiquido,
+            diaVencimento: diaVencimento
+        },
+        agendamento: {
+            turmaId: turmaId ? parseInt(turmaId) : null,
+            profId: profId ? parseInt(profId) : null,
+            dia: dia,
+            hora: hora,
+            sala: sala,
+            turmaAntigaId: parseInt(turmaAntigaId)
+        }
+    };
+
+    Swal.fire({
+        title: 'Salvando...',
+        text: 'Aguarde enquanto atualizamos o seu cadastro.',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    fetch('/matricula/api/alterar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            Swal.fire({
+                title: 'Tudo Certo! ✅',
+                text: 'Matrícula atualizada com sucesso.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = `/pessoas/${data.alunoId}/perfil?tab=cursos`;
+            });
+        } else {
+            Swal.fire('Erro', data.message, 'error');
+        }
+    })
+    .catch(err => Swal.fire('Erro', 'Falha na comunicação com o servidor.', 'error'));
 }

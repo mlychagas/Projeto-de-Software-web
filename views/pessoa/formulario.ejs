@@ -7,7 +7,7 @@
     <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Inicial</a></li>
-            <li class="breadcrumb-item"><a href="/alunos">Alunos</a></li>
+            <li class="breadcrumb-item"><a href="/pessoas">Pessoas</a></li>
             <li class="breadcrumb-item active"><a href="javascript:void(0)"><%= titulo %></a></li>
         </ol>
     </div>
@@ -17,74 +17,81 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <form action="/alunos/<%= aluno && aluno.id ? aluno.id + '/editar' : 'criar' %>" method="POST">
+                <form action="/pessoas/<%= pessoa && pessoa.id ? pessoa.id + '/editar' : 'criar' %>" method="POST">
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Nome</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="nome" value="<%= aluno ? aluno.nome : '' %>" required>
+                            <input type="text" class="form-control" name="nome" value="<%= typeof pessoa !== 'undefined' && pessoa ? pessoa.nome : '' %>" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">CPF</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="cpf" maxlength="11" value="<%= aluno ? aluno.cpf : '' %>" required>
+                            <input type="text" class="form-control" name="cpf" maxlength="11" value="<%= typeof pessoa !== 'undefined' && pessoa ? pessoa.cpf : '' %>" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">RG</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="rg" maxlength="20" value="<%= aluno ? aluno.rg : '' %>" required>
+                            <input type="text" class="form-control" name="rg" maxlength="20" value="<%= typeof pessoa !== 'undefined' && pessoa ? pessoa.rg : '' %>" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">E-mail</label>
                         <div class="col-sm-9">
-                            <input type="email" class="form-control" name="email" value="<%= aluno ? (aluno.email || '') : '' %>">
+                            <input type="email" class="form-control" name="email" value="<%= typeof pessoa !== 'undefined' && pessoa ? (pessoa.email || '') : '' %>">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Telefone</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="telefone" value="<%= aluno ? (aluno.telefone || '') : '' %>">
+                            <input type="text" class="form-control" name="telefone" value="<%= typeof pessoa !== 'undefined' && pessoa ? (pessoa.telefone || '') : '' %>">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Data de Nascimento</label>
                         <div class="col-sm-9">
-                            <input type="date" class="form-control" name="dataNascimento" value="<%= aluno ? aluno.dataNascimento : '' %>" required>
+                            <input type="date" class="form-control" name="dataNascimento" value="<%= typeof pessoa !== 'undefined' && pessoa && pessoa.dataNascimento ? (typeof pessoa.dataNascimento === 'string' ? pessoa.dataNascimento.split('T')[0] : pessoa.dataNascimento.toISOString().split('T')[0]) : '' %>" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Responsável</label>
                         <div class="col-sm-9">
-                            <select class="form-control" name="responsavelId" required>
-                                <option value="">Selecione...</option>
-                                <% responsaveis.forEach(r => { %>
-                                    <option value="<%= r.id %>" <%= aluno && aluno.responsavel && aluno.responsavel.id === r.id ? 'selected' : '' %>><%= r.nome %></option>
-                                <% }) %>
+                            <select class="form-control" name="responsavelId">
+                                <option value="">Nenhum / O próprio</option>
+                                <% if (typeof responsaveis !== 'undefined' && responsaveis) { %>
+                                    <% responsaveis.forEach(r => { %>
+                                        <option value="<%= r.id %>" <%= pessoa && pessoa.responsavel && pessoa.responsavel.id === r.id ? 'selected' : '' %>><%= r.nome %></option>
+                                    <% }) %>
+                                <% } %>
                             </select>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Data de Matrícula</label>
-                        <div class="col-sm-9">
-                            <input type="date" class="form-control" name="dataMatricula" value="<%= aluno ? aluno.dataMatricula : '' %>" required>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Status</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" name="statusAluno">
-                                <% ['Ativo','Inativo'].forEach(s => { %>
-                                    <option value="<%= s %>" <%= aluno && aluno.statusAluno === s ? 'selected' : '' %>><%= s %></option>
-                                <% }) %>
-                            </select>
+                        <label class="col-sm-3 col-form-label">Papéis no Sistema</label>
+                        <div class="col-sm-9 d-flex align-items-center flex-wrap" style="gap: 15px;">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="isAluno" name="isAluno" <%= pessoa && pessoa.isAluno ? 'checked' : '' %>>
+                                <label class="custom-control-label" for="isAluno">Aluno</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="isProfessor" name="isProfessor" <%= pessoa && pessoa.isProfessor ? 'checked' : '' %>>
+                                <label class="custom-control-label" for="isProfessor">Professor</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="isResponsavel" name="isResponsavel" <%= pessoa && pessoa.isResponsavel ? 'checked' : '' %>>
+                                <label class="custom-control-label" for="isResponsavel">Responsável Financeiro</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="isUsuario" name="isUsuario" <%= pessoa && pessoa.isUsuario ? 'checked' : '' %>>
+                                <label class="custom-control-label" for="isUsuario">Usuário do Sistema</label>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-9 offset-sm-3">
                             <button type="submit" class="btn btn-primary">Salvar</button>
-                            <a href="/alunos" class="btn btn-light ml-2">Cancelar</a>
+                            <a href="/pessoas" class="btn btn-light ml-2">Cancelar</a>
                         </div>
                     </div>
                 </form>

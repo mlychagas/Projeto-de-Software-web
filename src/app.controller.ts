@@ -40,99 +40,14 @@ export class AppController {
       .getCount();
 
     // --- Aulas em andamento e próximas ---
+    const diasSemanaMap: Record<number, string> = {
+      0: 'Domingo', 1: 'Segunda', 2: 'Terça', 3: 'Quarta',
+      4: 'Quinta', 5: 'Sexta', 6: 'Sábado',
+    };
+    const diaSemanaDB = diasSemanaMap[hoje.getDay()];
+
+    const aulasComProfessor = await this.obterAulasDoDia(hoje, diaSemanaDB);
     const horaAtual = `${hoje.getHours().toString().padStart(2, '0')}:${hoje.getMinutes().toString().padStart(2, '0')}:00`;
-
-    // Buscar todas as aulas de hoje com relações
-    const aulasDodia = await this.dataSource.getRepository(Aula)
-      .createQueryBuilder('aula')
-      .leftJoinAndSelect('aula.aluno', 'aluno')
-      .leftJoinAndSelect('aula.turma', 'turma')
-      .leftJoinAndSelect('turma.curso', 'curso')
-      .leftJoinAndSelect('turma.sala', 'sala')
-      .where('aula.data_prevista = :hoje', { hoje: hojeStr })
-      .orderBy('aula.horario_inicio', 'ASC')
-      .getMany();
-
-    // Para cada aula, buscar o professor via Ministra
-    const aulasComProfessor: any[] = [];
-    for (const aula of aulasDodia) {
-      let professorNome = 'Sem Professor';
-      if (aula.turma) {
-        const ministra = await this.dataSource.getRepository(Ministra).findOne({
-          where: { fkTurmaId: aula.turma.id },
-          relations: ['professor'],
-        });
-        if (ministra?.professor) {
-          professorNome = ministra.professor.nome;
-        }
-      }
-
-      // Contar faltas do aluno
-      let totalFaltas = 0;
-      if (aula.aluno && aula.turma) {
-        totalFaltas = await this.dataSource.getRepository(Aula)
-          .createQueryBuilder('a')
-          .where('a.fk_aluno_id = :alunoId AND a.fk_turma_id = :turmaId', {
-            alunoId: aula.aluno.id,
-            turmaId: aula.turma.id,
-          })
-          .andWhere('a.status_presenca_aluno = :status', { status: StatusPresenca.FALTOU })
-          .getCount();
-      }
-
-      // Contar faturas pendentes/vencidas do aluno
-      let faturasAbertas = 0;
-      if (aula.aluno) {
-        const contratos = await this.dataSource.getRepository(Contrato).find({
-          where: { aluno: { id: aula.aluno.id } },
-        });
-        if (contratos.length > 0) {
-          const ids = contratos.map(c => c.id);
-          faturasAbertas = await this.dataSource.getRepository('fatura')
-            .createQueryBuilder('f')
-            .where('f.fk_contrato_id IN (:...ids)', { ids })
-            .andWhere('f.status_fatura IN (:...status)', { status: ['Pendente', 'Vencida'] })
-            .getCount();
-        }
-      }
-
-      // Calcular meses até vencimento do contrato
-      let vencimentoLabel = '-';
-      if (aula.aluno) {
-        const contrato = await this.dataSource.getRepository(Contrato).findOne({
-          where: { aluno: { id: aula.aluno.id }, statusContrato: 'Ativo' as any },
-          order: { dataInicio: 'DESC' },
-        });
-        if (contrato?.dataFim) {
-          const fim = new Date(contrato.dataFim);
-          const diffMs = fim.getTime() - hoje.getTime();
-          const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-          if (diffDias > 30) {
-            vencimentoLabel = `${Math.floor(diffDias / 30)}m`;
-          } else if (diffDias > 0) {
-            vencimentoLabel = `${diffDias}d`;
-          } else {
-            vencimentoLabel = 'Venc.';
-          }
-        }
-      }
-
-      aulasComProfessor.push({
-        horario: aula.horarioInicio?.substring(0, 5) || '--:--',
-        alunoNome: aula.aluno?.nome || 'Sem Aluno',
-        professorNome,
-        cursoNome: aula.turma?.curso?.instrumento || 'N/A',
-        salaNome: aula.turma?.sala?.nome || 'Sem Sala',
-        statusPresencaAluno: aula.statusPresencaAluno,
-        statusPresencaProfessor: aula.statusPresencaProfessor,
-        statusAula: aula.statusAula,
-        totalFaltas,
-        faturasAbertas,
-        vencimentoLabel,
-        horarioInicio: aula.horarioInicio || '00:00:00',
-        horarioFim: aula.horarioFim || '00:00:00',
-      });
-    }
 
     // Separar aulas em andamento e próximas
     const aulasEmAndamento = aulasComProfessor.filter(a => {
@@ -143,6 +58,12 @@ export class AppController {
     });
 
     // --- Métricas dos donuts ---
+    // Recarregar apenas aulas do dia explícitas para cálculo de % real
+    const aulasDodia = await this.dataSource.getRepository(Aula)
+      .createQueryBuilder('aula')
+      .where('aula.data_prevista = :hoje', { hoje: hojeStr })
+      .getMany();
+
     // Aulas do dia: realizadas vs total
     const aulasRealizadasHoje = aulasDodia.filter(a => a.statusAula === StatusAula.REALIZADA).length;
     const percentAulasRealizadas = aulasHoje > 0 ? Math.round((aulasRealizadasHoje / aulasHoje) * 100) : 0;
@@ -214,6 +135,28 @@ export class AppController {
       // Anotações
       anotacoes,
     };
+  }
+
+  @Get('/api/clean-aulas')
+  async cleanAulas() {
+    // Busca aulas que não tem agenda ativa
+    const aulas = await this.dataSource.getRepository(Aula).find({
+      relations: ['aluno', 'turma']
+    });
+    let limpadas = 0;
+    for (const aula of aulas) {
+      if (aula.aluno && aula.turma) {
+        const agenda = await this.dataSource.getRepository(Agenda).findOne({
+          where: { fkAlunoId: aula.aluno.id, fkTurmaId: aula.turma.id }
+        });
+        if (!agenda || agenda.statusAgenda === 'Cancelado' as any) {
+          aula.statusAula = StatusAula.CANCELADA;
+          await aula.save();
+          limpadas++;
+        }
+      }
+    }
+    return { message: `Limpeza concluída. ${limpadas} aulas canceladas.` };
   }
 
   @Get('/escola')
@@ -309,23 +252,21 @@ export class AppController {
     const diaSemanaDB = diasSemanaMap[dataAtual.getDay()];
 
     const dataStr = `${dataAtual.getFullYear()}-${(dataAtual.getMonth() + 1).toString().padStart(2, '0')}-${dataAtual.getDate().toString().padStart(2, '0')}`;
+    const todasAsAulasDoDia = await this.obterAulasDoDia(dataAtual, diaSemanaDB);
 
     const recursos: any[] = [];
 
     if (modoRecurso === 'professores') {
-      // Buscar professores ativos
       const professores = await this.dataSource.getRepository(Pessoa).find({
         where: { isProfessor: true, statusProf: StatusPessoa.ATIVO },
         order: { nome: 'ASC' },
       });
 
       for (const prof of professores) {
-        // Buscar disponibilidade do professor para calcular turno
         const disponibilidades = await this.dataSource.getRepository(DisponibilidadeProfessor).find({
           where: { professor: { id: prof.id } },
         });
 
-        // Calcular início e fim do turno a partir das disponibilidades
         let inicioTurno = 8;
         let fimTurno = 22;
         if (disponibilidades.length > 0) {
@@ -335,57 +276,14 @@ export class AppController {
           fimTurno = Math.max(...horasFim);
         }
 
-        // Buscar turmas do professor que ocorrem no dia da semana selecionado
-        const ministras = await this.dataSource.getRepository(Ministra).find({
-          where: { fkProfessorId: prof.id },
-          relations: ['turma', 'turma.sala', 'turma.curso'],
-        });
-
-        const turmasNoDia = ministras
-          .filter(m => m.turma && m.turma.diaSemana === diaSemanaDB)
-          .map(m => m.turma);
-
-        // Para cada turma no dia, buscar aulas agendadas
-        const aulas: any[] = [];
-        for (const turma of turmasNoDia) {
-          // Buscar aulas desta turma na data selecionada
-          const aulasDodia = await this.dataSource.getRepository(Aula)
-            .createQueryBuilder('aula')
-            .leftJoinAndSelect('aula.aluno', 'aluno')
-            .where('aula.fk_turma_id = :turmaId', { turmaId: turma.id })
-            .andWhere('aula.data_prevista = :data', { data: dataStr })
-            .getMany();
-
-          if (aulasDodia.length > 0) {
-            for (const aula of aulasDodia) {
-              const horaInicio = parseInt(turma.horarioInicio.split(':')[0], 10);
-              aulas.push({
-                hora: horaInicio,
-                tituloCard: aula.aluno?.nome || 'Aluno',
-                subtituloCard: turma.sala?.nome || 'Sem Sala',
-                cor: this.determinarCorEvento(aula),
-                badge: this.determinarBadge(aula),
-              });
-            }
-          } else {
-            // Se a turma tem aula neste dia da semana mas não tem registros de aula,
-            // mostrar os alunos agendados nessa turma
-            const agendamentos = await this.dataSource.getRepository(Agenda).find({
-              where: { fkTurmaId: turma.id, statusAgenda: 'Matriculado' as any },
-              relations: ['aluno'],
-            });
-            for (const ag of agendamentos) {
-              const horaInicio = parseInt(turma.horarioInicio.split(':')[0], 10);
-              aulas.push({
-                hora: horaInicio,
-                tituloCard: ag.aluno?.nome || 'Aluno',
-                subtituloCard: turma.sala?.nome || 'Sem Sala',
-                cor: 'event-blue',
-                badge: null,
-              });
-            }
-          }
-        }
+        const aulasDoProfessor = todasAsAulasDoDia.filter(a => a.profId === prof.id).map(a => ({
+          hora: parseInt(a.horarioInicio.split(':')[0], 10),
+          tituloCard: a.alunoNome,
+          subtituloCard: a.salaNome,
+          cor: a.cor,
+          badge: a.badge,
+          alunoId: a.alunoId,
+        }));
 
         recursos.push({
           id: prof.id,
@@ -393,68 +291,23 @@ export class AppController {
           subtitulo: prof.especialidade,
           inicioTurno,
           fimTurno,
-          aulas,
+          aulas: aulasDoProfessor,
         });
       }
     } else {
-      // Modo Salas
       const salas = await this.dataSource.getRepository(Sala).find({
         order: { nome: 'ASC' },
       });
 
       for (const sala of salas) {
-        // Buscar turmas vinculadas a esta sala no dia da semana
-        const turmasNaSala = await this.dataSource.getRepository(Turma).find({
-          where: { sala: { id: sala.id }, diaSemana: diaSemanaDB as any },
-          relations: ['curso'],
-        });
-
-        const aulas: any[] = [];
-        for (const turma of turmasNaSala) {
-          // Buscar o professor da turma
-          const ministra = await this.dataSource.getRepository(Ministra).findOne({
-            where: { fkTurmaId: turma.id },
-            relations: ['professor'],
-          });
-          const profNome = ministra?.professor?.nome || 'Sem Prof.';
-
-          // Buscar aulas na data
-          const aulasDodia = await this.dataSource.getRepository(Aula)
-            .createQueryBuilder('aula')
-            .leftJoinAndSelect('aula.aluno', 'aluno')
-            .where('aula.fk_turma_id = :turmaId', { turmaId: turma.id })
-            .andWhere('aula.data_prevista = :data', { data: dataStr })
-            .getMany();
-
-          if (aulasDodia.length > 0) {
-            for (const aula of aulasDodia) {
-              const horaInicio = parseInt(turma.horarioInicio.split(':')[0], 10);
-              aulas.push({
-                hora: horaInicio,
-                tituloCard: aula.aluno?.nome || 'Aluno',
-                subtituloCard: profNome,
-                cor: this.determinarCorEvento(aula),
-                badge: this.determinarBadge(aula),
-              });
-            }
-          } else {
-            // Mostrar agendamentos
-            const agendamentos = await this.dataSource.getRepository(Agenda).find({
-              where: { fkTurmaId: turma.id, statusAgenda: 'Matriculado' as any },
-              relations: ['aluno'],
-            });
-            for (const ag of agendamentos) {
-              const horaInicio = parseInt(turma.horarioInicio.split(':')[0], 10);
-              aulas.push({
-                hora: horaInicio,
-                tituloCard: ag.aluno?.nome || 'Aluno',
-                subtituloCard: profNome,
-                cor: 'event-blue',
-                badge: null,
-              });
-            }
-          }
-        }
+        const aulasDaSala = todasAsAulasDoDia.filter(a => a.salaId === sala.id).map(a => ({
+          hora: parseInt(a.horarioInicio.split(':')[0], 10),
+          tituloCard: a.alunoNome,
+          subtituloCard: a.professorNome,
+          cor: a.cor,
+          badge: a.badge,
+          alunoId: a.alunoId,
+        }));
 
         recursos.push({
           id: sala.id,
@@ -462,7 +315,7 @@ export class AppController {
           subtitulo: `Capacidade ${sala.capacidade}`,
           inicioTurno: 8,
           fimTurno: 22,
-          aulas,
+          aulas: aulasDaSala,
         });
       }
     }
@@ -486,7 +339,9 @@ export class AppController {
   }
 
   // Determinar cor do evento com base no status real da aula
-  private determinarCorEvento(aula: Aula): string {
+  private determinarCorEvento(aula: Aula | any): string {
+    if (aula.isPrevista) return 'event-blue'; // Aulas regulares (sem registro Aula)
+
     const now = new Date();
     const aulaDia = new Date(aula.dataPrevista);
     const horaInicio = parseInt((aula.horarioInicio || '00').split(':')[0], 10);
@@ -514,9 +369,125 @@ export class AppController {
   }
 
   // Determinar badge do evento
-  private determinarBadge(aula: Aula): string | null {
+  private determinarBadge(aula: Aula | any): string | null {
+    if (aula.isPrevista) return null;
     if (aula.reagendado) return 'R';
     return null;
+  }
+
+  // Helper para obter as aulas e sincronizar Dashboard e Agenda
+  private async obterAulasDoDia(dataAtual: Date, diaSemanaDB: string): Promise<any[]> {
+    const dataStr = `${dataAtual.getFullYear()}-${(dataAtual.getMonth() + 1).toString().padStart(2, '0')}-${dataAtual.getDate().toString().padStart(2, '0')}`;
+    
+    // 1. Buscar todas as Aulas salvas para essa data
+    const aulasSalvas = await this.dataSource.getRepository(Aula)
+      .createQueryBuilder('aula')
+      .leftJoinAndSelect('aula.aluno', 'aluno')
+      .leftJoinAndSelect('aula.turma', 'turma')
+      .leftJoinAndSelect('turma.curso', 'curso')
+      .leftJoinAndSelect('turma.sala', 'sala')
+      .leftJoin(Agenda, 'ag', 'ag.fk_turma_id = turma.id AND ag.fk_aluno_id = aluno.id')
+      .where('aula.data_prevista = :data', { data: dataStr })
+      .andWhere('aula.status_aula != :statusCanc', { statusCanc: StatusAula.CANCELADA })
+      .andWhere('(ag.fk_aluno_id IS NULL OR ag.status_agenda = :statusMatriculado)', { statusMatriculado: 'Matriculado' })
+      .orderBy('aula.horario_inicio', 'ASC')
+      .getMany();
+
+    // 2. Buscar todas as turmas que ocorrem neste dia da semana
+    const turmasRegulares = await this.dataSource.getRepository(Turma)
+      .createQueryBuilder('turma')
+      .leftJoinAndSelect('turma.curso', 'curso')
+      .leftJoinAndSelect('turma.sala', 'sala')
+      .where('turma.dia_semana = :dia', { dia: diaSemanaDB })
+      .getMany();
+
+    const aulasConsolidadas: any[] = [];
+    const aulasSalvasMap = new Set<string>();
+
+    for (const aula of aulasSalvas) {
+      if (aula.turma) aulasSalvasMap.add(`${aula.turma.id}-${aula.aluno?.id}`);
+      
+      const ministra = aula.turma ? await this.dataSource.getRepository(Ministra).findOne({
+        where: { fkTurmaId: aula.turma.id },
+        relations: ['professor'],
+      }) : null;
+      
+      const prof = ministra?.professor;
+
+      aulasConsolidadas.push({
+        isPrevista: false,
+        id: aula.id,
+        turmaId: aula.turma?.id,
+        salaId: aula.turma?.sala?.id,
+        profId: prof?.id,
+        alunoId: aula.aluno?.id,
+        horario: aula.horarioInicio?.substring(0, 5) || '--:--',
+        alunoNome: aula.aluno?.nome || 'Sem Aluno',
+        professorNome: prof?.nome || 'Sem Professor',
+        cursoNome: aula.turma?.curso?.instrumento || 'N/A',
+        salaNome: aula.turma?.sala?.nome || 'Sem Sala',
+        statusPresencaAluno: aula.statusPresencaAluno,
+        statusPresencaProfessor: aula.statusPresencaProfessor,
+        statusAula: aula.statusAula,
+        horarioInicio: aula.horarioInicio || '00:00:00',
+        horarioFim: aula.horarioFim || '00:00:00',
+        dataPrevista: aula.dataPrevista,
+        cor: this.determinarCorEvento(aula),
+        badge: this.determinarBadge(aula),
+        totalFaltas: 0, // Poderia ser computado
+        faturasAbertas: 0,
+        vencimentoLabel: '-'
+      });
+    }
+
+    // 3. Adicionar aulas regulares que não foram instanciadas (previstas)
+    for (const turma of turmasRegulares) {
+      const agendamentos = await this.dataSource.getRepository(Agenda).find({
+        where: { fkTurmaId: turma.id, statusAgenda: 'Matriculado' as any },
+        relations: ['aluno'],
+      });
+
+      const ministra = await this.dataSource.getRepository(Ministra).findOne({
+        where: { fkTurmaId: turma.id },
+        relations: ['professor'],
+      });
+      const prof = ministra?.professor;
+
+      for (const ag of agendamentos) {
+        const chave = `${turma.id}-${ag.aluno?.id}`;
+        if (!aulasSalvasMap.has(chave)) {
+           aulasConsolidadas.push({
+            isPrevista: true,
+            id: `prev-${ag.fkAlunoId}-${ag.fkTurmaId}`,
+            turmaId: turma.id,
+            salaId: turma.sala?.id,
+            profId: prof?.id,
+            alunoId: ag.aluno?.id,
+            horario: turma.horarioInicio?.substring(0, 5) || '--:--',
+            alunoNome: ag.aluno?.nome || 'Sem Aluno',
+            professorNome: prof?.nome || 'Sem Professor',
+            cursoNome: turma.curso?.instrumento || 'N/A',
+            salaNome: turma.sala?.nome || 'Sem Sala',
+            statusPresencaAluno: null,
+            statusPresencaProfessor: null,
+            statusAula: null,
+            horarioInicio: turma.horarioInicio || '00:00:00',
+            horarioFim: turma.horarioFim || '00:00:00',
+            dataPrevista: dataStr,
+            cor: 'event-blue',
+            badge: null,
+            totalFaltas: 0,
+            faturasAbertas: 0,
+            vencimentoLabel: '-'
+           });
+        }
+      }
+    }
+
+    // 4. Calcular métricas secundárias do Dashboard apenas se necessário (otimização)
+    // Para economizar queries, deixaremos as métricas extras simplificadas nesta versão
+    
+    return aulasConsolidadas.sort((a, b) => a.horarioInicio.localeCompare(b.horarioInicio));
   }
 
   @Get('/api/busca-pessoas')

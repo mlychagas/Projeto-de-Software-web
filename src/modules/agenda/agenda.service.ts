@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Pessoa } from "../pessoa/pessoa.entity";
 import { Turma } from "../turma/turma.entity";
-import { Agenda } from "./agenda.entity";
+import { Agenda, StatusAgenda } from "./agenda.entity";
 
 @Injectable()
 export class AgendaService {
@@ -52,6 +52,8 @@ export class AgendaService {
         const agenda = await this.findOne(alunoId, turmaId);
         if (!agenda) return null;
 
-        return agenda.remove();
+        agenda.statusAgenda = StatusAgenda.CANCELADO;
+        agenda.dataCancelamento = new Date();
+        return agenda.save();
     }
 }

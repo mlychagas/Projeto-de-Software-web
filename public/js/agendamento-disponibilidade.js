@@ -224,14 +224,14 @@ function avancarParaFinanceiro() {
     const pessoaCard = document.querySelector('[data-pessoa-id]');
     const pessoaId = pessoaCard ? pessoaCard.getAttribute('data-pessoa-id') : '';
     
-    const params = new URLSearchParams();
-    if(profId) params.append('prof', profId);
-    if(cursoId) params.append('curso', cursoId);
-    if(pessoaId) params.append('pessoa', pessoaId);
+    const params = new URLSearchParams(window.location.search);
+    if(profId) params.set('prof', profId);
+    if(cursoId) params.set('curso', cursoId);
+    if(pessoaId) params.set('pessoa', pessoaId);
     if(agendamentoFinal) {
-        params.append('dia', agendamentoFinal.dia);
-        params.append('hora', agendamentoFinal.hora);
-        params.append('sala', agendamentoFinal.sala);
+        params.set('dia', agendamentoFinal.dia);
+        params.set('hora', agendamentoFinal.hora);
+        params.set('sala', agendamentoFinal.sala);
     }
     
     window.location.href = `/matricula/nova?${params.toString()}`;
