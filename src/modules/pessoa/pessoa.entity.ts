@@ -9,16 +9,23 @@ export enum StatusPessoa {
     SUSPENSO = 'Suspenso',
 }
 
+export enum StatusLead {
+    ATIVO = 'Ativo',
+    INCOMPLETO = 'Incompleto',
+    PENDENTE = 'Pendente',
+    ARQUIVADO = 'Arquivado',
+}
+
 @Entity('pessoa')
 export class Pessoa extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ type: 'varchar', length: 11, unique: true })
-    cpf!: string;
+    @Column({ type: 'varchar', length: 11, unique: true, nullable: true })
+    cpf?: string;
 
-    @Column({ type: 'varchar', length: 20, unique: true })
-    rg!: string;
+    @Column({ type: 'varchar', length: 20, unique: true, nullable: true })
+    rg?: string;
 
     @Column({ type: 'varchar', length: 150 })
     nome!: string;
@@ -82,6 +89,22 @@ export class Pessoa extends BaseEntity {
     // Dados Pessoais Extras
     @Column({ type: 'varchar', length: 10, nullable: true })
     pronome?: string;
+
+    // Dados de Lead / Cadastro
+    @Column({ type: 'enum', enum: StatusLead, default: StatusLead.ATIVO, name: 'status_lead', nullable: true })
+    statusLead?: StatusLead;
+
+    @Column({ type: 'varchar', length: 100, name: 'origem_cadastro', nullable: true })
+    origemCadastro?: string;
+
+    @Column({ type: 'text', nullable: true })
+    observacoes?: string;
+
+    @Column({ type: 'varchar', length: 150, name: 'nome_responsavel', nullable: true })
+    nomeResponsavel?: string;
+
+    @Column({ type: 'varchar', length: 100, name: 'instrumento_interesse', nullable: true })
+    instrumentoInteresse?: string;
 
     // Endereço
     @Column({ type: 'varchar', length: 10, nullable: true })

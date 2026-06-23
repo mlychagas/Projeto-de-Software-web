@@ -1,4 +1,27 @@
 function nextStep(stepNumber) {
+    // Validate Step 1 before moving to Step 2
+    if (stepNumber === 2) {
+        const requiredIds = ['respNome', 'respCpf', 'respNascimento', 'respEmail', 'respTelefone'];
+        let hasError = false;
+        
+        for (const id of requiredIds) {
+            const el = document.getElementById(id);
+            if (!el.value.trim()) {
+                el.classList.add('is-invalid');
+                hasError = true;
+            } else {
+                el.classList.remove('is-invalid');
+            }
+        }
+
+        if (hasError) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire('Campos Obrigatórios', 'Preencha todos os campos obrigatórios marcados com *', 'warning');
+            }
+            return; // Bloqueia a navegação
+        }
+    }
+
     // Hide all steps
     document.querySelectorAll('.step-content').forEach(el => el.style.display = 'none');
     

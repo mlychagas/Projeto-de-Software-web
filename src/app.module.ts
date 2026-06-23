@@ -13,6 +13,7 @@ import { AgendaModule } from './modules/agenda/agenda.module';
 import { MinistraModule } from './modules/ministra/ministra.module';
 import { DisponibilidadeProfessorModule } from './modules/disponibilidade-professor/disponibilidade-professor.module';
 import { MatriculaModule } from './modules/matricula/matricula.module';
+import { AtendimentoModule } from './modules/atendimento/atendimento.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MatriculaModule } from './modules/matricula/matricula.module';
     MinistraModule,
     DisponibilidadeProfessorModule,
     MatriculaModule,
+    AtendimentoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

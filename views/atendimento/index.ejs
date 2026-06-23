@@ -1,0 +1,401 @@
+<style>
+    /* Custom Styles for Leads View */
+    .metric-card {
+        border-radius: 12px;
+        padding: 20px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 20px 0 rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+    }
+    .metric-card:hover { transform: translateY(-5px); }
+    .card-total { background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%); }
+    .card-ativos { background: linear-gradient(135deg, #00b894 0%, #55efc4 100%); }
+    .card-pendentes { background: linear-gradient(135deg, #fdcb6e 0%, #ffeaa7 100%); }
+    .card-incompletos { background: linear-gradient(135deg, #d63031 0%, #ff7675 100%); }
+    
+    .metric-card h3 { color: #fff; font-size: 28px; margin-bottom: 0; font-weight: 700; }
+    .metric-card p { margin-bottom: 0; font-size: 14px; opacity: 0.9; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric-icon { font-size: 40px; opacity: 0.5; }
+
+    .table-modern { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px 0 rgba(0,0,0,0.05); }
+    .table-modern th { border-top: none; text-transform: uppercase; font-size: 12px; font-weight: 600; color: #888; background: #f8f9fa; padding: 15px; }
+    .table-modern td { vertical-align: middle; padding: 15px; border-top: 1px solid #f1f2f6; color: #444; }
+    
+    .badge-modern { padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .bg-light-success { background-color: rgba(0, 184, 148, 0.1); color: #00b894; }
+    .bg-light-warning { background-color: rgba(253, 203, 110, 0.1); color: #e1b12c; }
+    .bg-light-danger { background-color: rgba(214, 48, 49, 0.1); color: #d63031; }
+    .bg-light-secondary { background-color: rgba(100, 100, 100, 0.1); color: #666; }
+
+    .btn-action { width: 32px; height: 32px; padding: 0; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; margin-right: 5px; border: none; transition: all 0.2s; }
+    .btn-view { background: rgba(108, 92, 231, 0.1); color: #6c5ce7; }
+    .btn-edit { background: rgba(9, 132, 227, 0.1); color: #0984e3; }
+    .btn-delete { background: rgba(214, 48, 49, 0.1); color: #d63031; }
+    .btn-matricula { background: #00b894; color: #fff; border-radius: 8px; font-weight: 600; padding: 6px 16px; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; border: none;}
+    .btn-matricula:hover { background: #00a884; color: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,184,148,0.3); }
+    .btn-action:hover { transform: translateY(-2px); color: #fff; }
+    .btn-view:hover { background: #6c5ce7; }
+    .btn-edit:hover { background: #0984e3; }
+    .btn-delete:hover { background: #d63031; }
+
+    .filter-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 20px 0 rgba(0,0,0,0.05); }
+    
+    .modal-content { border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+    .modal-header { border-bottom: 1px solid #f1f2f6; padding: 24px; border-radius: 16px 16px 0 0; }
+    .modal-footer { border-top: 1px solid #f1f2f6; padding: 20px 24px; border-radius: 0 0 16px 16px; }
+    .modal-body { padding: 24px; }
+    .form-control { border-radius: 8px; border: 1px solid #e1e5eb; padding: 10px 15px; }
+    .form-control:focus { border-color: #6c5ce7; box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.15); }
+</style>
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h2 class="mb-1" style="font-weight: 700; color: #2d3436;">Pessoas Sem Vínculo</h2>
+        <p class="text-muted mb-0">Gerenciamento e cadastro de potenciais alunos e contatos.</p>
+    </div>
+    <div class="col-md-6 text-right">
+        <button class="btn btn-primary" style="background: #6c5ce7; border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600; box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);" onclick="openLeadModal()">
+            <i class="mdi mdi-plus-circle-outline mr-2"></i>Nova Pessoa
+        </button>
+    </div>
+</div>
+
+<!-- Metrics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-sm-6 mb-3">
+        <div class="metric-card card-total">
+            <div>
+                <p>Total Cadastrado</p>
+                <h3 id="metric-total">0</h3>
+            </div>
+            <i class="mdi mdi-account-group metric-icon"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-3">
+        <div class="metric-card card-ativos">
+            <div>
+                <p>Ativos</p>
+                <h3 id="metric-ativos">0</h3>
+            </div>
+            <i class="mdi mdi-account-check metric-icon"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-3">
+        <div class="metric-card card-pendentes">
+            <div>
+                <p>Pendentes</p>
+                <h3 id="metric-pendentes">0</h3>
+            </div>
+            <i class="mdi mdi-account-clock metric-icon"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 mb-3">
+        <div class="metric-card card-incompletos">
+            <div>
+                <p>Incompletos</p>
+                <h3 id="metric-incompletos">0</h3>
+            </div>
+            <i class="mdi mdi-account-alert metric-icon"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filter-card">
+    <div class="row">
+        <div class="col-md-4 mb-2">
+            <input type="text" id="filter-nome" class="form-control" placeholder="Buscar por Nome do Aluno ou Responsável...">
+        </div>
+        <div class="col-md-3 mb-2">
+            <select id="filter-situacao" class="form-control">
+                <option value="">Todas Situações</option>
+                <option value="Ativo">Ativo</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Incompleto">Incompleto</option>
+                <option value="Arquivado">Arquivado</option>
+            </select>
+        </div>
+        <div class="col-md-5 mb-2 text-right">
+            <button class="btn btn-outline-secondary mr-2" style="border-radius: 8px;" onclick="clearFilters()">Limpar</button>
+            <button class="btn btn-dark" style="border-radius: 8px;" onclick="fetchLeads()"><i class="mdi mdi-filter mr-1"></i>Filtrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="table-modern">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Nome / Responsável</th>
+                    <th>Interesse</th>
+                    <th>Contato</th>
+                    <th>Situação</th>
+                    <th class="text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="leads-table-body">
+                <tr><td colspan="6" class="text-center py-4">Carregando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Nova Pessoa (Lead) -->
+<div class="modal fade" id="leadModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="leadModalLabel" style="font-weight: 700; color: #2d3436;">Cadastrar Nova Pessoa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="leadForm">
+                    <input type="hidden" id="lead-id" name="id">
+                    
+                    <h6 class="text-primary mb-3" style="font-weight: 600;">1. Dados Principais</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Nome do Aluno *</label>
+                            <input type="text" class="form-control" id="lead-nome" name="nome" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Nome do Responsável</label>
+                            <input type="text" class="form-control" id="lead-nomeResponsavel" name="nomeResponsavel">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Data de Nascimento</label>
+                            <input type="date" class="form-control" id="lead-dataNascimento" name="dataNascimento">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Instrumento de Interesse</label>
+                            <input type="text" class="form-control" id="lead-instrumentoInteresse" name="instrumentoInteresse" placeholder="Ex: Violão, Teclado...">
+                        </div>
+                    </div>
+
+                    <h6 class="text-primary mb-3 mt-2" style="font-weight: 600;">2. Contato</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Telefone/Celular</label>
+                            <input type="text" class="form-control" id="lead-telefone" name="telefone">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>E-mail</label>
+                            <input type="email" class="form-control" id="lead-email" name="email">
+                        </div>
+                    </div>
+
+                    <h6 class="text-primary mb-3 mt-2" style="font-weight: 600;">3. Informações Complementares</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Situação do Cadastro</label>
+                            <select class="form-control" id="lead-statusLead" name="statusLead">
+                                <option value="Ativo">Ativo</option>
+                                <option value="Pendente">Pendente</option>
+                                <option value="Incompleto">Incompleto</option>
+                                <option value="Arquivado">Arquivado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Como conheceu a escola?</label>
+                            <input type="text" class="form-control" id="lead-origemCadastro" name="origemCadastro" placeholder="Ex: Instagram, Indicação...">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Observações</label>
+                            <textarea class="form-control" id="lead-observacoes" name="observacoes" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" style="border-radius: 8px;">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveLead()" style="background: #6c5ce7; border: none; border-radius: 8px;">Salvar Registro</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allLeads = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchLeads();
+    });
+
+    async function fetchLeads() {
+        try {
+            const res = await fetch('/atendimento/api/leads');
+            const data = await res.json();
+            allLeads = data.leads || [];
+            
+            // Atualizar cards
+            document.getElementById('metric-total').innerText = data.totais?.total || 0;
+            document.getElementById('metric-ativos').innerText = data.totais?.ativos || 0;
+            document.getElementById('metric-pendentes').innerText = data.totais?.pendentes || 0;
+            document.getElementById('metric-incompletos').innerText = data.totais?.incompletos || 0;
+
+            renderTable();
+        } catch (error) {
+            console.error('Erro ao buscar leads:', error);
+            document.getElementById('leads-table-body').innerHTML = `<tr><td colspan="6" class="text-center text-danger">Erro ao carregar dados.</td></tr>`;
+        }
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('leads-table-body');
+        tbody.innerHTML = '';
+
+        // Filtros
+        const fNome = document.getElementById('filter-nome').value.toLowerCase();
+        const fSituacao = document.getElementById('filter-situacao').value;
+
+        const filtered = allLeads.filter(l => {
+            if (fNome && !l.nome?.toLowerCase().includes(fNome) && !l.nomeResponsavel?.toLowerCase().includes(fNome)) return false;
+            if (fSituacao && l.statusLead !== fSituacao) return false;
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4">Nenhuma pessoa encontrada.</td></tr>`;
+            return;
+        }
+
+        filtered.forEach(lead => {
+            const bgBadge = lead.statusLead === 'Ativo' ? 'bg-light-success' : 
+                            lead.statusLead === 'Pendente' ? 'bg-light-warning' : 
+                            lead.statusLead === 'Incompleto' ? 'bg-light-danger' : 'bg-light-secondary';
+
+            const emailText = lead.email ? `<div><small class="text-muted">${lead.email}</small></div>` : '';
+            const phoneText = lead.telefone ? `<div>${lead.telefone}</div>` : '<small class="text-muted">S/ Contato</small>';
+            const respText = lead.nomeResponsavel ? `<div><small class="text-muted">Resp: ${lead.nomeResponsavel}</small></div>` : '';
+            const intText = lead.instrumentoInteresse || '-';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <div style="font-weight: 600; color: #2d3436;">${lead.nome}</div>
+                    ${respText}
+                </td>
+                <td>${intText}</td>
+                <td>${phoneText} ${emailText}</td>
+                <td><span class="badge badge-modern ${bgBadge}">${lead.statusLead || 'Ativo'}</span></td>
+                <td class="text-right">
+                    <a href="/matricula/agendamento?pessoa=${lead.id}" class="btn-matricula mr-2" title="Realizar Matrícula">
+                        <i class="mdi mdi-school"></i> Matrícula
+                    </a>
+                    <button class="btn-action btn-edit" onclick="editLead(${lead.id})" title="Editar"><i class="mdi mdi-pencil"></i></button>
+                    <button class="btn-action btn-delete" onclick="deleteLead(${lead.id})" title="Excluir"><i class="mdi mdi-delete"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function clearFilters() {
+        document.getElementById('filter-nome').value = '';
+        document.getElementById('filter-situacao').value = '';
+        renderTable();
+    }
+
+    function openLeadModal() {
+        document.getElementById('leadForm').reset();
+        document.getElementById('lead-id').value = '';
+        document.getElementById('leadModalLabel').innerText = 'Cadastrar Nova Pessoa';
+        $('#leadModal').modal('show');
+    }
+
+    async function editLead(id) {
+        try {
+            const res = await fetch(`/atendimento/api/leads/${id}`);
+            const lead = await res.json();
+            
+            document.getElementById('lead-id').value = lead.id || '';
+            document.getElementById('lead-nome').value = lead.nome || '';
+            document.getElementById('lead-nomeResponsavel').value = lead.nomeResponsavel || '';
+            if (lead.dataNascimento) {
+                document.getElementById('lead-dataNascimento').value = lead.dataNascimento.split('T')[0];
+            } else {
+                document.getElementById('lead-dataNascimento').value = '';
+            }
+            document.getElementById('lead-instrumentoInteresse').value = lead.instrumentoInteresse || '';
+            document.getElementById('lead-telefone').value = lead.telefone || '';
+            document.getElementById('lead-email').value = lead.email || '';
+            document.getElementById('lead-statusLead').value = lead.statusLead || 'Ativo';
+            document.getElementById('lead-origemCadastro').value = lead.origemCadastro || '';
+            document.getElementById('lead-observacoes').value = lead.observacoes || '';
+
+            document.getElementById('leadModalLabel').innerText = 'Editar Pessoa';
+            $('#leadModal').modal('show');
+        } catch (error) {
+            Swal.fire('Erro', 'Erro ao carregar dados do registro.', 'error');
+        }
+    }
+
+    async function saveLead() {
+        const id = document.getElementById('lead-id').value;
+        const formData = new FormData(document.getElementById('leadForm'));
+        const data = Object.fromEntries(formData.entries());
+
+        const url = id ? `/atendimento/api/leads/${id}` : '/atendimento/api/leads';
+        const method = id ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            
+            if (result.success) {
+                $('#leadModal').modal('hide');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: 'Registro salvo com sucesso!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                fetchLeads();
+            } else {
+                Swal.fire('Atenção', result.message || 'Erro ao salvar', 'warning');
+            }
+        } catch (error) {
+            Swal.fire('Erro', 'Erro de comunicação com o servidor', 'error');
+        }
+    }
+
+    function deleteLead(id) {
+        Swal.fire({
+            title: 'Excluir registro?',
+            text: "Esta ação não pode ser desfeita!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d63031',
+            cancelButtonColor: '#636e72',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await fetch(`/atendimento/api/leads/${id}`, { method: 'DELETE' });
+                    const data = await res.json();
+                    if (data.success) {
+                        Swal.fire('Excluído!', 'Registro removido.', 'success');
+                        fetchLeads();
+                    } else {
+                        Swal.fire('Erro', 'Não foi possível excluir.', 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Erro', 'Erro de comunicação', 'error');
+                }
+            }
+        });
+    }
+</script>
