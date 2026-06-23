@@ -88,10 +88,14 @@ function iniciarFluxoFazerMatricula() {
     // Coletar dados da URL (origem do agendamento)
     const urlParams = new URLSearchParams(window.location.search);
     const turmaId = urlParams.get('turma') || 1; // Mock fallback
+    const alunoId = document.getElementById('alunoNome').getAttribute('data-pessoa-id');
+    const valorMensalidadeElement = document.getElementById('valorMensalidade');
+    const valorLiquido = valorMensalidadeElement ? converterParaFloat(valorMensalidadeElement.textContent) : 0;
     
     // Preparar payload para o backend
     const payload = {
         aluno: {
+            id: alunoId ? parseInt(alunoId) : null,
             nome: alunoNome,
             cpf: '123456789' + Math.floor(Math.random() * 99), // Mock para evitar conflito Unique
             rg: '123456' + Math.floor(Math.random() * 99),
@@ -101,7 +105,7 @@ function iniciarFluxoFazerMatricula() {
         },
         financeiro: {
             cursoId: cursoSelect,
-            valorLiquido: document.getElementById('valorMensalidade') ? document.getElementById('valorMensalidade').value : 0,
+            valorLiquido: valorLiquido,
             diaVencimento: diaVencimento
         },
         agendamento: {
@@ -110,8 +114,8 @@ function iniciarFluxoFazerMatricula() {
     };
 
     Swal.fire({
-        title: 'Salvando Matrícula...',
-        text: 'Aguarde enquanto registramos os dados no banco.',
+        title: 'Processando...',
+        text: 'Aguarde enquanto preparamos o seu cadastro.',
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading()
     });
@@ -125,12 +129,13 @@ function iniciarFluxoFazerMatricula() {
     .then(data => {
         if(data.success) {
             Swal.fire({
-                title: 'Matrícula Realizada com Sucesso! 🎉',
-                text: 'Aluno, Contrato e Turma vinculados no Banco de Dados.',
+                title: 'Quase lá! 🎉',
+                text: 'Redirecionando para a finalização do cadastro...',
                 icon: 'success',
-                confirmButtonColor: '#7b61ff'
+                timer: 1500,
+                showConfirmButton: false
             }).then(() => {
-                window.location.href = '/matricula/agendamento';
+                window.location.href = '/matricula/cadastro?aluno=' + data.alunoId;
             });
         } else {
             Swal.fire('Erro', data.message, 'error');

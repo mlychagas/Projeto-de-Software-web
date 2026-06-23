@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Render, Post, Body, Inject } from '@nestjs/common';
+import { Controller, Get, Param, Render, Post, Body, Inject, Query } from '@nestjs/common';
 import { Curso } from '../curso/curso.entity';
 import { Pessoa, StatusPessoa } from '../pessoa/pessoa.entity';
 import { Ministra } from '../ministra/ministra.entity';
@@ -17,7 +17,7 @@ export class MatriculaController {
   async selecionarHorario(@Query('pessoa') pessoaId?: string) {
     const cursos = await Curso.find({ order: { nome: 'ASC' } });
     const professores = await Pessoa.find({ where: { isProfessor: true, statusProf: StatusPessoa.ATIVO }, order: { nome: 'ASC' } });
-    let pessoa = null;
+    let pessoa: Pessoa | null = null;
     if (pessoaId) {
       pessoa = await Pessoa.findOne({ where: { id: parseInt(pessoaId, 10) } });
     }
@@ -62,15 +62,15 @@ export class MatriculaController {
     @Query('sala') sala?: string
   ) {
     const cursos = await Curso.find({ order: { nome: 'ASC' } });
-    let pessoa = null;
+    let pessoa: Pessoa | null = null;
     if (pessoaId) {
       pessoa = await Pessoa.findOne({ where: { id: parseInt(pessoaId, 10) } });
     }
-    let turma = null;
+    let turma: Turma | null = null;
     if (turmaId) {
       turma = await Turma.findOne({ where: { id: parseInt(turmaId, 10) }, relations: ['curso', 'sala'] });
     }
-    let professor = null;
+    let professor: Pessoa | null = null;
     if (profId) {
       professor = await Pessoa.findOne({ where: { id: parseInt(profId, 10), isProfessor: true } });
     }
@@ -79,8 +79,49 @@ export class MatriculaController {
 
   @Get('cadastro')
   @Render('matricula/cadastro')
-  cadastro() {
-    return { title: 'Cadastro de Matrícula' };
+  async cadastro(@Query('aluno') alunoId?: string) {
+    let aluno: Pessoa | null = null;
+    if (alunoId) {
+      aluno = await Pessoa.findOne({ where: { id: parseInt(alunoId, 10) } });
+    }
+    return { title: 'Cadastro de Matrícula', aluno };
+  }
+
+  @Post('api/cadastro-finalizar')
+  async finalizarCadastro(@Body() payload: any) {
+    const { alunoId, responsavel } = payload;
+    
+    try {
+      let aluno = await Pessoa.findOne({ where: { id: parseInt(alunoId, 10) } });
+      if (!aluno) throw new Error('Aluno não encontrado');
+
+      // Se o aluno for o próprio responsável (ou menor de idade com outro responsavel)
+      // Por simplicidade, vamos atualizar os dados de endereço no aluno por enquanto
+      // e atualizar seus dados pessoais
+      aluno.nome = responsavel.nome;
+      if (responsavel.cpf) aluno.cpf = responsavel.cpf;
+      if (responsavel.rg) aluno.rg = responsavel.rg;
+      if (responsavel.email) aluno.email = responsavel.email;
+      if (responsavel.telefone) aluno.telefone = responsavel.telefone;
+      if (responsavel.dataNascimento) aluno.dataNascimento = new Date(responsavel.dataNascimento);
+      if (responsavel.pronome) aluno.pronome = responsavel.pronome;
+
+      // Endereço
+      aluno.cep = responsavel.cep;
+      aluno.logradouro = responsavel.logradouro;
+      aluno.numero = responsavel.numero;
+      aluno.complemento = responsavel.complemento;
+      aluno.bairro = responsavel.bairro;
+      aluno.cidade = responsavel.cidade;
+      aluno.estado = responsavel.estado;
+
+      await aluno.save();
+
+      return { success: true, message: 'Cadastro finalizado com sucesso!' };
+    } catch (error) {
+      console.error('Erro ao finalizar cadastro:', error);
+      return { success: false, message: error.message || 'Erro interno ao salvar.' };
+    }
   }
 
   @Post('api/salvar')
@@ -92,7 +133,18 @@ export class MatriculaController {
 
     try {
       // 2. Tratar Aluno
-      let aluno = await queryRunner.manager.findOne(Pessoa, { where: { cpf: payload.aluno.cpf, isAluno: true } });
+      let aluno: Pessoa | null = null;
+      if (payload.aluno.id) {
+        aluno = await queryRunner.manager.findOne(Pessoa, { where: { id: payload.aluno.id } });
+        if (aluno && !aluno.isAluno) {
+          aluno.isAluno = true;
+          if (!aluno.statusAluno) aluno.statusAluno = StatusPessoa.ATIVO;
+          if (!aluno.dataMatricula) aluno.dataMatricula = new Date();
+          aluno = await queryRunner.manager.save(aluno);
+        }
+      } else {
+        aluno = await queryRunner.manager.findOne(Pessoa, { where: { cpf: payload.aluno.cpf, isAluno: true } });
+      }
       
       if (!aluno) {
         aluno = new Pessoa();

@@ -48,7 +48,7 @@
               <%= typeof sala !== 'undefined' && sala ? ' na ' + sala : '' %>
             </small>
           </div>
-          <button class="btn btn-sm btn-primary" style="background-color: #7b61ff; border-color: #7b61ff;" onclick="window.location.href='/matricula/agendamento<%= typeof pessoa !== 'undefined' && pessoa ? \'?pessoa=\' + pessoa.id : \'\' %>'"><i class="fa fa-edit"></i> Alterar Horário</button>
+          <button class="btn btn-sm btn-primary" style="background-color: #7b61ff; border-color: #7b61ff;" onclick="window.location.href='/matricula/agendamento<%= typeof pessoa !== 'undefined' && pessoa ? '?pessoa=' + pessoa.id : '' %>'"><i class="fa fa-edit"></i> Alterar Horário</button>
         </div>
       </div>
       <div class="col-md-8">

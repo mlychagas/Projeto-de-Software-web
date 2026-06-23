@@ -78,4 +78,30 @@ export class Pessoa extends BaseEntity {
 
     @Column({ type: 'varchar', length: 50, nullable: true })
     parentesco?: string;
+
+    // Dados Pessoais Extras
+    @Column({ type: 'varchar', length: 10, nullable: true })
+    pronome?: string;
+
+    // Endereço
+    @Column({ type: 'varchar', length: 10, nullable: true })
+    cep?: string;
+
+    @Column({ type: 'varchar', length: 150, nullable: true })
+    logradouro?: string;
+
+    @Column({ type: 'varchar', length: 20, nullable: true })
+    numero?: string;
+
+    @Column({ type: 'varchar', length: 100, nullable: true })
+    complemento?: string;
+
+    @Column({ type: 'varchar', length: 100, nullable: true })
+    bairro?: string;
+
+    @Column({ type: 'varchar', length: 100, nullable: true })
+    cidade?: string;
+
+    @Column({ type: 'varchar', length: 2, nullable: true })
+    estado?: string;
 }
