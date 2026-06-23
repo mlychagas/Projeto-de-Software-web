@@ -1,4 +1,33 @@
 <div class="quixnav">
+    <style>
+        .quixnav {
+            background: linear-gradient(180deg, #1e1e2d 0%, #151521 100%);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        .quixnav .metismenu > li > a {
+            color: #a2a3b7;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .quixnav .metismenu > li:hover > a, .quixnav .metismenu > li.mm-active > a {
+            color: #ffffff;
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid #593bdb;
+        }
+        .quixnav .metismenu .nav-label {
+            color: #6c6d83;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 15px;
+        }
+        .icon {
+            color: #593bdb;
+        }
+        .quixnav .metismenu > li:hover > a .icon, .quixnav .metismenu > li.mm-active > a .icon {
+            color: #ffffff;
+        }
+    </style>
     <div class="quixnav-scroll">
         <ul class="metismenu" id="menu">
             <li class="nav-label first">Menu Principal</li>
@@ -35,13 +64,11 @@
 
             <li class="nav-label">Administrativo</li>
 
-            <li><a class="has-arrow" href="javascript:void()" aria-expanded="false"><i
-                        class="icon icon-chart-bar-33"></i><span class="nav-text">Financeiro</span></a>
-                <ul aria-expanded="false">
-                    <li><a href="/caixa">Caixa</a></li>
-                    <li><a href="/contratos">Contratos</a></li>
-                    <li><a href="/pessoas">Pessoas / Cadastros</a></li>
-                </ul>
+            <li>
+                <a href="/financeiro" aria-expanded="false">
+                    <i class="icon icon-chart-bar-33"></i>
+                    <span class="nav-text">Financeiro</span>
+                </a>
             </li>
 
             <li>
@@ -50,16 +77,6 @@
                     <span class="nav-text">Relatórios</span>
                 </a>
             </li>
-
-            <li class="nav-label">Sistema</li>
-
-            <li>
-                <a href="/configuracoes" aria-expanded="false">
-                    <i class="icon icon-settings"></i>
-                    <span class="nav-text">Configurações</span>
-                </a>
-            </li>
-
         </ul>
     </div>
 </div>

@@ -1,0 +1,61 @@
+<div class="row page-titles mx-0">
+    <div class="col-sm-6 p-md-0">
+        <div class="welcome-text">
+            <h4><%= titulo %></h4>
+            <p class="mb-0">&raquo; Central de gestão financeira e faturamento</p>
+        </div>
+    </div>
+    <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicial</a></li>
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Financeiro</a></li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Contratos -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/contratos" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-file-document"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Contratos de Matrícula</h5>
+                    <p><%= contratosAtivos %> Contratos Ativos de um total de <%= totalContratos %></p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Pessoas/Cadastros (Financeiros) -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="/pessoas" style="text-decoration: none; color: inherit;">
+            <div class="config-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-account-group"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Clientes e Responsáveis</h5>
+                    <p>Gestão de cadastros e cobranças</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Faturas (Placeholder for future) -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <a href="javascript:void(0)" style="text-decoration: none; color: inherit; opacity: 0.6;">
+            <div class="config-card" style="cursor: not-allowed;">
+                <div class="config-card-icon">
+                    <i class="mdi mdi-cash-multiple"></i>
+                </div>
+                <div class="config-card-info">
+                    <h5>Faturas (Em breve)</h5>
+                    <p>Gestão de faturas e pagamentos</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>

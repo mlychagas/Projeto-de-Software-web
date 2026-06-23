@@ -164,7 +164,7 @@ export class AppController {
   async getEscola() {
     // Contagens reais do banco de dados
     const totalAlunos = await this.dataSource.getRepository(Pessoa).count({ where: { isAluno: true } });
-    const totalResponsaveis = await this.dataSource.getRepository(Pessoa).count({ where: { isResponsavel: true } });
+    const totalPessoas = await this.dataSource.getRepository(Pessoa).count();
     const totalTurmas = await this.dataSource.getRepository(Turma).count();
     const totalCursos = await this.dataSource.getRepository(Curso).count();
     const totalSalas = await this.dataSource.getRepository(Sala).count();
@@ -193,7 +193,7 @@ export class AppController {
       titulo: 'Recursos e Configurações da Escola',
       headerType: 'escola',
       totalAlunos,
-      totalResponsaveis,
+      totalPessoas,
       totalTurmas,
       totalCursos,
       totalSalas,
@@ -201,6 +201,33 @@ export class AppController {
       totalInstrumentos,
       aniversariantes,
       totalAniversariantes: aniversariantes.length,
+    };
+  }
+
+  // ========================
+  // FINANCEIRO HUB
+  // ========================
+  @Get('/financeiro')
+  @Render('financeiro')
+  async getFinanceiro() {
+    const totalContratos = await this.dataSource.getRepository(Contrato).count();
+    const contratosAtivos = await this.dataSource.getRepository(Contrato).count({ where: { statusContrato: 'Ativo' as any } });
+    
+    return {
+      titulo: 'Financeiro',
+      totalContratos,
+      contratosAtivos,
+    };
+  }
+
+  // ========================
+  // RELATÓRIOS HUB
+  // ========================
+  @Get('/relatorios')
+  @Render('relatorios')
+  async getRelatorios() {
+    return {
+      titulo: 'Relatórios',
     };
   }
 
@@ -264,19 +291,41 @@ export class AppController {
   @Post('/escola/professores/criar')
   @Redirect('/escola/professores')
   async salvarProfessor(@Body() dados: any) {
-    const professor = new Pessoa();
+    let professor: Pessoa | null = null;
+    
+    // Check if person already exists by CPF or RG
+    const cpfBusca = dados.cpf?.trim();
+    const rgBusca = dados.rg?.trim();
+
+    if (cpfBusca || rgBusca) {
+      const orConditions: any[] = [];
+      if (cpfBusca) orConditions.push({ cpf: cpfBusca });
+      if (rgBusca) orConditions.push({ rg: rgBusca });
+      
+      if (orConditions.length > 0) {
+        professor = await this.dataSource.getRepository(Pessoa).findOne({ 
+          where: orConditions 
+        });
+      }
+    }
+
+    if (!professor) {
+      professor = new Pessoa();
+    }
+
     professor.nome = dados.nome;
-    professor.email = dados.email || null;
-    professor.telefone = dados.telefone || null;
-    professor.cpf = dados.cpf || null;
-    professor.rg = dados.rg || null;
-    professor.dataNascimento = dados.dataNascimento || null;
-    professor.dataAdmissao = dados.dataAdmissao || null;
+    if (dados.email) professor.email = dados.email;
+    if (dados.telefone) professor.telefone = dados.telefone;
+    if (dados.cpf) professor.cpf = dados.cpf;
+    if (dados.rg) professor.rg = dados.rg;
+    if (dados.dataNascimento) professor.dataNascimento = dados.dataNascimento;
+    if (dados.dataAdmissao) professor.dataAdmissao = dados.dataAdmissao;
     professor.statusProf = dados.statusProf || 'Ativo' as any;
-    professor.especialidade = dados.especialidade || null;
-    professor.valorHoraAula = dados.valorHoraAula || null;
-    professor.observacoes = dados.observacoes || null;
+    if (dados.especialidade) professor.especialidade = dados.especialidade;
+    if (dados.valorHoraAula) professor.valorHoraAula = dados.valorHoraAula;
+    if (dados.observacoes) professor.observacoes = dados.observacoes;
     professor.isProfessor = true;
+    
     await professor.save();
   }
 

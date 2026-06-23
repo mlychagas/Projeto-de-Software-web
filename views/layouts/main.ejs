@@ -5,13 +5,50 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Focus - Bootstrap Admin Dashboard </title>
+    <title>MuseERP - Gestão Musical</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
     <link rel="stylesheet" href="/vendor/owl-carousel/css/owl.carousel.min.css">
     <link rel="stylesheet" href="/vendor/owl-carousel/css/owl.theme.default.min.css">
     <link href="/vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
+    <style>
+        /* Modernize grid and fix opacity */
+        .card {
+            background-color: #ffffff;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: none;
+            border-radius: 12px;
+        }
+        .table {
+            color: #454550;
+            background-color: transparent;
+            opacity: 1 !important; /* Fix opaque grid */
+        }
+        .table thead th {
+            border-bottom: 2px solid #f0f1f5;
+            color: #2c2c2c;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            background-color: #f8f9fa;
+        }
+        .table tbody tr {
+            transition: all 0.2s ease-in-out;
+        }
+        .table tbody tr:hover {
+            background-color: #f4f6fa;
+        }
+        .table td {
+            vertical-align: middle;
+            border-top: 1px solid #f0f1f5;
+        }
+        /* Style for Action Buttons */
+        .btn-sm {
+            border-radius: 6px;
+        }
+    </style>
     <link href="/css/custom-theme.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
@@ -201,6 +238,18 @@
                 }, 300);
             });
         }
+    </script>
+    <script>
+        $(document).ready(function() {
+            var path = window.location.pathname;
+            var isHub = path === '/' || path === '/escola' || path === '/financeiro' || path === '/relatorios' || path === '/agenda' || path === '/atendimento';
+            
+            if (!isHub && $('.welcome-text').length > 0) {
+                var backBtn = $('<a href="javascript:history.back()" class="btn btn-light btn-sm mr-3 shadow-sm" style="border-radius: 6px; color: #593bdb; border: 1px solid #e0e0e0;"><i class="mdi mdi-arrow-left"></i> Voltar</a>');
+                var innerHtml = $('.welcome-text').html();
+                $('.welcome-text').html('<div class="d-flex align-items-center">' + backBtn.prop('outerHTML') + '<div>' + innerHtml + '</div></div>');
+            }
+        });
     </script>
 </body>
 </html>

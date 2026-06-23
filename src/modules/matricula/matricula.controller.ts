@@ -140,10 +140,32 @@ export class MatriculaController {
       // Por simplicidade, vamos atualizar os dados de endereço no aluno por enquanto
       // e atualizar seus dados pessoais
       aluno.nome = responsavel.nome;
-      if (responsavel.cpf) aluno.cpf = responsavel.cpf;
-      if (responsavel.rg) aluno.rg = responsavel.rg;
+      
+      if (responsavel.cpf) {
+        const cleanCpf = responsavel.cpf.replace(/\D/g, '');
+        if (cleanCpf.length > 11) {
+          return { success: false, message: 'O CPF não pode ter mais de 11 dígitos numéricos.' };
+        }
+        
+        // Verificar se CPF já existe em outro usuário
+        const existingCpf = await Pessoa.findOne({ where: { cpf: cleanCpf } });
+        if (existingCpf && existingCpf.id !== aluno.id) {
+          return { success: false, message: 'Já existe outra pessoa cadastrada com este CPF.' };
+        }
+        aluno.cpf = cleanCpf;
+      }
+
+      if (responsavel.rg) {
+        // Verificar se RG já existe em outro usuário
+        const existingRg = await Pessoa.findOne({ where: { rg: responsavel.rg } });
+        if (existingRg && existingRg.id !== aluno.id) {
+          return { success: false, message: 'Já existe outra pessoa cadastrada com este RG.' };
+        }
+        aluno.rg = responsavel.rg;
+      }
+      
       if (responsavel.email) aluno.email = responsavel.email;
-      if (responsavel.telefone) aluno.telefone = responsavel.telefone;
+      if (responsavel.telefone) aluno.telefone = responsavel.telefone.replace(/\D/g, '');
       if (responsavel.dataNascimento) aluno.dataNascimento = new Date(responsavel.dataNascimento);
       if (responsavel.pronome) aluno.pronome = responsavel.pronome;
 
