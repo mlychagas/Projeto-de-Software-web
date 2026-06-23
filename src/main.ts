@@ -7,8 +7,12 @@ import expressEjsLayouts from 'express-ejs-layouts';
 import { registerHelpers } from './helpers';
 import { buildValidationErrorPayload } from 'nest-validation-view';
 
+import cookieParser from 'cookie-parser';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.use(cookieParser());
 
   app.useGlobalPipes(
     new ValidationPipe({

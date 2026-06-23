@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './config/database/database.module';
@@ -14,6 +15,8 @@ import { MinistraModule } from './modules/ministra/ministra.module';
 import { DisponibilidadeProfessorModule } from './modules/disponibilidade-professor/disponibilidade-professor.module';
 import { MatriculaModule } from './modules/matricula/matricula.module';
 import { AtendimentoModule } from './modules/atendimento/atendimento.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -30,8 +33,15 @@ import { AtendimentoModule } from './modules/atendimento/atendimento.module';
     DisponibilidadeProfessorModule,
     MatriculaModule,
     AtendimentoModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}

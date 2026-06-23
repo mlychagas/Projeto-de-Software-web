@@ -27,6 +27,56 @@
         .quixnav .metismenu > li:hover > a .icon, .quixnav .metismenu > li.mm-active > a .icon {
             color: #ffffff;
         }
+        .quixnav {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .quixnav-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .sidebar-user-block {
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .sidebar-user-block:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .sidebar-user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #593bdb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin-right: 12px;
+        }
+        .sidebar-user-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .sidebar-user-name {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar-user-role {
+            color: #a2a3b7;
+            font-size: 12px;
+        }
     </style>
     <div class="quixnav-scroll">
         <ul class="metismenu" id="menu">
@@ -34,14 +84,14 @@
 
             <li>
                 <a href="/" aria-expanded="false">
-                    <i class="icon icon-single-04"></i>
+                    <i class="icon mdi mdi-home"></i>
                     <span class="nav-text">Tela Inicial</span>
                 </a>
             </li>
 
             <li>
                 <a href="/atendimento" aria-expanded="false">
-                    <i class="icon icon-headphones"></i>
+                    <i class="icon mdi mdi-headphones"></i>
                     <span class="nav-text">Leads</span>
                 </a>
             </li>
@@ -50,14 +100,14 @@
 
             <li>
                 <a href="/escola" aria-expanded="false">
-                    <i class="icon icon-book-open"></i>
+                    <i class="icon mdi mdi-domain"></i>
                     <span class="nav-text">Escola</span>
                 </a>
             </li>
 
             <li>
                 <a href="/agenda" aria-expanded="false">
-                    <i class="icon icon-calendar"></i>
+                    <i class="icon mdi mdi-calendar"></i>
                     <span class="nav-text">Agenda</span>
                 </a>
             </li>
@@ -66,17 +116,55 @@
 
             <li>
                 <a href="/financeiro" aria-expanded="false">
-                    <i class="icon icon-chart-bar-33"></i>
+                    <i class="icon mdi mdi-cash-multiple"></i>
                     <span class="nav-text">Financeiro</span>
                 </a>
             </li>
 
             <li>
                 <a href="/relatorios" aria-expanded="false">
-                    <i class="icon icon-single-copy-06"></i>
+                    <i class="icon mdi mdi-chart-bar"></i>
                     <span class="nav-text">Relatórios</span>
                 </a>
             </li>
         </ul>
     </div>
+    
+    <% if (typeof user !== 'undefined' && user) { %>
+    <div class="sidebar-user-block" onclick="showUserModal()">
+        <div class="sidebar-user-avatar">
+            <%= user.nome.charAt(0).toUpperCase() %>
+        </div>
+        <div class="sidebar-user-info">
+            <div class="sidebar-user-name"><%= user.nome %></div>
+            <div class="sidebar-user-role"><%= user.isUsuario ? 'Administrador' : 'Usuário' %></div>
+        </div>
+        <i class="mdi mdi-chevron-right text-muted"></i>
+    </div>
+
+    <script>
+        function showUserModal() {
+            Swal.fire({
+                title: '<strong><%= user.nome %></strong>',
+                html: `
+                    <div class="text-left mt-3">
+                        <p><i class="mdi mdi-email mr-2"></i> <%= user.email %></p>
+                        <p><i class="mdi mdi-shield-account mr-2"></i> Permissão: <strong><%= user.isUsuario ? 'Administrador' : 'Usuário' %></strong></p>
+                    </div>
+                `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '<i class="mdi mdi-logout"></i> Sair do Sistema',
+                cancelButtonText: 'Voltar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/auth/logout';
+                }
+            });
+        }
+    </script>
+    <% } %>
 </div>

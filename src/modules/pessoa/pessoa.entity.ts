@@ -39,6 +39,9 @@ export class Pessoa extends BaseEntity {
     @Column({ type: 'date', name: 'data_nascimento', nullable: true })
     dataNascimento?: Date;
 
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    senha?: string;
+
     // Papéis
     @Column({ type: 'boolean', default: false, name: 'is_aluno' })
     isAluno!: boolean;
